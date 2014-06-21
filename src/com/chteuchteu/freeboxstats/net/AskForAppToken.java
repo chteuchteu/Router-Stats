@@ -61,14 +61,22 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 					AuthorizeStatus astatus = NetHelper.getAuthorizeStatus(freebox, trackId);
 					if (astatus == AuthorizeStatus.TIMEOUT || astatus == AuthorizeStatus.GRANTED || astatus == AuthorizeStatus.DENIED) {
 						MainActivity.pairingFinished(astatus);
-						return null;
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						check = false;
+					} else {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
+				
+				// Once done, open session
+				boolean success = NetHelper.openSession(freebox);
+				if (success)
+					MainActivity.hideLaunchPairingButton();
+				else
+					MainActivity.sessionOpenFailed();
 			}
 		}
 		

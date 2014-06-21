@@ -3,9 +3,11 @@ package com.chteuchteu.freeboxstats;
 import org.json.JSONException;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
+import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 
@@ -53,6 +55,7 @@ public class SingleBox {
 	public void init() {
 		String savedFreebox = Util.getPref(this.context, "freebox");
 		if (!savedFreebox.equals("")) {
+			Log.v("", "Loading freebox from preferences");
 			// Load freebox
 			try {
 				this.freebox = Freebox.load(savedFreebox);
@@ -60,11 +63,12 @@ public class SingleBox {
 				e.printStackTrace();
 			}
 			
-			// Get Auth token
-			
+			// Open session
+			new SessionOpener(this.freebox).execute();
+			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer().execute();
+			new FreeboxDiscoverer(this.context).execute();
 		}
 	}
 	

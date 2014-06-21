@@ -2,6 +2,10 @@ package com.chteuchteu.freeboxstats.net;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,6 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -146,5 +151,178 @@ public class NetHelper {
 		}
 		
 		return authorizeStatus;
+	}
+	
+	public static boolean openSession(Freebox freebox) {
+		// Get challenge
+		NetResponse response = getChallenge(freebox);
+		
+		String challenge = "";
+		if (response != null && response.hasSucceeded()) {
+			try {
+				challenge = response.getJsonObject().getString("challenge");
+				SingleBox.getInstance().getSession().setChallenge(challenge);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else return false;
+		
+		// Begin session
+		NetResponse response2 = beginSession(freebox, challenge);
+		if (response2 != null && response2.hasSucceeded()) {
+			try {
+				String session_token = response2.getJsonObject().getString("session_token");
+				SingleBox.getInstance().getSession().setSessionToken(session_token);
+				return true;
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else return false;
+	}
+	
+	private static NetResponse getChallenge(Freebox freebox) {
+		NetResponse netResponse = null;
+		String apiCallUri = freebox.getApiCallUrl() + "login/";
+		HttpClient httpclient = new DefaultHttpClient();
+		String responseBody = "";
+		try {
+			HttpGet httpget = new HttpGet(apiCallUri);
+			
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			responseBody = httpclient.execute(httpget, responseHandler);
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			httpclient.getConnectionManager().shutdown();
+		}
+		
+		if (responseBody.equals(""))
+			return null;
+		
+		// Check server's response
+		try {
+			JSONObject obj = new JSONObject(responseBody);
+			netResponse = new NetResponse(obj);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return netResponse;
+	}
+	
+	private static NetResponse beginSession(Freebox freebox, String challenge) {
+		HttpClient httpClient = null;
+		HttpPost httpPost = null;
+		InputStream inStream = null;
+		NetResponse netResponse = null;
+		
+		try {
+			httpClient = new DefaultHttpClient();
+			String uri = freebox.getApiCallUrl() + "login/session/";
+			Log.v("", "Polling uri " + uri);
+			// We have to provide app_id and password
+			JSONObject obj = new JSONObject();
+			obj.put("app_id", SingleBox.APP_ID);
+			Log.v("", "Computing ids with " + freebox.getAppToken() + " and " + challenge);
+			//obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
+			obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
+			httpPost = new HttpPost(uri);
+			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
+			httpPost.setEntity(postEntity);
+			
+			// Execute and get the response
+			HttpResponse response = httpClient.execute(httpPost);
+			HttpEntity entity = response.getEntity();
+			
+			if (entity != null) {
+				inStream = entity.getContent();
+				try {
+					String serverResponse = Util.Streams.convertStreamtoString(inStream);
+					Log.v("serverResponse", serverResponse);
+					// Check server's response
+					JSONObject obj2 = new JSONObject(serverResponse);
+					netResponse = new NetResponse(obj2);
+				} finally {
+					inStream.close();
+				}
+			}
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		} catch (JSONException exception) {
+			exception.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (SignatureException e) {
+			e.printStackTrace();
+		} finally {
+			if (inStream != null) {
+				try {
+					inStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return netResponse;
+	}
+	
+	public static NetResponse loadGraph(Freebox freebox, ArrayList<String> strFields) {
+		HttpClient httpClient = null;
+		HttpPost httpPost = null;
+		InputStream inStream = null;
+		NetResponse netResponse = null;
+		
+		try {
+			httpClient = new DefaultHttpClient();
+			String uri = freebox.getApiCallUrl() + "rrd/";
+			Log.v("", "Polling uri " + uri);
+			JSONObject obj = new JSONObject();
+			obj.put("db", "net");
+			JSONArray fields = new JSONArray();
+			for (String s : strFields)
+				fields.put(s);
+			obj.put("fields", fields);
+			httpPost = new HttpPost(uri);
+			HttpEntity postEntity = new ByteArrayEntity(fields.toString().getBytes("UTF-8"));
+			httpPost.setEntity(postEntity);
+			
+			// Execute and get the response
+			HttpResponse response = httpClient.execute(httpPost);
+			HttpEntity entity = response.getEntity();
+			
+			if (entity != null) {
+				inStream = entity.getContent();
+				try {
+					String serverResponse = Util.Streams.convertStreamtoString(inStream);
+					Log.v("serverResponse", serverResponse);
+					// Check server's response
+					JSONObject obj2 = new JSONObject(serverResponse);
+					netResponse = new NetResponse(obj2);
+				} finally {
+					inStream.close();
+				}
+			}
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		} catch (JSONException exception) {
+			exception.printStackTrace();
+		} finally {
+			if (inStream != null) {
+				try {
+					inStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return netResponse;
 	}
 }
