@@ -9,7 +9,7 @@ public class GraphHelper {
 		Number[] res = new Number[dataArray.length()];
 		for (int i=0; i<dataArray.length(); i++) {
 			JSONObject jsonObj = dataArray.getJSONObject(i);
-			res[i] = jsonObj.getInt("field");
+			res[i] = jsonObj.getInt(field);
 		}
 		
 		return res;

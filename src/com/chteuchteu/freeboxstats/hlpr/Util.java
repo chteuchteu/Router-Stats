@@ -83,42 +83,6 @@ public class Util {
 		}
 	}
 	
-	/*public static String hmac_sha1(String s, String keyString) throws 
-	UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-		
-		SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), "HmacSHA1");
-		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(key);
-		
-		byte[] bytes = mac.doFinal(s.getBytes("UTF-8"));
-		
-		return new String(Base64.encodeToString(bytes, 0));
-	}*/
-	
-	/*public static String calculateRFC2104HMAC(String data, String key)
-			throws java.security.SignatureException {
-		String result;
-		try {
-			String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-			// get an hmac_sha1 key from the raw key bytes
-			SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1_ALGORITHM);
-			
-			// get an hmac_sha1 Mac instance and initialize with the signing key
-			Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
-			mac.init(signingKey);
-			
-			// compute the hmac on input data bytes
-			byte[] rawHmac = mac.doFinal(data.getBytes());
-			
-			// base64-encode the hmac
-			result = new String(Base64.encodeToString(rawHmac, 0));
-			
-		} catch (Exception e) {
-			throw new SignatureException("Failed to generate HMAC : " + e.getMessage());
-		}
-		return result;
-	}*/
-	
 	/**
 	 * Returns the password asked by the API from the app_token and challenge
 	 * @throws NoSuchAlgorithmException 

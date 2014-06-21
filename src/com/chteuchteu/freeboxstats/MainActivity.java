@@ -67,6 +67,7 @@ public class MainActivity extends ActionBarActivity {
 					}
 					
 					plot.setTicksPerRangeLabel(3);
+					plot.redraw();
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

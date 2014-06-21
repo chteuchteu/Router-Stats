@@ -290,8 +290,10 @@ public class NetHelper {
 				fields.put(s);
 			obj.put("fields", fields);
 			httpPost = new HttpPost(uri);
-			HttpEntity postEntity = new ByteArrayEntity(fields.toString().getBytes("UTF-8"));
+			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
+			httpPost.setHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
+			httpPost.addHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
 			
 			// Execute and get the response
 			HttpResponse response = httpClient.execute(httpPost);
