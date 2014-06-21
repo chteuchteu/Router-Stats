@@ -8,16 +8,19 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 
 public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
+	private Period period;
 	private ArrayList<String> fields;
 	private NetResponse netResponse;
 	
-	public GraphLoader(Freebox freebox) {
+	public GraphLoader(Freebox freebox, Period period) {
 		this.freebox = freebox;
+		this.period = period;
 	}
 	
 	@Override
@@ -26,7 +29,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		//fields.add("rate_up");
 		fields.add("rate_down");
 		
-		netResponse = NetHelper.loadGraph(freebox, fields);
+		netResponse = NetHelper.loadGraph(freebox, period, fields);
 		
 		return null;
 	}

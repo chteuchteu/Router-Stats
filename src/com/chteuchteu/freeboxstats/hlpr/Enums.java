@@ -15,4 +15,6 @@ public class Enums {
 			return null;
 		}
 	}
+	
+	public enum Period { HOUR, DAY, WEEK, MONTH }
 }

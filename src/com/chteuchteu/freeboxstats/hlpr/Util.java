@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Scanner;
 
 import javax.crypto.Mac;
@@ -15,6 +17,8 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 
 public class Util {
 	public static String getPref(Context c, String key) {
@@ -96,5 +100,44 @@ public class Util {
 		//String res = calculateRFC2104HMAC(challenge, app_token);
 		Log.v("Generated res", res);
 		return res;
+	}
+	
+	public static final class Times {
+		/**
+		 * Gets "from" timestamp when retrieving data from Freebox
+		 * @param period
+		 * @return
+		 */
+		public static long getFrom(Period period) {
+			Calendar cal = Calendar.getInstance();
+			switch (period) {
+				case HOUR:
+					cal.add(Calendar.HOUR, -1);
+					break;
+				case DAY:
+					cal.add(Calendar.HOUR, -24);
+					break;
+				case WEEK:
+					cal.add(Calendar.DAY_OF_MONTH, -7);
+					break;
+				case MONTH:
+					cal.add(Calendar.DAY_OF_MONTH, -30);
+					break;
+				default:
+					break;
+				
+			}
+			Log.v("timestamp!", "-> " + (cal.getTime().getTime()/1000) + "...");
+			return cal.getTime().getTime() / 1000;
+		}
+		
+		/**
+		 * Returns "to" timestamp when retrieving data from Freebox
+		 * @return
+		 */
+		public static long getTo() {
+			Calendar cal = Calendar.getInstance();
+			return new Timestamp(cal.getTime().getTime()).getTime() / 1000;
+		}
 	}
 }

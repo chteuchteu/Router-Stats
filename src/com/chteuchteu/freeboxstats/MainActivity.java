@@ -22,6 +22,7 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
@@ -55,6 +56,10 @@ public class MainActivity extends ActionBarActivity {
 				try {
 					plot = (XYPlot) ((Activity) context).findViewById(R.id.xyPlot);
 					
+					plot.clear();
+					for (XYSeries serie : plot.getSeriesSet())
+						plot.removeSeries(serie);
+					
 					for (String field : fields) {
 						Number[] serieData = GraphHelper.jsonArrayToData(field, data);
 						
@@ -77,7 +82,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	private void updateGraph() {
 		if (SingleBox.getInstance(context).getFreebox() != null)
-			new GraphLoader(SingleBox.getInstance().getFreebox()).execute();
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR).execute();
 	}
 	
 	public static void displayLaunchPairingButton() {

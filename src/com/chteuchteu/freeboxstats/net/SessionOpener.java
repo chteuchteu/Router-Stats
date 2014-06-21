@@ -3,6 +3,7 @@ package com.chteuchteu.freeboxstats.net;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class SessionOpener extends AsyncTask<Void, Void, Void> {
@@ -25,7 +26,7 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (success)
-			new GraphLoader(freebox).execute();
+			new GraphLoader(freebox, Period.HOUR).execute();
 		else
 			Log.v("", "Failed to open session");
 	}
