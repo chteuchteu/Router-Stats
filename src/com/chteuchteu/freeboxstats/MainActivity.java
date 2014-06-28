@@ -7,17 +7,26 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -38,9 +47,18 @@ import com.chteuchteu.freeboxstats.net.GraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
 	private static Context context;
-	private static XYPlot plot;
+	private MainActivityPagerAdapter pagerAdapter;
+	private ViewPager viewPager;
+	
+	private static final String tab1Title = "Débit down";
+	private static final String tab2Title = "Débit up";
+	private static final String tab3Title = "Temp.";
+	
+	private static XYPlot plot1;
+	private static XYPlot plot2;
+	private static XYPlot plot3;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 		
 		context = this;
+		
 		findViewById(R.id.firstLaunch_getAppToken).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -55,21 +74,137 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
-		findViewById(R.id.xyPlot).setVisibility(View.GONE);
+		pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				getActionBar().setSelectedNavigationItem(position);
+			}
+		});
 		
-		design();
+		final ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			@Override public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
+			
+			@Override
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+				viewPager.setCurrentItem(tab.getPosition());
+			}
+			
+			@Override public void onTabReselected(Tab tab, FragmentTransaction ft) { }
+		};
+		actionBar.addTab(actionBar.newTab().setText(tab1Title).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setText(tab2Title).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setText(tab3Title).setTabListener(tabListener));
+		
+		// Some design
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
+			if (id != 0 && getResources().getBoolean(id)) { // Translucent available
+				Window w = getWindow();
+				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			}
+		}
+		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
+		
 		
 		// Load singleton
 		SingleBox.getInstance(this).init();
 	}
 	
-	public static void loadGraph(final GraphsContainer graphsContainer, final Period period) {
+	public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
+		public MainActivityPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+		
+		@Override
+		public Fragment getItem(int i) {
+			Fragment fragment = new GraphFragment();
+			Bundle args = new Bundle();
+			args.putInt(GraphFragment.ARG_OBJECT, i+1);
+			fragment.setArguments(args);
+			return fragment;
+		}
+		
+		@Override
+		public int getCount() {
+			return 3;
+		}
+		
+		@Override
+		public CharSequence getPageTitle(int position) {
+			switch (position) {
+				case 0: return tab1Title;
+				case 1: return tab2Title;
+				case 2: return tab3Title;
+				default: return "Unknown";
+			}
+		}
+	}
+	
+	public static class GraphFragment extends Fragment {
+		public static final String ARG_OBJECT = "object";
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_graph, container, false);
+			
+			Bundle args = getArguments();
+			int index = args.getInt(ARG_OBJECT);
+			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
+			switch (index) {
+				case 0: plot1 = plot; break;
+				case 1: plot2 = plot; break;
+				case 2: plot3 = plot; break;
+			}
+			initPlot(plot, index);
+			
+			return rootView;
+		}
+	}
+	
+	private static void initPlot(XYPlot plot, int plotIndex) {
+		plot.setVisibility(View.GONE);
+		
+		// Styling
+		plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
+		plot.setPlotMargins(10, 0, 0, 10);
+		plot.setPlotPadding(0, 0, 0, 0);
+		plot.setGridPadding(0, 10, 5, 0);
+		plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
+		plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
+		plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
+		plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.TRANSPARENT);
+		plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.GRAY);
+		plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
+		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
+		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
+		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+		
+		if (plotIndex == 0 || plotIndex == 1)
+			plot.setRangeLabel("Débit (" + DataSet.valuesUnit.name() + "/s)");
+		else
+			plot.setRangeLabel("");
+	}
+	
+	public static synchronized void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period) {
+		Log.v("", "displaying graph" + plotIndex);
 		((Activity) context).runOnUiThread(new Runnable() {
 			@SuppressWarnings("serial")
 			@SuppressLint("SimpleDateFormat")
 			@Override
 			public void run() {
-				plot = (XYPlot) ((Activity) context).findViewById(R.id.xyPlot);
+				XYPlot plot = null;
+				switch (plotIndex) {
+					case 0: plot = plot1;
+					case 1: plot = plot2;
+					case 2: plot = plot3;
+				}
+				
 				plot.setVisibility(View.VISIBLE);
 				
 				// Reset plot
@@ -77,30 +212,13 @@ public class MainActivity extends ActionBarActivity {
 				plot.getSeriesSet().clear();
 				plot.removeMarkers();
 				
-				// Styling
-				plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
-				plot.setPlotMargins(10, 0, 0, 10);
-				plot.setPlotPadding(0, 0, 0, 0);
-				plot.setGridPadding(0, 10, 5, 0);
-				plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
-				plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
-				plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.TRANSPARENT);
-				plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-				
-				plot.setRangeLabel("Débit (" + DataSet.valuesUnit.name() + ")");
-				
 				for (DataSet dSet : graphsContainer.getDataSets()) {
 					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().name());
 					
 					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
 					
-					if (dSet.getField() != Field.BW_DOWN)
+					if (dSet.getField() != Field.BW_DOWN && dSet.getField() != Field.BW_UP)
 						serieFormat.configure(context, R.xml.line_point_formatter_with_plf1);
 					else
 						serieFormat.configure(context, R.xml.line_point_formatter_with_plf2);
@@ -133,20 +251,33 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	private void updateGraph() {
-		ArrayList<Field> fields = new ArrayList<Field>();
-		fields.add(Field.RATE_DOWN);
-		fields.add(Field.BW_DOWN);
-		
-		if (SingleBox.getInstance(context).getFreebox() != null)
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields).execute();
+	public static void updateGraph() {
+		if (SingleBox.getInstance(context).getFreebox() != null) {
+			// First tab
+			ArrayList<Field> fields = new ArrayList<Field>();
+			fields.add(Field.RATE_DOWN);
+			fields.add(Field.BW_DOWN);
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 0).execute();
+			
+			// Second tab
+			fields.clear();
+			fields.add(Field.RATE_UP);
+			fields.add(Field.BW_UP);
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();
+			
+			// Third tab
+			/*fields.clear();
+			fields.add(Field.RATE_UP);
+			fields.add(Field.BW_UP);
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();*/
+		}
 	}
 	
 	public static void displayLaunchPairingButton() {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.VISIBLE);
+				//((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -155,7 +286,7 @@ public class MainActivity extends ActionBarActivity {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.GONE);
+				//((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.GONE);
 			}
 		});
 	}
@@ -176,21 +307,6 @@ public class MainActivity extends ActionBarActivity {
 				Toast.makeText(context, "Erreur lors de la connexion avec la Freebox", Toast.LENGTH_SHORT).show();
 			}
 		});
-	}
-	
-	@SuppressLint("InlinedApi")
-	public void design() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
-			if (id != 0 && getResources().getBoolean(id)) { // Translucent available
-				Window w = getWindow();
-				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			}
-		}
-		ActionBar actionBar = getActionBar();
-		if (actionBar != null)
-			actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
 	}
 	
 	@Override

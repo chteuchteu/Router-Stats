@@ -18,11 +18,13 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private Period period;
 	private ArrayList<Field> fields;
 	private GraphsContainer graphsContainer;
+	private int plotIndex;
 	
-	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields) {
+	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields, int plotIndex) {
 		this.freebox = freebox;
 		this.period = period;
 		this.fields = fields;
+		this.plotIndex = plotIndex;
 	}
 	
 	@Override
@@ -42,6 +44,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (graphsContainer != null)
-			MainActivity.loadGraph(graphsContainer, period);
+			MainActivity.loadGraph(plotIndex, graphsContainer, period);
 	}
 }
