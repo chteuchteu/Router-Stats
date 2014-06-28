@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
@@ -47,24 +50,38 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 		
+		findViewById(R.id.xyPlot).setVisibility(View.GONE);
+		
 		// Load singleton
-		SingleBox.getInstance(this);
 		SingleBox.getInstance(this).init();
 	}
 	
-	public static void loadGraph(final GraphsContainer graphsContainer) {
+	public static void loadGraph(final GraphsContainer graphsContainer, final Period period) {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@SuppressLint("SimpleDateFormat")
 			@SuppressWarnings("serial")
 			@Override
 			public void run() {
 				plot = (XYPlot) ((Activity) context).findViewById(R.id.xyPlot);
+				plot.setVisibility(View.VISIBLE);
+				
+				// Styling
+				plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
+				plot.setPlotMargins(0, 0, 0, 0);
+				plot.setPlotPadding(0, 0, 0, 0);
+				plot.setGridPadding(0, 10, 5, 0);
+				plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
+				plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
+				plot.getGraphWidget().getDomainLabelPaint().setColor(Color.BLACK);
+				plot.getGraphWidget().getRangeLabelPaint().setColor(Color.BLACK);
+				plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.BLACK);
+				plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.BLACK);
+				plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.BLACK);
 				
 				plot.setTitle("Débit");
 				
 				plot.clear();
-				for (XYSeries serie : plot.getSeriesSet())
-					plot.removeSeries(serie);
+				plot.getSeriesSet().clear();
 				
 				for (DataSet dSet : graphsContainer.getDataSets()) {
 					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().name());
@@ -72,15 +89,21 @@ public class MainActivity extends ActionBarActivity {
 					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
 					serieFormat.configure(context, R.xml.line_point_formatter_with_plf1);
+					if (dSet.getField() != Field.BW_DOWN) {
+						Paint paint = new Paint();
+						paint.setColor(Color.GREEN);
+						serieFormat.setFillPaint(paint);
+					}
 					
 					plot.addSeries(serie, serieFormat);
 				}
-				plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
+				plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
 				plot.setDomainValueFormat(new Format() {
 					@Override
 					public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-						int position = ((Number) obj).intValue()/10;// * 1000;
-						return new StringBuffer(graphsContainer.getSerie().get(position));
+						int position = ((Number) obj).intValue();
+						String label = Util.Times.getLabel(period, graphsContainer.getSerie().get(position), position, graphsContainer.getSerie());
+						return new StringBuffer(label);
 					}
 					
 					@Override
@@ -89,7 +112,8 @@ public class MainActivity extends ActionBarActivity {
 					}
 				});
 				
-				plot.setTicksPerRangeLabel(3);
+				
+				//plot.setTicksPerRangeLabel(3);
 				plot.redraw();
 			}
 		});

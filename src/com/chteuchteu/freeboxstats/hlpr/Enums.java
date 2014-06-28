@@ -40,7 +40,7 @@ public class Enums {
 	}
 	
 	public enum Unit {
-		O(0), ko(1), Mo(2), Go(3), To(4);
+		o(0), ko(1), Mo(2), Go(3), To(4);
 		private int index;
 		Unit(int index) { this.index = index; }
 		public int getIndex() { return this.index; }

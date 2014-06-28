@@ -42,6 +42,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (graphsContainer != null)
-			MainActivity.loadGraph(graphsContainer);
+			MainActivity.loadGraph(graphsContainer, period);
 	}
 }

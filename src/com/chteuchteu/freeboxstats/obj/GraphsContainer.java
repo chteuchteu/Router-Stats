@@ -37,8 +37,8 @@ public class GraphsContainer {
 				JSONObject obj = (JSONObject) data.get(i);
 				for (Field f : fields) {
 					try {
-						getDataSet(f).addValue(Unit.O, obj.getInt(f.getSerializedValue()));
-					} catch (Exception ex) { ex.printStackTrace(); }
+						getDataSet(f).addValue(Unit.o, obj.getInt(f.getSerializedValue()));
+					} catch (JSONException ex) { ex.printStackTrace(); }
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

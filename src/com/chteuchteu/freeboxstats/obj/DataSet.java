@@ -28,7 +28,7 @@ public class DataSet {
 				
 				if (jsonObj.has(field.getSerializedValue())) {
 					int intValue = jsonObj.getInt(field.getSerializedValue());
-					Number value = Util.convertUnit(Unit.O, valuesUnit, intValue);
+					Number value = Util.convertUnit(Unit.o, valuesUnit, intValue);
 					this.values.add(value);
 				}
 				else

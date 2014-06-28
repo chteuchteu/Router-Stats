@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
@@ -136,6 +137,46 @@ public class Util {
 		public static long getTo() {
 			Calendar cal = Calendar.getInstance();
 			return new Timestamp(cal.getTime().getTime()).getTime() / 1000;
+		}
+		
+		/**
+		 * Avoid printing a label for each drawn point :
+		 * returns an empty string or the label depending on the label value
+		 */
+		public static String getLabel(Period period, String serie, int pos, ArrayList<String> series) {
+			switch (period) {
+				case HOUR:
+					if (serie.equals("") || !serie.contains(":"))
+						return "";
+					// Only display 11:00, 11:10, 11:20, ...
+					int minutes = Integer.parseInt(serie.split(":")[1]);
+					
+					if (minutes % 10 == 0
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
+						return serie;
+					else
+						return "";
+					
+				case DAY :
+					if (serie.equals("") || !serie.contains(":"))
+						return "";
+					// Only display 14:00, 16:00, 18:00, ...
+					int hours = Integer.parseInt(serie.split(":")[0]);
+					int minutes2 = Integer.parseInt(serie.split(":")[1]);
+					
+					if (hours % 2 == 0 && minutes2 == 0
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
+						return serie;
+					else
+						return "";
+					
+				case WEEK:
+					return "";
+					
+				case MONTH:
+					return "";
+				default: return "";
+			}
 		}
 	}
 	
