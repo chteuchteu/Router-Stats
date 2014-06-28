@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.chteuchteu.freeboxstats.SingleBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -274,7 +275,7 @@ public class NetHelper {
 		return netResponse;
 	}
 	
-	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<String> strFields) {
+	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields) {
 		HttpClient httpClient = null;
 		HttpPost httpPost = null;
 		InputStream inStream = null;
@@ -287,8 +288,8 @@ public class NetHelper {
 			JSONObject obj = new JSONObject();
 			obj.put("db", "net");
 			JSONArray fields = new JSONArray();
-			for (String s : strFields)
-				fields.put(s);
+			for (Field f : fFields)
+				fields.put(f.getSerializedValue());
 			obj.put("fields", fields);
 			obj.put("date_start", Util.Times.getFrom(period));
 			//obj.put("date_end", Util.Times.getTo());

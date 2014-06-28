@@ -97,7 +97,6 @@ public class Util {
 	public static String encodeAppToken(String app_token, String challenge) throws 
 	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, SignatureException {
 		String res = Crypto.hmacSha1(challenge, app_token);
-		//String res = calculateRFC2104HMAC(challenge, app_token);
 		Log.v("Generated res", res);
 		return res;
 	}

@@ -1,11 +1,10 @@
 package com.chteuchteu.freeboxstats;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,11 +20,13 @@ import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
+import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
-import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
+import com.chteuchteu.freeboxstats.obj.DataSet;
+import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
 public class MainActivity extends ActionBarActivity {
 	private static Context context;
@@ -49,33 +50,45 @@ public class MainActivity extends ActionBarActivity {
 		SingleBox.getInstance(this).init();
 	}
 	
-	public static void loadGraph(final JSONArray data, final ArrayList<String> fields) {
+	public static void loadGraph(final GraphsContainer graphsContainer) {
 		((Activity) context).runOnUiThread(new Runnable() {
+			@SuppressLint("SimpleDateFormat")
+			@SuppressWarnings("serial")
 			@Override
 			public void run() {
-				try {
-					plot = (XYPlot) ((Activity) context).findViewById(R.id.xyPlot);
+				plot = (XYPlot) ((Activity) context).findViewById(R.id.xyPlot);
+				
+				plot.setTitle("Débit");
+				
+				plot.clear();
+				for (XYSeries serie : plot.getSeriesSet())
+					plot.removeSeries(serie);
+				
+				for (DataSet dSet : graphsContainer.getDataSets()) {
+					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().name());
 					
-					plot.clear();
-					for (XYSeries serie : plot.getSeriesSet())
-						plot.removeSeries(serie);
+					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
+					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
+					serieFormat.configure(context, R.xml.line_point_formatter_with_plf1);
 					
-					for (String field : fields) {
-						Number[] serieData = GraphHelper.jsonArrayToData(field, data);
-						
-						XYSeries serie = new SimpleXYSeries(Arrays.asList(serieData), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, field);
-						
-						LineAndPointFormatter serieFormat = new LineAndPointFormatter();
-						serieFormat.setPointLabelFormatter(new PointLabelFormatter());
-						serieFormat.configure(context, R.xml.line_point_formatter_with_plf1);
-						plot.addSeries(serie, serieFormat);
+					plot.addSeries(serie, serieFormat);
+				}
+				plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
+				plot.setDomainValueFormat(new Format() {
+					@Override
+					public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+						int position = ((Number) obj).intValue()/10;// * 1000;
+						return new StringBuffer(graphsContainer.getSerie().get(position));
 					}
 					
-					plot.setTicksPerRangeLabel(3);
-					plot.redraw();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+					@Override
+					public Object parseObject(String source, ParsePosition pos) {
+						return null;
+					}
+				});
+				
+				plot.setTicksPerRangeLabel(3);
+				plot.redraw();
 			}
 		});
 	}
