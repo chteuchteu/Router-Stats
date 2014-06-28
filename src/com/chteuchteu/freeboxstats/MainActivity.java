@@ -6,17 +6,20 @@ import java.text.ParsePosition;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.androidplot.xy.LineAndPointFormatter;
@@ -54,6 +57,8 @@ public class MainActivity extends ActionBarActivity {
 		
 		findViewById(R.id.xyPlot).setVisibility(View.GONE);
 		
+		design();
+		
 		// Load singleton
 		SingleBox.getInstance(this).init();
 	}
@@ -74,17 +79,20 @@ public class MainActivity extends ActionBarActivity {
 				
 				// Styling
 				plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
-				plot.setPlotMargins(0, 0, 0, 0);
+				plot.setPlotMargins(10, 0, 0, 10);
 				plot.setPlotPadding(0, 0, 0, 0);
 				plot.setGridPadding(0, 10, 5, 0);
 				plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
 				plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
 				plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
 				plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.TRANSPARENT);
-				plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
 				plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.GRAY);
-				plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.BLACK);
-				plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.BLACK);
+				plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
+				plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
+				plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
+				plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+				
+				plot.setRangeLabel("Débit (" + DataSet.valuesUnit.name() + ")");
 				
 				for (DataSet dSet : graphsContainer.getDataSets()) {
 					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().name());
@@ -99,34 +107,27 @@ public class MainActivity extends ActionBarActivity {
 					
 					plot.addSeries(serie, serieFormat);
 				}
-				plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
 				
 				// Add markers (vertical lines)
 				for (XValueMarker m : Util.Times.getMarkers(period, graphsContainer.getSerie())) {
-					Paint paint = new Paint();
-					paint.setARGB(30, 0, 0, 0);
-					m.setLinePaint(paint);
+					m.getLinePaint().setARGB(30, 255, 255, 255);
 					plot.addMarker(m);
 				}
 				
 				// Add labels
+				plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
 				plot.setDomainValueFormat(new Format() {
 					@Override
 					public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-						Log.v("", "lol");
 						int position = ((Number) obj).intValue();
 						String label = Util.Times.getLabel(period, graphsContainer.getSerie().get(position), position, graphsContainer.getSerie());
 						return new StringBuffer(label);
 					}
 					
-					@Override
-					public Object parseObject(String source, ParsePosition pos) {
-						return null;
-					}
+					@Override public Object parseObject(String source, ParsePosition pos) { return null; }
 				});
 				
 				
-				//plot.setTicksPerRangeLabel(3);
 				plot.redraw();
 			}
 		});
@@ -175,6 +176,21 @@ public class MainActivity extends ActionBarActivity {
 				Toast.makeText(context, "Erreur lors de la connexion avec la Freebox", Toast.LENGTH_SHORT).show();
 			}
 		});
+	}
+	
+	@SuppressLint("InlinedApi")
+	public void design() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
+			if (id != 0 && getResources().getBoolean(id)) { // Translucent available
+				Window w = getWindow();
+				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			}
+		}
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null)
+			actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
 	}
 	
 	@Override
