@@ -19,6 +19,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.androidplot.xy.XValueMarker;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
@@ -177,6 +178,54 @@ public class Util {
 					return "";
 				default: return "";
 			}
+		}
+		
+		public static ArrayList<XValueMarker> getMarkers(Period period, ArrayList<String> series) {
+			ArrayList<XValueMarker> markers = new ArrayList<XValueMarker>();
+			
+			String lastText = "";
+			int pos = 0;
+			for (String serie : series) {
+				boolean display = false;
+				String currentText = "";
+				
+				switch (period) {
+					case HOUR:
+						if (serie.equals("") || !serie.contains(":"))
+							display = false;
+						else {
+							// Only display 11:00, 11:10, 11:20, ...
+							int minutes = Integer.parseInt(serie.split(":")[1]);
+							
+							if (minutes % 10 == 0) {
+								display = true;
+								currentText = serie;
+							}
+						}
+						break;
+					case DAY:
+						// TODO
+						break;
+					case MONTH:
+						// TODO
+						break;
+					case WEEK:
+						// TODO
+						break;
+					default:
+						break;
+				}
+				
+				if (display && !currentText.equals(lastText)) {
+					XValueMarker marker = new XValueMarker(pos, "");
+					markers.add(marker);
+					lastText = currentText;
+				}
+				
+				pos++;
+			}
+			
+			return markers;
 		}
 	}
 	

@@ -230,8 +230,6 @@ public class NetHelper {
 			// We have to provide app_id and password
 			JSONObject obj = new JSONObject();
 			obj.put("app_id", SingleBox.APP_ID);
-			Log.v("", "Computing ids with " + freebox.getAppToken() + " and " + challenge);
-			//obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
 			obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
@@ -296,7 +294,6 @@ public class NetHelper {
 				fields.put(f.getSerializedValue());
 			obj.put("fields", fields);
 			obj.put("date_start", Util.Times.getFrom(period));
-			//obj.put("date_end", Util.Times.getTo());
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
