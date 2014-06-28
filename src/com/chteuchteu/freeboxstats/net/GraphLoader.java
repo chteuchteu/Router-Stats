@@ -19,17 +19,14 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private ArrayList<Field> fields;
 	private GraphsContainer graphsContainer;
 	
-	public GraphLoader(Freebox freebox, Period period) {
+	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields) {
 		this.freebox = freebox;
 		this.period = period;
+		this.fields = fields;
 	}
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		fields = new ArrayList<Field>();
-		//fields.add("rate_up");
-		fields.add(Field.RATE_DOWN);
-		
 		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields);
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {

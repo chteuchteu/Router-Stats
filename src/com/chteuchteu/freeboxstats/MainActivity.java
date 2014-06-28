@@ -3,6 +3,7 @@ package com.chteuchteu.freeboxstats;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,6 +23,7 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
@@ -94,8 +96,12 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	private void updateGraph() {
+		ArrayList<Field> fields = new ArrayList<Field>();
+		fields.add(Field.RATE_DOWN);
+		fields.add(Field.BW_DOWN);
+		
 		if (SingleBox.getInstance(context).getFreebox() != null)
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR).execute();
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields).execute();
 	}
 	
 	public static void displayLaunchPairingButton() {

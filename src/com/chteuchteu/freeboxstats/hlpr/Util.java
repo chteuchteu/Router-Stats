@@ -19,6 +19,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class Util {
 	public static String getPref(Context c, String key) {
@@ -124,9 +125,7 @@ public class Util {
 					break;
 				default:
 					break;
-				
 			}
-			Log.v("timestamp!", "-> " + (cal.getTime().getTime()/1000) + "...");
 			return cal.getTime().getTime() / 1000;
 		}
 		
@@ -138,5 +137,17 @@ public class Util {
 			Calendar cal = Calendar.getInstance();
 			return new Timestamp(cal.getTime().getTime()).getTime() / 1000;
 		}
+	}
+	
+	public static Number convertUnit(Unit from, Unit to, double value) {
+		int fromIndex = from.getIndex();
+		int toIndex = to.getIndex();
+		
+		if (fromIndex == toIndex)
+			return value;
+		else if (fromIndex < toIndex)
+			return value / Math.pow(1024, toIndex - fromIndex);
+		else // if (fromIndex > toIndex)
+			return value * Math.pow(1024, fromIndex - toIndex);
 	}
 }

@@ -18,10 +18,13 @@ public class Enums {
 	
 	public enum Period { HOUR, DAY, WEEK, MONTH }
 	
-	public enum Db { NET, TEMP, DSL, SWITCH }
+	public enum Db {
+		NET, TEMP, DSL, SWITCH;
+		public String getSerializedValue() { return this.name().toLowerCase(); }
+	}
 	public enum Field {
 		BW_UP, BW_DOWN, RATE_UP, RATE_DOWN, VPN_RATE_UP, VPN_RATE_DOWN,
-		CPUM, CPUB, SW, HDD, FAN_SPEED, TEMP1, TEMP2, TEMP3,
+		CPUM, CPUB, SW, HDD, FAN_SPEED,
 		DSL_RATE_UP, DSL_RATE_DOWN, SNR_UP, SNR_DOWN,
 		RW_1, TX_1, RX_2, TX_2, RX_3, TX_3, RX_4, TX_4;
 		
@@ -34,5 +37,12 @@ public class Enums {
 			return null;
 		}
 		public boolean equals(Field f1) { return this.getSerializedValue().equals(f1.getSerializedValue()); }
+	}
+	
+	public enum Unit {
+		O(0), ko(1), Mo(2), Go(3), To(4);
+		private int index;
+		Unit(int index) { this.index = index; }
+		public int getIndex() { return this.index; }
 	}
 }

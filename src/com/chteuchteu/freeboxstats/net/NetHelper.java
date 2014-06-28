@@ -27,6 +27,7 @@ import com.chteuchteu.freeboxstats.SingleBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -276,6 +277,9 @@ public class NetHelper {
 	}
 	
 	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields) {
+		if (fFields.size() == 0)
+			return null;
+		
 		HttpClient httpClient = null;
 		HttpPost httpPost = null;
 		InputStream inStream = null;
@@ -286,7 +290,7 @@ public class NetHelper {
 			String uri = freebox.getApiCallUrl() + "rrd/";
 			Log.v("", "Polling uri " + uri);
 			JSONObject obj = new JSONObject();
-			obj.put("db", "net");
+			obj.put("db", GraphHelper.getDbFromField(fFields.get(0)).getSerializedValue());
 			JSONArray fields = new JSONArray();
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());

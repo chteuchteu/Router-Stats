@@ -6,9 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 
 public class GraphsContainer {
@@ -38,7 +37,7 @@ public class GraphsContainer {
 				JSONObject obj = (JSONObject) data.get(i);
 				for (Field f : fields) {
 					try {
-						getDataSet(f).getValues().add(obj.getInt(f.getSerializedValue()));
+						getDataSet(f).addValue(Unit.O, obj.getInt(f.getSerializedValue()));
 					} catch (Exception ex) { ex.printStackTrace(); }
 				}
 			} catch (JSONException e) {
@@ -56,7 +55,6 @@ public class GraphsContainer {
 	public void addDataSet(Field field, JSONArray jsonArray) { this.dataSets.add(new DataSet(field, jsonArray)); }
 	public DataSet getDataSet(Field field) {
 		for (DataSet ds : this.dataSets) {
-			Log.v("", ds.getField().getSerializedValue() + " vs " + field.getSerializedValue());
 			if (ds.getField().equals(field))
 				return ds;
 		}

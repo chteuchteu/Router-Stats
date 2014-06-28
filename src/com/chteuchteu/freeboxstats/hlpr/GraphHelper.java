@@ -50,9 +50,6 @@ public class GraphHelper {
 			case SW:
 			case HDD:
 			case FAN_SPEED:
-			case TEMP1:
-			case TEMP2:
-			case TEMP3:
 				return Db.TEMP;
 			case DSL_RATE_UP:
 			case DSL_RATE_DOWN:
