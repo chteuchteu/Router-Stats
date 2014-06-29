@@ -9,8 +9,10 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -30,6 +32,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +73,10 @@ public class MainActivity extends FragmentActivity {
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem okMenuItem;
+	private static MenuItem periodMenuItem;
+	private static MenuItem spinningMenuItem;
+	
+	private static int loadedGraphs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +106,7 @@ public class MainActivity extends FragmentActivity {
 	
 	public static void displayGraphs() {
 		refreshMenuItem.setVisible(true);
+		periodMenuItem.setVisible(true);
 		
 		pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
 		viewPager = (ViewPager) activity.findViewById(R.id.pager);
@@ -239,7 +248,7 @@ public class MainActivity extends FragmentActivity {
 							case CPUB:	serieFormat.configure(context, R.xml.serieformat_cpub);	break;
 							case SW:	serieFormat.configure(context, R.xml.serieformat_sw);	break;
 							case HDD:	serieFormat.configure(context, R.xml.serieformat_hdd);	break;
-								default: break;
+							default: break;
 							
 						}
 					}
@@ -274,25 +283,40 @@ public class MainActivity extends FragmentActivity {
 				
 				
 				plot.redraw();
+				
+				loadedGraphs++;
+				if (loadedGraphs == 3)
+					toggleSpinningMenuItem(false);
 			}
 		});
+	}
+	
+	public static void toggleSpinningMenuItem(boolean visible) {
+		spinningMenuItem.setVisible(visible);
+		if (visible)
+			spinningMenuItem.setActionView(new ProgressBar(context));
+		else
+			spinningMenuItem.setActionView(null);
 	}
 	
 	public static void updateGraph() {
 		if (SingleBox.getInstance(context).getFreebox() == null)
 			return;
 		
+		toggleSpinningMenuItem(true);
+		loadedGraphs = 0;
+		
 		// First tab
 		ArrayList<Field> fields = new ArrayList<Field>();
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.BW_DOWN);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1, FieldType.DATA).execute();
+		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields, 1, FieldType.DATA).execute();
 		
 		// Second tab
 		ArrayList<Field> fields2 = new ArrayList<Field>();
 		fields2.add(Field.RATE_UP);
 		fields2.add(Field.BW_UP);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, 2, FieldType.DATA).execute();
+		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields2, 2, FieldType.DATA).execute();
 		
 		// Third tab
 		ArrayList<Field> fields3 = new ArrayList<Field>();
@@ -300,7 +324,7 @@ public class MainActivity extends FragmentActivity {
 		fields3.add(Field.CPUB);
 		fields3.add(Field.SW);
 		fields3.add(Field.HDD);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields3, 3, FieldType.TEMP).execute();
+		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields3, 3, FieldType.TEMP).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {
@@ -364,7 +388,7 @@ public class MainActivity extends FragmentActivity {
 						webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
 						webView.getSettings().setLoadWithOverviewMode(true);
 						webView.getSettings().setUseWideViewPort(true);
-						webView.setInitialScale(80);
+						webView.setInitialScale(90);
 						
 						WebView webViewInstructions = (WebView) activity.findViewById(R.id.webview_instructions);
 						webViewInstructions.setVerticalScrollBarEnabled(true);
@@ -398,6 +422,9 @@ public class MainActivity extends FragmentActivity {
 		refreshMenuItem.setVisible(false);
 		okMenuItem = menu.findItem(R.id.action_valider);
 		okMenuItem.setVisible(false);
+		periodMenuItem = menu.findItem(R.id.period);
+		periodMenuItem.setVisible(false);
+		spinningMenuItem = menu.findItem(R.id.menu_progressbar);
 		
 		return true;
 	}
@@ -412,6 +439,23 @@ public class MainActivity extends FragmentActivity {
 				okMenuItem.setVisible(false);
 				activity.findViewById(R.id.screen4).setVisibility(View.GONE);
 				displayGraphs();
+				break;
+			case R.id.period:
+				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
+				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+						context, android.R.layout.simple_list_item_1);
+				for (Period period : Period.values())
+					arrayAdapter.add(period.getLabel());
+				
+				builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						SingleBox.getInstance().setPeriod(Period.get(which));
+						periodMenuItem.setTitle(Period.get(which).getLabel());
+						updateGraph();
+					}
+				});
+				builderSingle.show();
 				break;
 			default: super.onOptionsItemSelected(item); break;
 		}

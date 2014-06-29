@@ -5,6 +5,7 @@ import org.json.JSONException;
 import android.content.Context;
 import android.util.Log;
 
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
@@ -26,6 +27,8 @@ public class SingleBox {
 	
 	private Session session;
 	
+	private Period currentPeriod;
+	
 	private SingleBox(Context context) {
 		loadInstance(context);
 	}
@@ -34,6 +37,7 @@ public class SingleBox {
 		if (context != null)
 			this.context = context;
 		this.session = new Session();
+		this.currentPeriod = Period.HOUR;
 	}
 	
 	public static synchronized SingleBox getInstance(Context context) {
@@ -64,7 +68,7 @@ public class SingleBox {
 			}
 			
 			// Open session
-			new SessionOpener(this.freebox).execute();
+			new SessionOpener(this.freebox, this.context).execute();
 			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
@@ -101,4 +105,7 @@ public class SingleBox {
 	public Session getSession() { return this.session; }
 	
 	public Context getContext() { return this.context; }
+	
+	public Period getPeriod() { return this.currentPeriod; }
+	public void setPeriod(Period val) { this.currentPeriod = val; }
 }

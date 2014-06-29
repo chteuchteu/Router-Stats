@@ -1,7 +1,8 @@
 package com.chteuchteu.freeboxstats.net;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -9,9 +10,11 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	private boolean success;
 	private Freebox freebox;
+	private Context context;
 	
-	public SessionOpener(Freebox freebox) {
+	public SessionOpener(Freebox freebox, Context context) {
 		this.freebox = freebox;
+		this.context = context;
 	}
 	
 	@Override
@@ -28,8 +31,9 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		if (success) {
 			MainActivity.displayGraphs();
 			MainActivity.updateGraph();
+		} else {
+			Toast.makeText(context, "Impossible de se connecter à la Freebox...", Toast.LENGTH_SHORT).show();
+			//new FreeboxDiscoverer().execute();
 		}
-		else
-			Log.v("", "Failed to open session");
 	}
 }

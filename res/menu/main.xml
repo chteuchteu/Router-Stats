@@ -4,6 +4,15 @@
 	tools:context="com.chteuchteu.freeboxstats.MainActivity" >
 	
 	<item
+		android:id="@+id/period"
+		android:title="Heure"
+		android:showAsAction="always" />
+	<item
+		android:id="@+id/menu_progressbar"
+		android:title="..."
+		android:showAsAction="always"
+		android:visible="false" />
+	<item
 		android:id="@+id/action_refresh"
 		android:title="Actualiser"
 		android:showAsAction="always" />

@@ -1,5 +1,7 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import java.util.Arrays;
+
 import android.annotation.SuppressLint;
 
 @SuppressLint("DefaultLocale")
@@ -16,7 +18,20 @@ public class Enums {
 		}
 	}
 	
-	public enum Period { HOUR, DAY, WEEK, MONTH }
+	public enum Period {
+		HOUR, DAY, WEEK, MONTH;
+		public int getIndex() { return Arrays.asList(Period.values()).indexOf(this); }
+		public static Period get(int index) { return Period.values()[index]; }
+		public String getLabel() {
+			switch (getIndex()) {
+				case 0: return "Heure";
+				case 1: return "Jour";
+				case 2: return "Semaine";
+				case 3: return "Mois";
+				default: return "";
+			}
+		}
+	}
 	
 	public enum Db {
 		NET, TEMP, DSL, SWITCH;
