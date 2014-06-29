@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
@@ -132,15 +131,6 @@ public class Util {
 		}
 		
 		/**
-		 * Returns "to" timestamp when retrieving data from Freebox
-		 * @return
-		 */
-		public static long getTo() {
-			Calendar cal = Calendar.getInstance();
-			return new Timestamp(cal.getTime().getTime()).getTime() / 1000;
-		}
-		
-		/**
 		 * Avoid printing a label for each drawn point :
 		 * returns an empty string or the label depending on the label value
 		 */
@@ -153,9 +143,13 @@ public class Util {
 					int minutes = Integer.parseInt(serie.split(":")[1]);
 					
 					if (minutes % 10 == 0
-							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
-						return serie;
-					else
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1)))) {
+						int hours = Integer.parseInt(serie.split(":")[0]);
+						if (hours == 24) // Avoid 24:30, display 00:30 instead
+							return "00:" + minutes;
+						else
+							return serie;
+					} else
 						return "";
 					
 				case DAY :
@@ -166,9 +160,13 @@ public class Util {
 					int minutes2 = Integer.parseInt(serie.split(":")[1]);
 					
 					if (hours % 2 == 0 && minutes2 == 0
-							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
-						return serie;
-					else
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1)))) {
+						int hours2 = Integer.parseInt(serie.split(":")[0]);
+						if (hours2 == 24) // Avoid 24:30, display 00:30 instead
+							return "00:" + minutes2;
+						else
+							return serie;
+					} else
 						return "";
 					
 				case WEEK:

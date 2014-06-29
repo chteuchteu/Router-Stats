@@ -177,7 +177,7 @@ public class MainActivity extends FragmentActivity {
 		plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
 		plot.setPlotMargins(10, 0, 0, 10);
 		plot.setPlotPadding(0, 0, 0, 0);
-		plot.setGridPadding(0, 10, 5, 0);
+		plot.setGridPadding(4, 10, 15, 0);
 		plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
 		plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
 		plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
