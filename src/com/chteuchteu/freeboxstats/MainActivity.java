@@ -41,6 +41,7 @@ import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
@@ -83,6 +84,8 @@ public class MainActivity extends FragmentActivity {
 				getActionBar().setSelectedNavigationItem(position);
 			}
 		});
+		// Let Android load all the tabs at once (= disable lazy load)
+		viewPager.setOffscreenPageLimit(2);
 		
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -157,9 +160,9 @@ public class MainActivity extends FragmentActivity {
 			int index = args.getInt(ARG_OBJECT);
 			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
 			switch (index) {
-				case 0: plot1 = plot; break;
-				case 1: plot2 = plot; break;
-				case 2: plot3 = plot; break;
+				case 1: plot1 = plot; break;
+				case 2: plot2 = plot; break;
+				case 3: plot3 = plot; break;
 			}
 			initPlot(plot, index);
 			
@@ -185,14 +188,15 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
 		
-		if (plotIndex == 0 || plotIndex == 1)
-			plot.setRangeLabel("Débit (" + DataSet.valuesUnit.name() + "/s)");
+		if (plotIndex == 1)
+			plot.setRangeLabel("Débit (Mo/s)");
+		else if (plotIndex == 2)
+			plot.setRangeLabel("Débit (ko/s)");
 		else
 			plot.setRangeLabel("");
 	}
 	
 	public static synchronized void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period) {
-		Log.v("", "displaying graph" + plotIndex);
 		((Activity) context).runOnUiThread(new Runnable() {
 			@SuppressWarnings("serial")
 			@SuppressLint("SimpleDateFormat")
@@ -200,11 +204,10 @@ public class MainActivity extends FragmentActivity {
 			public void run() {
 				XYPlot plot = null;
 				switch (plotIndex) {
-					case 0: plot = plot1;
-					case 1: plot = plot2;
-					case 2: plot = plot3;
+					case 1: plot = plot1; break;
+					case 2: plot = plot2; break;
+					case 3: plot = plot3; break;
 				}
-				
 				plot.setVisibility(View.VISIBLE);
 				
 				// Reset plot
@@ -257,19 +260,19 @@ public class MainActivity extends FragmentActivity {
 			ArrayList<Field> fields = new ArrayList<Field>();
 			fields.add(Field.RATE_DOWN);
 			fields.add(Field.BW_DOWN);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 0).execute();
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, Unit.Mo, 1).execute();
 			
 			// Second tab
-			fields.clear();
-			fields.add(Field.RATE_UP);
-			fields.add(Field.BW_UP);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();
+			ArrayList<Field> fields2 = new ArrayList<Field>();
+			fields2.add(Field.RATE_UP);
+			fields2.add(Field.BW_UP);
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, Unit.ko, 2).execute();
 			
 			// Third tab
 			/*fields.clear();
 			fields.add(Field.RATE_UP);
 			fields.add(Field.BW_UP);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();*/
+			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 3).execute();*/
 		}
 	}
 	

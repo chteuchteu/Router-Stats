@@ -24,13 +24,13 @@ public class GraphsContainer {
 		this.dataSets = dataSets;
 	}
 	
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data) {
+	public GraphsContainer(ArrayList<Field> fields, JSONArray data, Unit valuesUnit) {
 		// Construct things from raw data from the Freebox
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
 		
 		for (Field f : fields)
-			this.dataSets.add(new DataSet(f));
+			this.dataSets.add(new DataSet(f, valuesUnit));
 		
 		for (int i=0; i<data.length(); i++) {
 			try {
@@ -52,7 +52,7 @@ public class GraphsContainer {
 	public ArrayList<String> getSerie() { return this.serie; }
 	
 	public void addDataSet(DataSet val) { this.dataSets.add(val); }
-	public void addDataSet(Field field, JSONArray jsonArray) { this.dataSets.add(new DataSet(field, jsonArray)); }
+	public void addDataSet(Field field, JSONArray jsonArray, Unit valuesUnit) { this.dataSets.add(new DataSet(field, jsonArray, valuesUnit)); }
 	public DataSet getDataSet(Field field) {
 		for (DataSet ds : this.dataSets) {
 			if (ds.getField().equals(field))

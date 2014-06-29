@@ -12,15 +12,17 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class DataSet {
 	private Field field;
-	public static final Unit valuesUnit = Unit.Mo;
+	private Unit valuesUnit;
 	private ArrayList<Number> values;
 	
-	public DataSet(Field field) {
+	public DataSet(Field field, Unit valuesUnit) {
 		this.field = field;
 		this.values = new ArrayList<Number>();
+		this.valuesUnit = valuesUnit;
 	}
 	
-	public DataSet(Field field, JSONArray jsonArray) {
+	public DataSet(Field field, JSONArray jsonArray, Unit valuesUnit) {
+		this.valuesUnit = valuesUnit;
 		this.values = new ArrayList<Number>();
 		try {
 			for (int i=0; i<jsonArray.length(); i++) {
