@@ -25,8 +25,10 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(Void res) {
 		super.onPostExecute(res);
 		
-		if (success)
+		if (success) {
+			MainActivity.displayGraphs();
 			MainActivity.updateGraph();
+		}
 		else
 			Log.v("", "Failed to open session");
 	}

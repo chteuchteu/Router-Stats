@@ -2,7 +2,38 @@
 <resources>
 
 	<string name="app_name">Freebox Stats</string>
-	<string name="hello_world">Hello world!</string>
-	<string name="action_settings">Settings</string>
-
+	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
+	<string name="firstlaunch_aut_explanation">Lors de sa première utilisation, l\'application a besoin d\'être autorisée auprès de la Freebox.
+		Un message s\'affichera sur l\'écran du boîtier server.</string>
+	<string name="ok">OK</string>
+	<string name="firstlaunch_enattente">En attente de l\'autorisation...</string>
+	<string name="firstlaunch_andnow">Et maintenant...</string>
+	<string name="firstlaunch_aut_specialaut">Pour accéder aux statistiques de la Freebox, l\'application a besoin d\'acquérir une autorisation supplémentaire. (modification des réglages de la Freebox)
+		Pour des raisons de sécurité, ceci ne peut pas être fait directement par l\'application.\n
+		Après avoir appuyé sur OK, vous serez mis(e) en relation avec l\'interface de gestion de la Freebox.\n
+		Après vous être connecté(e), veuillez suivre les indications afin d\'ajouter cette autorisation à l\'application.</string>
+	<string name="firstlaunch_instructions"><![CDATA[
+		<head>
+		<style>
+			p { padding: 0px 10px; }
+			body { text-align: justify; color: #555; font-size:0.95em; color:#fff; }
+		</style>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		</head>
+		<body>
+			<p>Instructions</p>
+			<ul>
+				<li>Cliquez sur <u>Continuer avec la version web</u></li>
+				<li>Connectez-vous à l\'interface d\'administration</li>
+				<li>Ouvrez l\'<i>application</i> <u>Paramètres de la Freebox</u></li>
+				<li>Ouvrez la <u>Gestion des accès</u></li>
+				<li>Accédez à l\'onglet <u>Applications</u></li>
+				<li>Dans la liste, cherchez la ligne correspondant à <u>FreeboxStats (Android)</u></li>
+				<li>Cliquez sur le bouton de modification</li>
+				<li>Cochez la case <u>Modification des réglages de la Freebox</u></li>
+				<li>Cliquez sur OK</li>
+				<li>Cliquez sur <u>Valider</u>, en haut à droite de l\'application</li>
+			</ul>
+			<br />
+		</body>]]></string>
 </resources>

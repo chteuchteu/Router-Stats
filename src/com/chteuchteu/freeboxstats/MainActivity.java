@@ -28,6 +28,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidplot.xy.BoundaryMode;
@@ -44,15 +47,17 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
 public class MainActivity extends FragmentActivity {
+	private static FragmentActivity activity;
 	private static Context context;
-	private MainActivityPagerAdapter pagerAdapter;
-	private ViewPager viewPager;
+	private static MainActivityPagerAdapter pagerAdapter;
+	private static ViewPager viewPager;
 	
 	private static final String tab1Title = "Débit down";
 	private static final String tab2Title = "Débit up";
@@ -62,48 +67,18 @@ public class MainActivity extends FragmentActivity {
 	private static XYPlot plot2;
 	private static XYPlot plot3;
 	
+	private static MenuItem refreshMenuItem;
+	private static MenuItem okMenuItem;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		context = this;
+		activity = this;
 		
-		findViewById(R.id.firstLaunch_getAppToken).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				new AskForAppToken(SingleBox.getInstance().getFreebox()).execute();
-			}
-		});
-		
-		pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
-		viewPager = (ViewPager) findViewById(R.id.pager);
-		viewPager.setAdapter(pagerAdapter);
-		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				getActionBar().setSelectedNavigationItem(position);
-			}
-		});
-		// Let Android load all the tabs at once (= disable lazy load)
-		viewPager.setOffscreenPageLimit(2);
-		
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-			@Override public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
-			
-			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-				viewPager.setCurrentItem(tab.getPosition());
-			}
-			
-			@Override public void onTabReselected(Tab tab, FragmentTransaction ft) { }
-		};
-		actionBar.addTab(actionBar.newTab().setText(tab1Title).setTabListener(tabListener));
-		actionBar.addTab(actionBar.newTab().setText(tab2Title).setTabListener(tabListener));
-		actionBar.addTab(actionBar.newTab().setText(tab3Title).setTabListener(tabListener));
-		
+		ActionBar actionBar = getActionBar();
 		// Some design
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
@@ -121,7 +96,39 @@ public class MainActivity extends FragmentActivity {
 		SingleBox.getInstance(this).init();
 	}
 	
-	public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
+	public static void displayGraphs() {
+		refreshMenuItem.setVisible(true);
+		
+		pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
+		viewPager = (ViewPager) activity.findViewById(R.id.pager);
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				activity.getActionBar().setSelectedNavigationItem(position);
+			}
+		});
+		// Let Android load all the tabs at once (= disable lazy load)
+		viewPager.setOffscreenPageLimit(2);
+		
+		final ActionBar actionBar = activity.getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			@Override public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
+			
+			@Override
+			public void onTabSelected(Tab tab, FragmentTransaction ft) {
+				viewPager.setCurrentItem(tab.getPosition());
+			}
+			
+			@Override public void onTabReselected(Tab tab, FragmentTransaction ft) { }
+		};
+		actionBar.addTab(actionBar.newTab().setText(tab1Title).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setText(tab2Title).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setText(tab3Title).setTabListener(tabListener));
+	}
+	
+	public static class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
 		public MainActivityPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
@@ -296,35 +303,87 @@ public class MainActivity extends FragmentActivity {
 		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields3, 3, FieldType.TEMP).execute();
 	}
 	
-	public static void displayLaunchPairingButton() {
-		((Activity) context).runOnUiThread(new Runnable() {
+	public static void displayLaunchPairingScreen() {
+		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				//((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.VISIBLE);
+				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
+				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
+				
+				activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
+				
+				activity.findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
+						activity.findViewById(R.id.screen1).setVisibility(View.GONE);
+						activity.findViewById(R.id.screen2).setVisibility(View.VISIBLE);
+						new AskForAppToken(SingleBox.getInstance().getFreebox(), context).execute();
+					}
+				});
 			}
 		});
 	}
 	
-	public static void hideLaunchPairingButton() {
-		((Activity) context).runOnUiThread(new Runnable() {
+	/*public static void hideLaunchPairingButton() {
+		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				//((Activity) context).findViewById(R.id.firstLaunch).setVisibility(View.GONE);
+				//activity.findViewById(R.id.firstLaunch).setVisibility(View.GONE);
 			}
 		});
-	}
+	}*/
 	
 	public static void pairingFinished(final AuthorizeStatus aStatus) {
-		((Activity) context).runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(context, "Pairing terminé : " + aStatus.name() + ".", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(context, "Pairing terminé : " + aStatus.name() + ".", Toast.LENGTH_SHORT).show();
+				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text4), CustomFont.RobotoCondensed_Light);
+				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text5), CustomFont.RobotoCondensed_Light);
+				activity.findViewById(R.id.screen2).setVisibility(View.GONE);
+				activity.findViewById(R.id.screen3).setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.firstlaunch_ok2).setOnClickListener(new OnClickListener() {
+					@SuppressWarnings("deprecation")
+					@Override
+					public void onClick(View v) {
+						activity.findViewById(R.id.screen3).setVisibility(View.GONE);
+						activity.findViewById(R.id.screen4).setVisibility(View.VISIBLE);
+						okMenuItem.setVisible(true);
+						
+						WebView webView = (WebView) activity.findViewById(R.id.webview);
+						webView.getSettings().setJavaScriptEnabled(true);
+						webView.loadUrl("http://mafreebox.freebox.fr");
+						webView.getSettings().setDefaultTextEncodingName("utf-8");
+						// Avoid flickering during scroll
+						webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+						webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+						webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+						webView.getSettings().setBuiltInZoomControls(true);
+						webView.getSettings().setSupportZoom(true);
+						webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+						webView.getSettings().setLoadWithOverviewMode(true);
+						webView.getSettings().setUseWideViewPort(true);
+						webView.setInitialScale(80);
+						
+						WebView webViewInstructions = (WebView) activity.findViewById(R.id.webview_instructions);
+						webViewInstructions.setVerticalScrollBarEnabled(true);
+						webViewInstructions.getSettings().setDefaultTextEncodingName("utf-8");
+						webViewInstructions.setBackgroundColor(0x00000000);
+						String content = activity.getString(R.string.firstlaunch_instructions);
+						webViewInstructions.loadDataWithBaseURL(null, content, "text/html", "utf-8", null);
+						// Avoid flickering during scroll
+						webViewInstructions.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+						webViewInstructions.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+						webViewInstructions.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+					}
+				});
 			}
 		});
 	}
 	
 	public static void sessionOpenFailed() {
-		((Activity) context).runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				Toast.makeText(context, "Erreur lors de la connexion avec la Freebox", Toast.LENGTH_SHORT).show();
@@ -335,6 +394,11 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
+		refreshMenuItem = menu.findItem(R.id.action_refresh);
+		refreshMenuItem.setVisible(false);
+		okMenuItem = menu.findItem(R.id.action_valider);
+		okMenuItem.setVisible(false);
+		
 		return true;
 	}
 	
@@ -343,6 +407,11 @@ public class MainActivity extends FragmentActivity {
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
 				updateGraph();
+				break;
+			case R.id.action_valider:
+				okMenuItem.setVisible(false);
+				activity.findViewById(R.id.screen4).setVisibility(View.GONE);
+				displayGraphs();
 				break;
 			default: super.onOptionsItemSelected(item); break;
 		}

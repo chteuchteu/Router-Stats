@@ -5,17 +5,133 @@
 	android:fitsSystemWindows="true">
 	
 	<LinearLayout
-		android:id="@+id/firstLaunch"
+		android:id="@+id/firstlaunch"
+		android:visibility="gone"
+		android:orientation="vertical"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@color/colorPrimaryDark"
-		android:visibility="gone">
+		android:layout_height="match_parent"
+		android:background="@color/colorPrimary">
 		
-		<Button
-			android:id="@+id/firstLaunch_getAppToken"
+		<LinearLayout
+			android:id="@+id/screen1"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="getAppToken" />
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:gravity="center_vertical|center_horizontal">
+			
+			<TextView
+				android:id="@+id/firstlaunch_text1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="30sp"
+				android:textColor="#ffffff"
+				android:text="@string/firstlaunch_autoriserfreebox" />
+			
+			<TextView
+				android:id="@+id/firstlaunch_text2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="19sp"
+				android:textColor="#ffffff"
+				android:text="@string/firstlaunch_aut_explanation"
+				android:layout_marginTop="20dp"
+				android:textAlignment="center"
+				android:gravity="center"
+				android:padding="20dp" />
+			
+			<Button
+				android:id="@+id/firstlaunch_ok"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="40dp"
+				android:text="@string/ok" />
+			
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id="@+id/screen2"
+			android:gravity="center_vertical|center_horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:visibility="gone">
+			
+			<TextView
+				android:id="@+id/firstlaunch_text3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="30sp"
+				android:textColor="#ffffff" 
+				android:text="@string/firstlaunch_enattente"
+				android:padding="20dp" />
+			
+			<ProgressBar
+				android:id="@+id/progressbar"
+				android:layout_marginTop="40dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id="@+id/screen3"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:gravity="center_vertical|center_horizontal">
+			
+			<TextView
+				android:id="@+id/firstlaunch_text4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="30sp"
+				android:textColor="#ffffff"
+				android:text="@string/firstlaunch_andnow" />
+			
+			<TextView
+				android:id="@+id/firstlaunch_text5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="19sp"
+				android:textColor="#ffffff"
+				android:text="@string/firstlaunch_aut_specialaut"
+				android:layout_marginTop="20dp"
+				android:textAlignment="center"
+				android:gravity="center"
+				android:padding="20dp" />
+			
+			<Button
+				android:id="@+id/firstlaunch_ok2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="40dp"
+				android:text="@string/ok" />
+			
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id="@+id/screen4"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:gravity="center_vertical|center_horizontal">
+			
+			<WebView
+				android:id="@+id/webview"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="3" />
+			
+			<WebView
+				android:id="@+id/webview_instructions"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_marginTop="10dp"
+				android:layout_weight="1" />
+			
+		</LinearLayout>
+		
+		
 		
 	</LinearLayout>
 	

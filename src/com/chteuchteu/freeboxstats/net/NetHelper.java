@@ -261,7 +261,10 @@ public class NetHelper {
 			e.printStackTrace();
 		} catch (SignatureException e) {
 			e.printStackTrace();
-		} finally {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		finally {
 			if (inStream != null) {
 				try {
 					inStream.close();

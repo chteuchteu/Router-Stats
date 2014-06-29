@@ -3,6 +3,7 @@ package com.chteuchteu.freeboxstats.net;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.MainActivity;
@@ -14,9 +15,11 @@ import com.chteuchteu.freeboxstats.obj.NetResponse;
 public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 	private boolean ok;
 	private Freebox freebox;
+	private Context context;
 	
-	public AskForAppToken(Freebox freebox) {
+	public AskForAppToken(Freebox freebox, Context context) {
 		this.freebox = freebox;
+		this.context = context;
 	}
 	
 	@Override
@@ -73,8 +76,15 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				
 				// Once done, open session
 				boolean success = NetHelper.openSession(freebox);
-				if (success)
-					MainActivity.hideLaunchPairingButton();
+				if (success) {
+					// Save Freebox
+					try {
+						freebox.save(context);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					// TODO MainActivity.hideLaunchPairingButton();
+				}
 				else
 					MainActivity.sessionOpenFailed();
 			}

@@ -68,8 +68,14 @@ public class SingleBox {
 			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer(this.context).execute();
+			new FreeboxDiscoverer().execute();
 		}
+	}
+	
+	public void reset() {
+		Context context = this.context;
+		instance = null;
+		loadInstance(context);
 	}
 	
 	public void saveAppToken(String appToken) {
