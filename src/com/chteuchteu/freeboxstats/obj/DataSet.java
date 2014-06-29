@@ -46,7 +46,18 @@ public class DataSet {
 	 * @return
 	 */
 	public ArrayList<Number> getValues() { return this.values; }
+	
 	public void addValue(Unit unit, int value) {
 		this.values.add(Util.convertUnit(unit, valuesUnit, value));
+	}
+	
+	public void setValuesUnit(Unit unit, boolean convertAll) {
+		if (convertAll) {
+			ArrayList<Number> newValues = new ArrayList<Number>();
+			for (Number number : this.values)
+				newValues.add(Util.convertUnit(valuesUnit, unit, number.doubleValue()));
+			this.values = newValues;
+		}
+		this.valuesUnit = unit;
 	}
 }

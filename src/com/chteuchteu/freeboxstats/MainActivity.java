@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -113,6 +112,7 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
+		actionBar.setTitle("");
 		
 		
 		// Load singleton
@@ -187,16 +187,9 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-		
-		if (plotIndex == 1)
-			plot.setRangeLabel("Débit (Mo/s)");
-		else if (plotIndex == 2)
-			plot.setRangeLabel("Débit (ko/s)");
-		else
-			plot.setRangeLabel("");
 	}
 	
-	public static synchronized void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period) {
+	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final Unit unit) {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@SuppressWarnings("serial")
 			@SuppressLint("SimpleDateFormat")
@@ -248,6 +241,12 @@ public class MainActivity extends FragmentActivity {
 					@Override public Object parseObject(String source, ParsePosition pos) { return null; }
 				});
 				
+				// Set range label
+				if (plotIndex == 1 || plotIndex == 2)
+					plot.setRangeLabel("Débit (" + unit.name() + "/s)");
+				else
+					plot.setRangeLabel("");
+				
 				
 				plot.redraw();
 			}
@@ -255,25 +254,26 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void updateGraph() {
-		if (SingleBox.getInstance(context).getFreebox() != null) {
-			// First tab
-			ArrayList<Field> fields = new ArrayList<Field>();
-			fields.add(Field.RATE_DOWN);
-			fields.add(Field.BW_DOWN);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, Unit.Mo, 1).execute();
-			
-			// Second tab
-			ArrayList<Field> fields2 = new ArrayList<Field>();
-			fields2.add(Field.RATE_UP);
-			fields2.add(Field.BW_UP);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, Unit.ko, 2).execute();
-			
-			// Third tab
-			/*fields.clear();
-			fields.add(Field.RATE_UP);
-			fields.add(Field.BW_UP);
-			new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 3).execute();*/
-		}
+		if (SingleBox.getInstance(context).getFreebox() == null)
+			return;
+		
+		// First tab
+		ArrayList<Field> fields = new ArrayList<Field>();
+		fields.add(Field.RATE_DOWN);
+		fields.add(Field.BW_DOWN);
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();
+		
+		// Second tab
+		ArrayList<Field> fields2 = new ArrayList<Field>();
+		fields2.add(Field.RATE_UP);
+		fields2.add(Field.BW_UP);
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, 2).execute();
+		
+		// Third tab
+		/*fields.clear();
+		fields.add(Field.RATE_UP);
+		fields.add(Field.BW_UP);
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 3).execute();*/
 	}
 	
 	public static void displayLaunchPairingButton() {

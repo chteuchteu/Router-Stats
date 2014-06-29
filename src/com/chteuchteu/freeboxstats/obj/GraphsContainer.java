@@ -13,21 +13,26 @@ import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 public class GraphsContainer {
 	private ArrayList<String> serie;
 	private ArrayList<DataSet> dataSets;
+	private Unit valuesUnit;
+	public static final Unit defaultUnit = Unit.Mo;
 	
 	public GraphsContainer() {
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
+		this.valuesUnit = defaultUnit;
 	}
 	
 	public GraphsContainer(ArrayList<String> serie, ArrayList<DataSet> dataSets) {
 		this.serie = serie;
 		this.dataSets = dataSets;
+		this.valuesUnit = defaultUnit;
 	}
 	
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data, Unit valuesUnit) {
+	public GraphsContainer(ArrayList<Field> fields, JSONArray data) {
 		// Construct things from raw data from the Freebox
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
+		this.valuesUnit = defaultUnit;
 		
 		for (Field f : fields)
 			this.dataSets.add(new DataSet(f, valuesUnit));
@@ -45,7 +50,20 @@ public class GraphsContainer {
 			}
 		}
 		
+		// Get the best values unit
+		int highestValue = GraphHelper.getHighestValue(data, fields);
+		Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
+		if (bestUnit != defaultUnit) {
+			convertAllValues(defaultUnit, bestUnit);
+			this.valuesUnit = bestUnit;
+		}
+		
 		this.serie.addAll(GraphHelper.getDatesLabelsFromData(data));
+	}
+	
+	private void convertAllValues(Unit from, Unit to) {
+		for (DataSet ds : this.dataSets)
+			ds.setValuesUnit(to, true);
 	}
 	
 	public void setSerie(ArrayList<String> val) { this.serie = val; }
@@ -67,4 +85,5 @@ public class GraphsContainer {
 			fields.add(ds.getField());
 		return fields;
 	}
+	public Unit getValuesUnit() { return this.valuesUnit; }
 }
