@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
@@ -19,12 +20,14 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private ArrayList<Field> fields;
 	private GraphsContainer graphsContainer;
 	private int plotIndex;
+	private FieldType fieldType;
 	
-	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields, int plotIndex) {
+	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields, int plotIndex, FieldType fieldType) {
 		this.freebox = freebox;
 		this.period = period;
 		this.fields = fields;
 		this.plotIndex = plotIndex;
+		this.fieldType = fieldType;
 	}
 	
 	@Override
@@ -32,7 +35,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields);
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
-				graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"));
+				graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType);
 			} catch (JSONException e) { e.printStackTrace(); }
 		}
 		
@@ -44,6 +47,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (graphsContainer != null)
-			MainActivity.loadGraph(plotIndex, graphsContainer, period, graphsContainer.getValuesUnit());
+			MainActivity.loadGraph(plotIndex, graphsContainer, period, fieldType, graphsContainer.getValuesUnit());
 	}
 }

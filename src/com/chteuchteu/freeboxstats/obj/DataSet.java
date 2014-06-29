@@ -48,7 +48,10 @@ public class DataSet {
 	public ArrayList<Number> getValues() { return this.values; }
 	
 	public void addValue(Unit unit, int value) {
-		this.values.add(Util.convertUnit(unit, valuesUnit, value));
+		if (unit == Unit.C)
+			this.values.add(value);
+		else
+			this.values.add(Util.convertUnit(unit, valuesUnit, value));
 	}
 	
 	public void setValuesUnit(Unit unit, boolean convertAll) {

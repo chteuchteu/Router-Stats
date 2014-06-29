@@ -30,6 +30,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
@@ -39,6 +40,7 @@ import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
@@ -187,9 +189,14 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+		
+		if (plotIndex == 3) {
+			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
+			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
+		}
 	}
 	
-	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final Unit unit) {
+	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final FieldType fieldType, final Unit unit) {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@SuppressWarnings("serial")
 			@SuppressLint("SimpleDateFormat")
@@ -214,10 +221,21 @@ public class MainActivity extends FragmentActivity {
 					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
 					
-					if (dSet.getField() != Field.BW_DOWN && dSet.getField() != Field.BW_UP)
-						serieFormat.configure(context, R.xml.line_point_formatter_with_plf1);
-					else
-						serieFormat.configure(context, R.xml.line_point_formatter_with_plf2);
+					if (fieldType == FieldType.DATA) {
+						if (dSet.getField() == Field.BW_DOWN || dSet.getField() == Field.BW_UP)
+							serieFormat.configure(context, R.xml.serieformat_bw);
+						else
+							serieFormat.configure(context, R.xml.serieformat_ratedown);
+					} else {
+						switch (dSet.getField()) {
+							case CPUM:	serieFormat.configure(context, R.xml.serieformat_cpum);	break;
+							case CPUB:	serieFormat.configure(context, R.xml.serieformat_cpub);	break;
+							case SW:	serieFormat.configure(context, R.xml.serieformat_sw);	break;
+							case HDD:	serieFormat.configure(context, R.xml.serieformat_hdd);	break;
+								default: break;
+							
+						}
+					}
 					
 					plot.addSeries(serie, serieFormat);
 				}
@@ -245,7 +263,7 @@ public class MainActivity extends FragmentActivity {
 				if (plotIndex == 1 || plotIndex == 2)
 					plot.setRangeLabel("Débit (" + unit.name() + "/s)");
 				else
-					plot.setRangeLabel("");
+					plot.setRangeLabel("Température (°C)");
 				
 				
 				plot.redraw();
@@ -261,19 +279,21 @@ public class MainActivity extends FragmentActivity {
 		ArrayList<Field> fields = new ArrayList<Field>();
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.BW_DOWN);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1).execute();
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 1, FieldType.DATA).execute();
 		
 		// Second tab
 		ArrayList<Field> fields2 = new ArrayList<Field>();
 		fields2.add(Field.RATE_UP);
 		fields2.add(Field.BW_UP);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, 2).execute();
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields2, 2, FieldType.DATA).execute();
 		
 		// Third tab
-		/*fields.clear();
-		fields.add(Field.RATE_UP);
-		fields.add(Field.BW_UP);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields, 3).execute();*/
+		ArrayList<Field> fields3 = new ArrayList<Field>();
+		fields3.add(Field.CPUM);
+		fields3.add(Field.CPUB);
+		fields3.add(Field.SW);
+		fields3.add(Field.HDD);
+		new GraphLoader(SingleBox.getInstance().getFreebox(), Period.HOUR, fields3, 3, FieldType.TEMP).execute();
 	}
 	
 	public static void displayLaunchPairingButton() {

@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 
@@ -15,24 +16,32 @@ public class GraphsContainer {
 	private ArrayList<DataSet> dataSets;
 	private Unit valuesUnit;
 	public static final Unit defaultUnit = Unit.Mo;
+	private FieldType fieldType;
+	public static final FieldType defaultFieldType = FieldType.DATA;
 	
 	public GraphsContainer() {
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
 		this.valuesUnit = defaultUnit;
+		this.fieldType = defaultFieldType;
 	}
 	
 	public GraphsContainer(ArrayList<String> serie, ArrayList<DataSet> dataSets) {
 		this.serie = serie;
 		this.dataSets = dataSets;
 		this.valuesUnit = defaultUnit;
+		this.fieldType = defaultFieldType;
 	}
 	
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data) {
+	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType) {
 		// Construct things from raw data from the Freebox
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
-		this.valuesUnit = defaultUnit;
+		if (fieldType == FieldType.DATA)
+			this.valuesUnit = defaultUnit;
+		else
+			this.valuesUnit = Unit.C;
+		this.fieldType = fieldType;
 		
 		for (Field f : fields)
 			this.dataSets.add(new DataSet(f, valuesUnit));
@@ -42,7 +51,10 @@ public class GraphsContainer {
 				JSONObject obj = (JSONObject) data.get(i);
 				for (Field f : fields) {
 					try {
-						getDataSet(f).addValue(Unit.o, obj.getInt(f.getSerializedValue()));
+						if (fieldType == FieldType.DATA)
+							getDataSet(f).addValue(Unit.o, obj.getInt(f.getSerializedValue()));
+						else if (fieldType == FieldType.TEMP)
+							getDataSet(f).addValue(Unit.C, obj.getInt(f.getSerializedValue()));
 					} catch (JSONException ex) { ex.printStackTrace(); }
 				}
 			} catch (JSONException e) {
@@ -51,17 +63,22 @@ public class GraphsContainer {
 		}
 		
 		// Get the best values unit
-		int highestValue = GraphHelper.getHighestValue(data, fields);
-		Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
-		if (bestUnit != defaultUnit) {
-			convertAllValues(defaultUnit, bestUnit);
-			this.valuesUnit = bestUnit;
+		if (fieldType == FieldType.DATA) {
+			int highestValue = GraphHelper.getHighestValue(data, fields);
+			Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
+			if (bestUnit != defaultUnit) {
+				convertAllValues(defaultUnit, bestUnit);
+				this.valuesUnit = bestUnit;
+			}
 		}
 		
 		this.serie.addAll(GraphHelper.getDatesLabelsFromData(data));
 	}
 	
 	private void convertAllValues(Unit from, Unit to) {
+		if (this.fieldType == FieldType.TEMP)
+			return;
+		
 		for (DataSet ds : this.dataSets)
 			ds.setValuesUnit(to, true);
 	}

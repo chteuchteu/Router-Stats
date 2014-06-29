@@ -22,6 +22,7 @@ public class Enums {
 		NET, TEMP, DSL, SWITCH;
 		public String getSerializedValue() { return this.name().toLowerCase(); }
 	}
+	public enum FieldType { DATA, TEMP }
 	public enum Field {
 		BW_UP, BW_DOWN, RATE_UP, RATE_DOWN, VPN_RATE_UP, VPN_RATE_DOWN,
 		CPUM, CPUB, SW, HDD, FAN_SPEED,
@@ -40,7 +41,7 @@ public class Enums {
 	}
 	
 	public enum Unit {
-		o(0), ko(1), Mo(2), Go(3), To(4);
+		C(-1), o(0), ko(1), Mo(2), Go(3), To(4);
 		private int index;
 		Unit(int index) { this.index = index; }
 		public int getIndex() { return this.index; }
