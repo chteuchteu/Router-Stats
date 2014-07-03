@@ -64,6 +64,7 @@ public class MainActivity extends FragmentActivity {
 	private static ViewPager viewPager;
 	private static Thread refreshThread;
 	public static final int AUTOREFRESH_TIME = 20000;
+	private static boolean graphsDisplayed;
 	
 	private static final String tab1Title = "Débit down";
 	private static final String tab2Title = "Débit up";
@@ -87,6 +88,7 @@ public class MainActivity extends FragmentActivity {
 		
 		context = this;
 		activity = this;
+		graphsDisplayed = false;
 		
 		ActionBar actionBar = getActionBar();
 		// Some design
@@ -143,6 +145,9 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void displayGraphs() {
+		if (graphsDisplayed)
+			return;
+		
 		refreshMenuItem.setVisible(true);
 		periodMenuItem.setVisible(true);
 		
@@ -173,6 +178,7 @@ public class MainActivity extends FragmentActivity {
 		actionBar.addTab(actionBar.newTab().setText(tab1Title).setTabListener(tabListener));
 		actionBar.addTab(actionBar.newTab().setText(tab2Title).setTabListener(tabListener));
 		actionBar.addTab(actionBar.newTab().setText(tab3Title).setTabListener(tabListener));
+		graphsDisplayed = true;
 	}
 	
 	public static class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
