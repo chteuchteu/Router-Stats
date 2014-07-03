@@ -6,6 +6,7 @@ import org.json.JSONObject;
 public class NetResponse {
 	private boolean success;
 	private JSONObject result;
+	private JSONObject completeResponse;
 	
 	public NetResponse(JSONObject response) {
 		parseResponse(response);
@@ -17,8 +18,8 @@ public class NetResponse {
 		
 		try {
 			this.success = response.getBoolean("success");
-			
-			if (this.success)
+			this.completeResponse = response;
+			if (success)
 				this.result = response.getJSONObject("result");
 			
 		} catch (JSONException e) {
@@ -28,4 +29,5 @@ public class NetResponse {
 	
 	public boolean hasSucceeded() { return this.success; }
 	public JSONObject getJsonObject() { return this.result; }
+	public JSONObject getCompleteResponse() { return this.completeResponse; }
 }

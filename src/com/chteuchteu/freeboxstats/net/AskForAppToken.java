@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.SingleBox;
@@ -38,6 +39,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		}
 		
 		NetResponse response = NetHelper.authorize(freebox, obj.toString());
+		
 		
 		if (response != null) {
 			if (response.hasSucceeded()) {
@@ -77,13 +79,18 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				// Once done, open session
 				boolean success = NetHelper.openSession(freebox);
 				if (success) {
+					// Get Freebox IP
+					String freeboxIP = NetHelper.getPublicIP(freebox);
+					if (freeboxIP != null && !freeboxIP.equals(""))
+						freebox.setIp(freeboxIP);
+					Log.v("", "Found IP " + freeboxIP);
+					
 					// Save Freebox
 					try {
 						freebox.save(context);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					// TODO MainActivity.hideLaunchPairingButton();
 				}
 				else
 					MainActivity.sessionOpenFailed();
@@ -98,15 +105,8 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (ok) {
-			// Save Freebox and all
-			try {
-				SingleBox.getInstance().getFreebox().save(SingleBox.getInstance().getContext());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			
-			// Ask for auth token
-			
+			// Load graphs
+			MainActivity.refreshGraph();
 		}
 	}
 }

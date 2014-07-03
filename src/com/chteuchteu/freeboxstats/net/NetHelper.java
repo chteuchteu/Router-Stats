@@ -335,4 +335,40 @@ public class NetHelper {
 		
 		return netResponse;
 	}
+	
+	public static String getPublicIP(Freebox freebox) {
+		String apiCallUri = freebox.getApiCallUrl() + "connection/config";
+		Log.v("", "Polling URI " + apiCallUri);
+		HttpClient httpclient = new DefaultHttpClient();
+		String responseBody = "";
+		try {
+			HttpGet httpget = new HttpGet(apiCallUri);
+			httpget.setHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
+			httpget.addHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
+			
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			responseBody = httpclient.execute(httpget, responseHandler);
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			httpclient.getConnectionManager().shutdown();
+		}
+		
+		if (responseBody.equals(""))
+			return null;
+		
+		// Parse JSON
+		try {
+			JSONObject obj = new JSONObject(responseBody);
+			JSONObject result = obj.getJSONObject("result");
+			String ip = result.getString("remote_access_ip");
+			int port = result.getInt("remote_access_port");
+			return ip + ":" + port;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

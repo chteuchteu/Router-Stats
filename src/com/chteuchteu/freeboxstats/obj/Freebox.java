@@ -16,6 +16,7 @@ public class Freebox {
 	private String apiBaseUrl;
 	private String deviceType;
 	private String appToken;
+	private String ip;
 	
 	public Freebox() {
 		this.uid = "";
@@ -24,6 +25,7 @@ public class Freebox {
 		this.apiBaseUrl = "";
 		this.deviceType = "";
 		this.appToken = "";
+		this.ip = "";
 	}
 	
 	public Freebox(String uid, String deviceName, String apiVersion, String apiBaseUrl, String deviceType) {
@@ -33,6 +35,7 @@ public class Freebox {
 		this.apiBaseUrl = apiBaseUrl;
 		this.deviceType = deviceType;
 		this.appToken = "";
+		this.ip = "";
 	}
 	
 	@Override
@@ -42,7 +45,10 @@ public class Freebox {
 	}
 	
 	public String getApiCallUrl() {
-		return Freebox.ApiUri + this.apiBaseUrl + "v1/";
+		if (this.ip.equals(""))
+			return Freebox.ApiUri + this.apiBaseUrl + "v1/";
+		else
+			return "http://" + this.ip + this.apiBaseUrl + "v1/";
 	}
 	
 	public void save(Context c) throws JSONException {
@@ -53,6 +59,7 @@ public class Freebox {
 		obj.put("apiBaseUrl", this.apiBaseUrl);
 		obj.put("deviceType", this.deviceType);
 		obj.put("appToken", this.appToken);
+		obj.put("publicIp", this.ip);
 		
 		Util.setPref(c, "freebox", obj.toString());
 	}
@@ -77,6 +84,8 @@ public class Freebox {
 			f.setDeviceName(obj.getString("deviceType"));
 		if (obj.has("appToken"))
 			f.setAppToken(obj.getString("appToken"));
+		if (obj.has("publicIp"))
+			f.setIp(obj.getString("publicIp"));
 		
 		return f;
 	}
@@ -98,4 +107,7 @@ public class Freebox {
 	
 	public String getAppToken() { return this.appToken; }
 	public void setAppToken(String val) { this.appToken = val; }
+	
+	public String getIp() { return this.ip; }
+	public void setIp(String val) { this.ip = val; }
 }

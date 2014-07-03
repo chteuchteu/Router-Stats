@@ -21,6 +21,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private GraphsContainer graphsContainer;
 	private int plotIndex;
 	private FieldType fieldType;
+	private NetResponse netResponse;
 	
 	public GraphLoader(Freebox freebox, Period period, ArrayList<Field> fields, int plotIndex, FieldType fieldType) {
 		this.freebox = freebox;
@@ -32,7 +33,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields);
+		netResponse = NetHelper.loadGraph(freebox, period, fields);
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
 				graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType);
@@ -48,5 +49,24 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		
 		if (graphsContainer != null)
 			MainActivity.loadGraph(plotIndex, graphsContainer, period, fieldType, graphsContainer.getValuesUnit());
+		else {
+			boolean cancel = true;
+			
+			if (netResponse != null) {
+				try {
+					String response = netResponse.getCompleteResponse().getString("error_code");
+					if (response.equals("auth_required"))
+						new SessionOpener(freebox, MainActivity.context).execute();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			if (cancel) {
+				MainActivity.toggleSpinningMenuItem(false);
+				MainActivity.graphLoadingFailed();
+			}
+		}
 	}
 }

@@ -59,9 +59,11 @@ import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
 public class MainActivity extends FragmentActivity {
 	private static FragmentActivity activity;
-	private static Context context;
+	public static Context context;
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
+	private static Thread refreshThread;
+	public static final int AUTOREFRESH_TIME = 20000;
 	
 	private static final String tab1Title = "Débit down";
 	private static final String tab2Title = "Débit up";
@@ -102,6 +104,42 @@ public class MainActivity extends FragmentActivity {
 		
 		// Load singleton
 		SingleBox.getInstance(this).init();
+	}
+	
+	public static void startRefreshThread() {
+		if (SingleBox.getInstance(context).getFreebox() == null)
+			return;
+		
+		if (refreshThread != null && refreshThread.isAlive())
+			refreshThread.interrupt();
+		
+		refreshThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						if (!Thread.interrupted()) {
+							Thread.sleep(AUTOREFRESH_TIME);
+							activity.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									refreshGraph();
+								}
+							});
+						} else return;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+			}
+		});
+		refreshThread.start();
+	}
+	
+	public static void stopRefreshThread() {
+		if (refreshThread.isAlive())
+			refreshThread.interrupt();
 	}
 	
 	public static void displayGraphs() {
@@ -299,7 +337,7 @@ public class MainActivity extends FragmentActivity {
 			spinningMenuItem.setActionView(null);
 	}
 	
-	public static void updateGraph() {
+	public static void refreshGraph() {
 		if (SingleBox.getInstance(context).getFreebox() == null)
 			return;
 		
@@ -348,15 +386,6 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 	}
-	
-	/*public static void hideLaunchPairingButton() {
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				//activity.findViewById(R.id.firstLaunch).setVisibility(View.GONE);
-			}
-		});
-	}*/
 	
 	public static void pairingFinished(final AuthorizeStatus aStatus) {
 		activity.runOnUiThread(new Runnable() {
@@ -415,6 +444,15 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
+	public static void graphLoadingFailed() {
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, "Erreur lors du chargement des graphiques", Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -430,10 +468,28 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	public void onResume() {
+		super.onResume();
+		
+		refreshGraph();
+		
+		if (refreshThread != null)
+			startRefreshThread();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		if (refreshThread != null)
+			stopRefreshThread();
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
-				updateGraph();
+				refreshGraph();
 				break;
 			case R.id.action_valider:
 				okMenuItem.setVisible(false);
@@ -452,7 +508,7 @@ public class MainActivity extends FragmentActivity {
 					public void onClick(DialogInterface dialog, int which) {
 						SingleBox.getInstance().setPeriod(Period.get(which));
 						periodMenuItem.setTitle(Period.get(which).getLabel());
-						updateGraph();
+						refreshGraph();
 					}
 				});
 				builderSingle.show();
