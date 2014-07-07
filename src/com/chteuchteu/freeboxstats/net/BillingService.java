@@ -55,11 +55,6 @@ public class BillingService {
 				Context.BIND_AUTO_CREATE);
 	}
 	
-	public void unbind() {
-		if (mService != null)
-			activityContext.unbindService(mServiceConn);
-	}
-	
 	public void launchPurchase() throws RemoteException, SendIntentException {
 		Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
 		PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
@@ -84,9 +79,12 @@ public class BillingService {
 		}
 	}
 	
-	public static BillingService getInstance() {
-		return instance;
+	public void unbind() {
+		if (mService != null)
+			activityContext.unbindService(mServiceConn);
 	}
+	
+	public static BillingService getInstance() { return instance; }
 	
 	public static synchronized BillingService getInstance(Context activityContext) {
 		if (instance == null)

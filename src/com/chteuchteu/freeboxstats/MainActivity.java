@@ -17,16 +17,19 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +39,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -45,7 +49,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidplot.Plot.BorderStyle;
 import com.androidplot.ui.AnchorPosition;
 import com.androidplot.ui.DynamicTableModel;
 import com.androidplot.ui.SizeLayoutType;
@@ -78,6 +81,8 @@ public class MainActivity extends FragmentActivity {
 	public static Context context;
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
+	private ActionBarDrawerToggle drawerToggle;
+	
 	private static Thread refreshThread;
 	private static boolean justRefreshed;
 	public static final int AUTOREFRESH_TIME = 20000;
@@ -109,6 +114,8 @@ public class MainActivity extends FragmentActivity {
 		graphsDisplayed = false;
 		justRefreshed = false;
 		
+		initDrawer();
+		
 		ActionBar actionBar = getActionBar();
 		// Some design
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -124,18 +131,29 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		FooBox.getInstance(this).init();
+		
+		// Set font
+		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
 	}
 	
 	public static void displayLoadingScreen() {
 		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.RobotoCondensed_Light);
-		((Activity) context).findViewById(R.id.loading).setVisibility(View.VISIBLE);
+		((Activity) context).findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 	
 	public static void hideLoadingScreen() {
-		Animation fadeOut = AnimationUtils.makeOutAnimation(context, true);
-		LinearLayout loadingView = (LinearLayout) ((Activity) context).findViewById(R.id.loading);
+		Animation fadeOut = AnimationUtils.loadAnimation(context, android.R.anim.fade_out);
+		fadeOut.setDuration(10000);
+		final LinearLayout loadingView = (LinearLayout) ((Activity) context).findViewById(R.id.ll_loading);
+		fadeOut.setAnimationListener(new AnimationListener() {
+			@Override public void onAnimationStart(Animation animation) { }
+			@Override public void onAnimationRepeat(Animation animation) { }
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				loadingView.setVisibility(View.GONE);
+			}
+		});
 		loadingView.startAnimation(fadeOut);
-		loadingView.setVisibility(View.GONE);
 	}
 	
 	public static void startRefreshThread() {
@@ -561,6 +579,41 @@ public class MainActivity extends FragmentActivity {
 		BillingService.getInstance().unbind();
 	}
 	
+	private void initDrawer() {
+		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_navigation_drawer, R.string.app_name, R.string.app_name) {
+			public void onDrawerClosed(View view) {
+				super.onDrawerClosed(view);
+			}
+			public void onDrawerOpened(View view) {
+				super.onDrawerOpened(view);
+			}
+		};
+		drawerLayout.setDrawerListener(drawerToggle);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+		
+		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				
+			}
+		});
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerToggle.syncState();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
 		if (requestCode == BillingService.REQUEST_CODE) {           
@@ -583,6 +636,9 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (drawerToggle.onOptionsItemSelected(item))
+			return true;
+		
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
 				refreshGraph(true);
