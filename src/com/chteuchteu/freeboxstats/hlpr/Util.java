@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.PowerManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -92,6 +93,11 @@ public class Util {
 			}
 			return new String(hexChars);
 		}
+	}
+	
+	public static boolean isScreenOn(Context context) {
+		PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+		return powerManager.isScreenOn();
 	}
 	
 	/**

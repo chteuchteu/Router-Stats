@@ -12,6 +12,7 @@
 		Pour des raisons de sécurité, ceci ne peut pas être fait directement par l\'application.\n
 		Après avoir appuyé sur OK, vous serez mis(e) en relation avec l\'interface de gestion de la Freebox.\n
 		Après vous être connecté(e), veuillez suivre les indications afin d\'ajouter cette autorisation à l\'application.</string>
+	<string name="loading">Loading...</string>
 	<string name="firstlaunch_instructions"><![CDATA[
 		<head>
 		<style>

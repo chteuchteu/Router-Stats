@@ -5,6 +5,9 @@ import java.text.Format;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -13,7 +16,9 @@ import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +42,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidplot.Plot.BorderStyle;
+import com.androidplot.ui.AnchorPosition;
+import com.androidplot.ui.DynamicTableModel;
+import com.androidplot.ui.SizeLayoutType;
+import com.androidplot.ui.SizeMetrics;
+import com.androidplot.ui.XLayoutStyle;
+import com.androidplot.ui.YLayoutStyle;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
@@ -53,6 +65,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
+import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
@@ -106,8 +119,23 @@ public class MainActivity extends FragmentActivity {
 		actionBar.setTitle("");
 		
 		
-		// Load singleton
 		FooBox.getInstance(this).init();
+		
+		BillingService.getInstance(context);
+		if (BillingService.getInstance(context).checkIfHasPurchased())
+			Toast.makeText(this, "Yes ! :)", Toast.LENGTH_LONG);
+		else
+			Toast.makeText(this, "No ! :)", Toast.LENGTH_LONG);
+		
+	}
+	
+	public static void displayLoadingScreen() {
+		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.RobotoCondensed_Light);
+		((Activity) context).findViewById(R.id.loading).setVisibility(View.VISIBLE);
+	}
+	
+	public static void hideLoadingScreen() {
+		
 	}
 	
 	public static void startRefreshThread() {
@@ -124,19 +152,23 @@ public class MainActivity extends FragmentActivity {
 					try {
 						if (!Thread.interrupted()) {
 							Thread.sleep(AUTOREFRESH_TIME);
-							if (justRefreshed) {
-								justRefreshed = false;
-								continue;
-							}
-							activity.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									refreshGraph();
+							if (Util.isScreenOn(context)) {
+								if (justRefreshed) {
+									justRefreshed = false;
+									continue;
 								}
-							});
+								activity.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										refreshGraph();
+									}
+								});
+							}
 						} else return;
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (InterruptedException e) {
+						if (FooBox.DEBUG)
+							e.printStackTrace();
+						Thread.currentThread().interrupt();
 						return;
 					}
 				}
@@ -238,7 +270,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 	
-	private static void initPlot(XYPlot plot, int plotIndex) {
+	private static void initPlot(final XYPlot plot, int plotIndex) {
 		plot.setVisibility(View.GONE);
 		
 		// Styling
@@ -255,11 +287,34 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+		plot.setBorderStyle(BorderStyle.SQUARE, null, null);
 		
 		if (plotIndex == 3) {
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
 			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
 		}
+		
+		// Legend
+		if (plotIndex == 1 || plotIndex == 2)
+			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
+		else
+			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
+		plot.getLegendWidget().setSize(new SizeMetrics(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
+		Paint bgPaint = new Paint();
+		bgPaint.setARGB(100, 0, 0, 0);
+		bgPaint.setStyle(Paint.Style.FILL);
+		plot.getLegendWidget().setBackgroundPaint(bgPaint);
+		plot.getLegendWidget().setPadding(10, 1, 1, 3);
+		plot.getLegendWidget().position(160, XLayoutStyle.ABSOLUTE_FROM_LEFT,
+				40, YLayoutStyle.ABSOLUTE_FROM_TOP, AnchorPosition.LEFT_TOP);
+		
+		plot.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				plot.getLegendWidget().setVisible(!plot.getLegendWidget().isVisible());
+				plot.redraw();
+			}
+		});
 	}
 	
 	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final FieldType fieldType, final Unit unit) {
@@ -282,7 +337,7 @@ public class MainActivity extends FragmentActivity {
 				plot.removeMarkers();
 				
 				for (DataSet dSet : graphsContainer.getDataSets()) {
-					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().name());
+					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
 					
 					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
@@ -502,10 +557,36 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		BillingService.getInstance().unbind();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+		if (requestCode == BillingService.REQUEST_CODE) {           
+			//int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+			String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+			//String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+			
+			if (resultCode == RESULT_OK) {
+				try {
+					JSONObject jo = new JSONObject(purchaseData);
+					/*String sku = */jo.getString("productId");
+					Toast.makeText(context, "Merci d'avoir acheté la version premium !", Toast.LENGTH_SHORT);
+				} catch (JSONException e) {
+					Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
-				refreshGraph();
+				refreshGraph(true);
 				break;
 			case R.id.action_valider:
 				okMenuItem.setVisible(false);

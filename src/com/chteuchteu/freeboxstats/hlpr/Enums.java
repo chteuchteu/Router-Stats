@@ -39,11 +39,14 @@ public class Enums {
 	}
 	public enum FieldType { DATA, TEMP }
 	public enum Field {
-		BW_UP, BW_DOWN, RATE_UP, RATE_DOWN, VPN_RATE_UP, VPN_RATE_DOWN,
-		CPUM, CPUB, SW, HDD, FAN_SPEED,
+		BW_UP("Débit maximum"), BW_DOWN("Débit maximum"), RATE_UP("Débit up"), RATE_DOWN("Débit down"), VPN_RATE_UP, VPN_RATE_DOWN,
+		CPUM("CpuM"), CPUB("CpuB"), SW("SW"), HDD("HDD"), FAN_SPEED("Ventilateur"),
 		DSL_RATE_UP, DSL_RATE_DOWN, SNR_UP, SNR_DOWN,
 		RW_1, TX_1, RX_2, TX_2, RX_3, TX_3, RX_4, TX_4;
 		
+		private String displayName;
+		Field() { this.displayName = getSerializedValue(); }
+		Field(String displayName) { this.displayName = displayName; }
 		public String getSerializedValue() { return this.name().toLowerCase(); }
 		public Field get(String serializedValue) {
 			for (Field field : Field.values()) {
@@ -53,6 +56,7 @@ public class Enums {
 			return null;
 		}
 		public boolean equals(Field f1) { return this.getSerializedValue().equals(f1.getSerializedValue()); }
+		public String getDisplayName() { return this.displayName; }
 	}
 	
 	public enum Unit {
