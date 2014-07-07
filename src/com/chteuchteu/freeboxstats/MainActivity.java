@@ -35,9 +35,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +82,7 @@ public class MainActivity extends FragmentActivity {
 	private static boolean justRefreshed;
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
+	public static int appLoadingStep; // steps : 0/1/2=finished
 	
 	private static final String tab1Title = "Débit down";
 	private static final String tab2Title = "Débit up";
@@ -120,13 +124,6 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		FooBox.getInstance(this).init();
-		
-		BillingService.getInstance(context);
-		if (BillingService.getInstance(context).checkIfHasPurchased())
-			Toast.makeText(this, "Yes ! :)", Toast.LENGTH_LONG);
-		else
-			Toast.makeText(this, "No ! :)", Toast.LENGTH_LONG);
-		
 	}
 	
 	public static void displayLoadingScreen() {
@@ -135,7 +132,10 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void hideLoadingScreen() {
-		
+		Animation fadeOut = AnimationUtils.makeOutAnimation(context, true);
+		LinearLayout loadingView = (LinearLayout) ((Activity) context).findViewById(R.id.loading);
+		loadingView.startAnimation(fadeOut);
+		loadingView.setVisibility(View.GONE);
 	}
 	
 	public static void startRefreshThread() {
@@ -287,7 +287,6 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-		plot.setBorderStyle(BorderStyle.SQUARE, null, null);
 		
 		if (plotIndex == 3) {
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);

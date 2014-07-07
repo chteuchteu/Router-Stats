@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -60,6 +61,9 @@ public class FooBox {
 	 * Then, ask for auth_token.
 	 */
 	public void init() {
+		MainActivity.displayLoadingScreen();
+		MainActivity.appLoadingStep = 0;
+		
 		String savedFreebox = Util.getPref(this.context, "freebox");
 		if (!savedFreebox.equals("")) {
 			FooBox.log("Loading freebox from preferences");
@@ -73,9 +77,12 @@ public class FooBox {
 			// Open session
 			new SessionOpener(this.freebox, this.context).execute();
 			// (once done, we'll update the graph)
+			// Init BillingService
+			BillingService.getInstance(this.context);
 		} else {
 			// Discover Freebox
 			new FreeboxDiscoverer().execute();
+			MainActivity.appLoadingStep++;
 		}
 	}
 	
@@ -116,4 +123,5 @@ public class FooBox {
 	public void setPeriod(Period val) { this.currentPeriod = val; }
 	
 	public boolean isPremium() { return this.premium || DEBUG; }
+	public void setIsPremium(boolean val) { this.premium = val; }
 }

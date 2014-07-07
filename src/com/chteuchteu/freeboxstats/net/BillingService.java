@@ -15,6 +15,7 @@ import android.os.RemoteException;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.MainActivity;
 
 public class BillingService {
 	private static BillingService instance;
@@ -30,7 +31,7 @@ public class BillingService {
 		loadInstance(activityContext);
 	}
 	
-	private void loadInstance(Context activityContext) {
+	private void loadInstance(final Context activityContext) {
 		if (activityContext != null && this.activityContext == null)
 			this.activityContext = activityContext;
 		
@@ -42,6 +43,12 @@ public class BillingService {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mService = IInAppBillingService.Stub.asInterface(service);
+				
+				// Binding finished : check if premium
+				FooBox.getInstance(activityContext).setIsPremium(checkIfHasPurchased());
+				MainActivity.appLoadingStep++;
+				if (MainActivity.appLoadingStep == 2)
+					MainActivity.hideLoadingScreen();
 			}
 		};
 		activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
