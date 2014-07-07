@@ -63,6 +63,7 @@ public class MainActivity extends FragmentActivity {
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
 	private static Thread refreshThread;
+	private static boolean justRefreshed;
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
@@ -89,6 +90,7 @@ public class MainActivity extends FragmentActivity {
 		context = this;
 		activity = this;
 		graphsDisplayed = false;
+		justRefreshed = false;
 		
 		ActionBar actionBar = getActionBar();
 		// Some design
@@ -122,6 +124,10 @@ public class MainActivity extends FragmentActivity {
 					try {
 						if (!Thread.interrupted()) {
 							Thread.sleep(AUTOREFRESH_TIME);
+							if (justRefreshed) {
+								justRefreshed = false;
+								continue;
+							}
 							activity.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -140,7 +146,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void stopRefreshThread() {
-		if (refreshThread.isAlive())
+		if (refreshThread != null && refreshThread.isAlive())
 			refreshThread.interrupt();
 	}
 	
@@ -342,9 +348,13 @@ public class MainActivity extends FragmentActivity {
 			spinningMenuItem.setActionView(null);
 	}
 	
-	public static void refreshGraph() {
+	public static void refreshGraph() { refreshGraph(false); }
+	public static void refreshGraph(boolean manualRefresh) {
 		if (FooBox.getInstance(context).getFreebox() == null)
 			return;
+		
+		if (manualRefresh)
+			justRefreshed = true;
 		
 		toggleSpinningMenuItem(true);
 		loadedGraphs = 0;
