@@ -162,12 +162,11 @@ public class Util {
 					if (serie.equals("") || !serie.contains(":"))
 						return "";
 					// Only display 14:00, 16:00, 18:00, ...
-					int hours = Integer.parseInt(serie.split(":")[0]);
+					int hours2 = Integer.parseInt(serie.split(":")[0]);
 					int minutes2 = Integer.parseInt(serie.split(":")[1]);
 					
-					if (hours % 2 == 0 && minutes2 == 0
+					if (hours2 % 4 == 0 && minutes2 == 0
 							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1)))) {
-						int hours2 = Integer.parseInt(serie.split(":")[0]);
 						if (hours2 == 24) // Avoid 24:30, display 00:30 instead
 							return "00:" + minutes2;
 						else
@@ -208,7 +207,18 @@ public class Util {
 						}
 						break;
 					case DAY:
-						// TODO
+						if (serie.equals("") || !serie.contains(":"))
+							display = false;
+						else {
+							// Only display 14:00, 16:00, ...
+							int hours = Integer.parseInt(serie.split(":")[0]);
+							int minutes = Integer.parseInt(serie.split(":")[1]);
+							
+							if (hours % 4 == 0 && minutes == 0) {
+								display = true;
+								currentText = serie;
+							}
+						}
 						break;
 					case MONTH:
 						// TODO

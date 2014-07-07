@@ -51,10 +51,13 @@ public class GraphsContainer {
 				JSONObject obj = (JSONObject) data.get(i);
 				for (Field f : fields) {
 					try {
+						int val = 0;
+						if (obj.has(f.getSerializedValue()))
+							val = obj.getInt(f.getSerializedValue());
 						if (fieldType == FieldType.DATA)
-							getDataSet(f).addValue(Unit.o, obj.getInt(f.getSerializedValue()));
+							getDataSet(f).addValue(Unit.o, val);
 						else if (fieldType == FieldType.TEMP)
-							getDataSet(f).addValue(Unit.C, obj.getInt(f.getSerializedValue()));
+							getDataSet(f).addValue(Unit.C, val);
 					} catch (JSONException ex) { ex.printStackTrace(); }
 				}
 			} catch (JSONException e) {

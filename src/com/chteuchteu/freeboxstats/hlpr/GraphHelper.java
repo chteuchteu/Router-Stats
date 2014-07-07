@@ -95,9 +95,11 @@ public class GraphHelper {
 			try {
 				JSONObject jsonObj = dataArray.getJSONObject(i);
 				for (Field field : fields) {
-					int val = jsonObj.getInt(field.getSerializedValue());
-					if (val > highestValue)
-						highestValue = val;
+					if (jsonObj.has(field.getSerializedValue())) {
+						int val = jsonObj.getInt(field.getSerializedValue());
+						if (val > highestValue)
+							highestValue = val;
+					}
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

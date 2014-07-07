@@ -477,7 +477,8 @@ public class MainActivity extends FragmentActivity {
 	public void onResume() {
 		super.onResume();
 		
-		refreshGraph();
+		if (spinningMenuItem != null) // if true, that means that the app has already started
+			refreshGraph();
 		
 		if (refreshThread != null)
 			startRefreshThread();
