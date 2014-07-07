@@ -13,9 +13,6 @@ public class NetResponse {
 	}
 	
 	private void parseResponse(JSONObject response) {
-		if (response.equals(""))
-			return;
-		
 		try {
 			this.success = response.getBoolean("success");
 			this.completeResponse = response;

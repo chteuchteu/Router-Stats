@@ -1,10 +1,9 @@
 package com.chteuchteu.freeboxstats.net;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.chteuchteu.freeboxstats.MainActivity;
-import com.chteuchteu.freeboxstats.SingleBox;
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
@@ -15,13 +14,13 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 		Freebox freebox = NetHelper.checkFreebox();
 		
 		if (freebox != null) {
-			Log.v("Found freebox", freebox.toString());
-			SingleBox.getInstance().setFreebox(freebox);
+			FooBox.log("Found freebox", freebox.toString());
+			FooBox.getInstance().setFreebox(freebox);
 			
 			MainActivity.displayLaunchPairingScreen();
 		}
 		else
-			Log.v("Not found", "Error while trying to find Freebox");
+			FooBox.log("Not found", "Error while trying to find Freebox");
 		
 		return null;
 	}

@@ -12,13 +12,16 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 
-public class SingleBox {
+public class FooBox {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
 	public static final String APP_VERSION = "1.0";
 	public static final String DEVICE_NAME = "Android";
 	
-	private static SingleBox instance;
+	private boolean premium;
+	public static final boolean DEBUG = true;
+	
+	private static FooBox instance;
 	private Context context;
 	
 	private Freebox freebox;
@@ -29,7 +32,7 @@ public class SingleBox {
 	
 	private Period currentPeriod;
 	
-	private SingleBox(Context context) {
+	private FooBox(Context context) {
 		loadInstance(context);
 	}
 	
@@ -40,13 +43,13 @@ public class SingleBox {
 		this.currentPeriod = Period.HOUR;
 	}
 	
-	public static synchronized SingleBox getInstance(Context context) {
+	public static synchronized FooBox getInstance(Context context) {
 		if (instance == null)
-			instance = new SingleBox(context);
+			instance = new FooBox(context);
 		return instance;
 	}
 	
-	public static SingleBox getInstance() {
+	public static FooBox getInstance() {
 		return getInstance(null);
 	}
 	
@@ -59,7 +62,7 @@ public class SingleBox {
 	public void init() {
 		String savedFreebox = Util.getPref(this.context, "freebox");
 		if (!savedFreebox.equals("")) {
-			Log.v("", "Loading freebox from preferences");
+			FooBox.log("Loading freebox from preferences");
 			// Load freebox
 			try {
 				this.freebox = Freebox.load(savedFreebox);
@@ -93,6 +96,9 @@ public class SingleBox {
 		}
 	}
 	
+	public static void log(String msg) { log("FreeboxStats", msg); }
+	public static void log(String key, String msg) { if (DEBUG) Log.v(key, msg); }
+	
 	public Freebox getFreebox() { return this.freebox; }
 	public void setFreebox(Freebox val) { this.freebox = val; }
 	
@@ -108,4 +114,6 @@ public class SingleBox {
 	
 	public Period getPeriod() { return this.currentPeriod; }
 	public void setPeriod(Period val) { this.currentPeriod = val; }
+	
+	public boolean isPremium() { return this.premium || DEBUG; }
 }

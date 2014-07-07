@@ -105,11 +105,11 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// Load singleton
-		SingleBox.getInstance(this).init();
+		FooBox.getInstance(this).init();
 	}
 	
 	public static void startRefreshThread() {
-		if (SingleBox.getInstance(context).getFreebox() == null)
+		if (FooBox.getInstance(context).getFreebox() == null)
 			return;
 		
 		if (refreshThread != null && refreshThread.isAlive())
@@ -281,21 +281,20 @@ public class MainActivity extends FragmentActivity {
 					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
 					
-					if (fieldType == FieldType.DATA) {
-						if (dSet.getField() == Field.BW_DOWN || dSet.getField() == Field.BW_UP)
-							serieFormat.configure(context, R.xml.serieformat_bw);
-						else
-							serieFormat.configure(context, R.xml.serieformat_ratedown);
-					} else {
-						switch (dSet.getField()) {
-							case CPUM:	serieFormat.configure(context, R.xml.serieformat_cpum);	break;
-							case CPUB:	serieFormat.configure(context, R.xml.serieformat_cpub);	break;
-							case SW:	serieFormat.configure(context, R.xml.serieformat_sw);	break;
-							case HDD:	serieFormat.configure(context, R.xml.serieformat_hdd);	break;
-							default: break;
-							
-						}
+					int xmlRef = -1;
+					switch (dSet.getField()) {
+						case BW_DOWN:
+						case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
+						case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
+						case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
+						case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
+						case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
+						case SW:		xmlRef = R.xml.serieformat_sw;		break;
+						case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
+						default: break;
 					}
+					if (xmlRef != -1)
+						serieFormat.configure(context, xmlRef);
 					
 					plot.addSeries(serie, serieFormat);
 				}
@@ -344,7 +343,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void refreshGraph() {
-		if (SingleBox.getInstance(context).getFreebox() == null)
+		if (FooBox.getInstance(context).getFreebox() == null)
 			return;
 		
 		toggleSpinningMenuItem(true);
@@ -354,13 +353,13 @@ public class MainActivity extends FragmentActivity {
 		ArrayList<Field> fields = new ArrayList<Field>();
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.BW_DOWN);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields, 1, FieldType.DATA).execute();
+		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields, 1, FieldType.DATA).execute();
 		
 		// Second tab
 		ArrayList<Field> fields2 = new ArrayList<Field>();
 		fields2.add(Field.RATE_UP);
 		fields2.add(Field.BW_UP);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields2, 2, FieldType.DATA).execute();
+		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields2, 2, FieldType.DATA).execute();
 		
 		// Third tab
 		ArrayList<Field> fields3 = new ArrayList<Field>();
@@ -368,7 +367,7 @@ public class MainActivity extends FragmentActivity {
 		fields3.add(Field.CPUB);
 		fields3.add(Field.SW);
 		fields3.add(Field.HDD);
-		new GraphLoader(SingleBox.getInstance().getFreebox(), SingleBox.getInstance().getPeriod(), fields3, 3, FieldType.TEMP).execute();
+		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields3, 3, FieldType.TEMP).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {
@@ -386,7 +385,7 @@ public class MainActivity extends FragmentActivity {
 						Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
 						activity.findViewById(R.id.screen1).setVisibility(View.GONE);
 						activity.findViewById(R.id.screen2).setVisibility(View.VISIBLE);
-						new AskForAppToken(SingleBox.getInstance().getFreebox(), context).execute();
+						new AskForAppToken(FooBox.getInstance().getFreebox(), context).execute();
 					}
 				});
 			}
@@ -513,7 +512,7 @@ public class MainActivity extends FragmentActivity {
 				builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						SingleBox.getInstance().setPeriod(Period.get(which));
+						FooBox.getInstance().setPeriod(Period.get(which));
 						periodMenuItem.setTitle(Period.get(which).getLabel());
 						refreshGraph();
 					}

@@ -32,9 +32,7 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 			MainActivity.displayGraphs();
 			MainActivity.refreshGraph();
 			MainActivity.startRefreshThread();
-		} else {
+		} else
 			Toast.makeText(context, "Impossible de se connecter à la Freebox...", Toast.LENGTH_SHORT).show();
-			//new FreeboxDiscoverer().execute();
-		}
 	}
 }

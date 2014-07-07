@@ -21,9 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
-import com.chteuchteu.freeboxstats.SingleBox;
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -78,7 +76,7 @@ public class NetHelper {
 		try {
 			httpClient = new DefaultHttpClient();
 			String uri = freebox.getApiCallUrl() + "login/authorize/";
-			Log.v("", "Polling uri " + uri);
+			FooBox.log("Polling uri " + uri);
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(appInfo.getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
@@ -91,7 +89,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					Log.v("serverResponse", serverResponse);
+					FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj);
@@ -147,7 +145,7 @@ public class NetHelper {
 			if (netResponse.hasSucceeded()) {
 				authorizeStatus = AuthorizeStatus.get(netResponse.getJsonObject().getString("status"));
 				String challenge = netResponse.getJsonObject().getString("challenge");
-				SingleBox.getInstance().getSession().setChallenge(challenge);
+				FooBox.getInstance().getSession().setChallenge(challenge);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -164,7 +162,7 @@ public class NetHelper {
 		if (response != null && response.hasSucceeded()) {
 			try {
 				challenge = response.getJsonObject().getString("challenge");
-				SingleBox.getInstance().getSession().setChallenge(challenge);
+				FooBox.getInstance().getSession().setChallenge(challenge);
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;
@@ -176,7 +174,7 @@ public class NetHelper {
 		if (response2 != null && response2.hasSucceeded()) {
 			try {
 				String session_token = response2.getJsonObject().getString("session_token");
-				SingleBox.getInstance().getSession().setSessionToken(session_token);
+				FooBox.getInstance().getSession().setSessionToken(session_token);
 				return true;
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -226,10 +224,10 @@ public class NetHelper {
 		try {
 			httpClient = new DefaultHttpClient();
 			String uri = freebox.getApiCallUrl() + "login/session/";
-			Log.v("", "Polling uri " + uri);
+			FooBox.log("Polling uri " + uri);
 			// We have to provide app_id and password
 			JSONObject obj = new JSONObject();
-			obj.put("app_id", SingleBox.APP_ID);
+			obj.put("app_id", FooBox.APP_ID);
 			obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
@@ -243,7 +241,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					Log.v("serverResponse", serverResponse);
+					FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj2 = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj2);
@@ -289,7 +287,7 @@ public class NetHelper {
 		try {
 			httpClient = new DefaultHttpClient();
 			String uri = freebox.getApiCallUrl() + "rrd/";
-			Log.v("", "Polling uri " + uri);
+			FooBox.log("Polling uri " + uri);
 			JSONObject obj = new JSONObject();
 			obj.put("db", GraphHelper.getDbFromField(fFields.get(0)).getSerializedValue());
 			JSONArray fields = new JSONArray();
@@ -300,8 +298,8 @@ public class NetHelper {
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
-			httpPost.setHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
-			httpPost.addHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
+			httpPost.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+			httpPost.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
 			
 			// Execute and get the response
 			HttpResponse response = httpClient.execute(httpPost);
@@ -311,7 +309,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					Log.v("serverResponse", serverResponse);
+					FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj2 = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj2);
@@ -338,13 +336,13 @@ public class NetHelper {
 	
 	public static String getPublicIP(Freebox freebox) {
 		String apiCallUri = freebox.getApiCallUrl() + "connection/config";
-		Log.v("", "Polling URI " + apiCallUri);
+		FooBox.log("Polling URI " + apiCallUri);
 		HttpClient httpclient = new DefaultHttpClient();
 		String responseBody = "";
 		try {
 			HttpGet httpget = new HttpGet(apiCallUri);
-			httpget.setHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
-			httpget.addHeader("X-Fbx-App-Auth", SingleBox.getInstance().getSession().getSessionToken());
+			httpget.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+			httpget.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);

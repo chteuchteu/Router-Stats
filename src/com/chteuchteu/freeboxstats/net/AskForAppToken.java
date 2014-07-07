@@ -5,10 +5,9 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.chteuchteu.freeboxstats.MainActivity;
-import com.chteuchteu.freeboxstats.SingleBox;
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -30,10 +29,10 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		JSONObject obj = new JSONObject();
 		
 		try {
-			obj.put("app_id", SingleBox.APP_ID);
-			obj.put("app_name", SingleBox.APP_NAME);
-			obj.put("app_version", SingleBox.APP_VERSION);
-			obj.put("device_name", SingleBox.DEVICE_NAME);
+			obj.put("app_id", FooBox.APP_ID);
+			obj.put("app_name", FooBox.APP_NAME);
+			obj.put("app_version", FooBox.APP_VERSION);
+			obj.put("device_name", FooBox.DEVICE_NAME);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -51,8 +50,8 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 					trackId = res.getInt("track_id");
 					String appTocken = res.getString("app_token");
 					
-					SingleBox.getInstance().setTrackId(trackId);
-					SingleBox.getInstance().saveAppToken(appTocken);
+					FooBox.getInstance().setTrackId(trackId);
+					FooBox.getInstance().saveAppToken(appTocken);
 					
 					ok = true;
 				} catch (JSONException e) {
@@ -83,7 +82,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 					String freeboxIP = NetHelper.getPublicIP(freebox);
 					if (freeboxIP != null && !freeboxIP.equals(""))
 						freebox.setIp(freeboxIP);
-					Log.v("", "Found IP " + freeboxIP);
+					FooBox.log("Found IP " + freeboxIP);
 					
 					// Save Freebox
 					try {

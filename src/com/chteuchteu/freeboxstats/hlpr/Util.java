@@ -17,7 +17,6 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -105,7 +104,6 @@ public class Util {
 	public static String encodeAppToken(String app_token, String challenge) throws 
 	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, SignatureException {
 		String res = Crypto.hmacSha1(challenge, app_token);
-		Log.v("Generated res", res);
 		return res;
 	}
 	
