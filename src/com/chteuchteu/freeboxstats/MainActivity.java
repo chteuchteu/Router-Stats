@@ -580,9 +580,20 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				
+				// TODO
 			}
 		});
+		
+		findViewById(R.id.drawer_premium).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				BillingService.getInstance().launchPurchase();
+			}
+		});
+	}
+	
+	public static void isPremium() {
+		//TODO activity.findViewById(R.id.drawer_premium).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -613,7 +624,8 @@ public class MainActivity extends FragmentActivity {
 					Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
 					e.printStackTrace();
 				}
-			}
+			} else
+				Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
 		}
 	}
 	

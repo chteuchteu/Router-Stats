@@ -49,17 +49,22 @@ public class BillingService {
 				MainActivity.appLoadingStep++;
 				if (MainActivity.appLoadingStep == 2)
 					MainActivity.hideLoadingScreen();
+				MainActivity.isPremium();
 			}
 		};
 		activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
 				Context.BIND_AUTO_CREATE);
 	}
 	
-	public void launchPurchase() throws RemoteException, SendIntentException {
-		Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
-		PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-		((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
-				REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+	public void launchPurchase() {
+		try {
+			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
+			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
+					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+		}
+		catch (RemoteException ex) { ex.printStackTrace(); }
+		catch (SendIntentException ex) { ex.printStackTrace(); }
 	}
 	
 	public boolean checkIfHasPurchased() {
