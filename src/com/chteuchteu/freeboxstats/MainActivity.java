@@ -10,10 +10,8 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -63,6 +61,7 @@ import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
+import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -210,30 +209,14 @@ public class MainActivity extends FragmentActivity {
 		pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
 		viewPager = (ViewPager) activity.findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
-		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				activity.getActionBar().setSelectedNavigationItem(position);
-			}
-		});
+		
 		// Let Android load all the tabs at once (= disable lazy load)
 		viewPager.setOffscreenPageLimit(2);
 		
-		final ActionBar actionBar = activity.getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-			@Override public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
-			
-			@Override
-			public void onTabSelected(Tab tab, FragmentTransaction ft) {
-				viewPager.setCurrentItem(tab.getPosition());
-			}
-			
-			@Override public void onTabReselected(Tab tab, FragmentTransaction ft) { }
-		};
-		actionBar.addTab(actionBar.newTab().setText(tab1Title).setTabListener(tabListener));
-		actionBar.addTab(actionBar.newTab().setText(tab2Title).setTabListener(tabListener));
-		actionBar.addTab(actionBar.newTab().setText(tab3Title).setTabListener(tabListener));
+		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) activity.findViewById(R.id.tabs);
+		tabs.setViewPager(viewPager);
+		tabs.setTextColor(Color.WHITE);
+		
 		graphsDisplayed = true;
 	}
 	

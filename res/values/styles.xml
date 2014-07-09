@@ -16,5 +16,13 @@
 	<style name="AppTheme" parent="AppBaseTheme">
 		<!-- All customizations that are NOT specific to a particular API-level can go here. -->
 	</style>
+	
+	<!-- PagerSlidingTabStrip -->
+	<style name="PagerSlidingTabStrip">
+		<item name="pstsIndicatorColor">#fff</item>
+		<item name="pstsUnderlineColor">@color/colorPrimaryDark</item>
+		<item name="pstsIndicatorHeight">4dp</item>
+		<item name="pstsShouldExpand">true</item>
+	</style>
 
 </resources>
