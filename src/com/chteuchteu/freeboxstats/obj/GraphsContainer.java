@@ -46,19 +46,55 @@ public class GraphsContainer {
 		for (Field f : fields)
 			this.dataSets.add(new DataSet(f, valuesUnit));
 		
+		int timestampDiff = 0;
+		try {
+			timestampDiff = getTimestampDiff(data);
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+		}
+		
+		int lastAddedTimestamp = -1;
+		ValuesBuffer valuesBuffer = new ValuesBuffer(fields);
 		for (int i=0; i<data.length(); i++) {
 			try {
 				JSONObject obj = (JSONObject) data.get(i);
-				for (Field f : fields) {
-					try {
-						int val = 0;
-						if (obj.has(f.getSerializedValue()))
-							val = obj.getInt(f.getSerializedValue());
-						if (fieldType == FieldType.DATA)
-							getDataSet(f).addValue(Unit.o, val);
-						else if (fieldType == FieldType.TEMP)
-							getDataSet(f).addValue(Unit.C, val);
-					} catch (JSONException ex) { ex.printStackTrace(); }
+				
+				if (lastAddedTimestamp == -1)
+					lastAddedTimestamp = obj.getInt("time");
+				
+				if (obj.getInt("time") - lastAddedTimestamp >= timestampDiff
+						|| obj.getInt("time") - lastAddedTimestamp == 0
+						|| timestampDiff == 0) {
+					// Add the Numbers to the values lists
+					for (Field f : fields) {
+						try {
+							int val = 0;
+							if (obj.has(f.getSerializedValue()))
+								val = obj.getInt(f.getSerializedValue());
+							
+							if (!valuesBuffer.isEmpty()) { // Include all the buffered values
+								valuesBuffer.addValue(f, val);
+								val = valuesBuffer.getAverage(f);
+								valuesBuffer.clear(f);
+							}
+							
+							if (fieldType == FieldType.DATA)
+								getDataSet(f).addValue(Unit.o, val);
+							else if (fieldType == FieldType.TEMP)
+								getDataSet(f).addValue(Unit.C, val);
+						} catch (JSONException ex) { ex.printStackTrace(); }
+					}
+					lastAddedTimestamp = obj.getInt("time");
+					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time")));
+				} else {
+					for (Field f : fields) {
+						try {
+							int val = 0;
+							if (obj.has(f.getSerializedValue()))
+								val = obj.getInt(f.getSerializedValue());
+							valuesBuffer.addValue(f, val);
+						} catch (JSONException ex) { ex.printStackTrace(); }
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -75,7 +111,76 @@ public class GraphsContainer {
 			}
 		}
 		
-		this.serie.addAll(GraphHelper.getDatesLabelsFromData(data));
+		//this.serie.addAll(GraphHelper.getDatesLabelsFromData(data));
+	}
+	
+	/**
+	 * When skipping values (because the timestampdiff is not respected),
+	 * we generate the values average for each Field.
+	 */
+	private class ValuesBuffer {
+		private ArrayList<ValuesBufferSet> bufferSets;
+		
+		public ValuesBuffer(ArrayList<Field> fields) {
+			this.bufferSets = new ArrayList<ValuesBufferSet>();
+			for (Field f : fields)
+				this.bufferSets.add(new ValuesBufferSet(f));
+		}
+		
+		public void addValue(Field field, int val) {
+			getVBSByField(field).addValue(val);
+		}
+		
+		public void clear(Field field) {
+			getVBSByField(field).clear();
+		}
+		
+		public boolean isEmpty() {
+			for (ValuesBufferSet vbs : this.bufferSets)
+				if (!vbs.getValues().isEmpty())
+					return false;
+			return true;
+		}
+		
+		public int getAverage(Field field) {
+			ValuesBufferSet vbs = getVBSByField(field);
+			float sum = 0;
+			int nb = vbs.getValues().size();
+			for (int n : vbs.getValues())
+				sum += n;
+			return (int) (sum/nb);
+		}
+		
+		private ValuesBufferSet getVBSByField(Field field) {
+			for (ValuesBufferSet vbs : this.bufferSets) {
+				if (vbs.getField() == field)
+					return vbs;
+			}
+			return null;
+		}
+		
+		private class ValuesBufferSet {
+			private Field field;
+			private ArrayList<Integer> values;
+			public ValuesBufferSet(Field field) {
+				this.field = field;
+				this.values = new ArrayList<Integer>();
+			}
+			public void addValue(int val) { this.values.add(val); }
+			public ArrayList<Integer> getValues() { return this.values; }
+			public Field getField() { return this.field; }
+			public void clear() { this.values.clear(); }
+		}
+	}
+	
+	private int getTimestampDiff(JSONArray data) throws JSONException {
+		// For every period > HOUR, the time between 2 values
+		// becomes smaller at 3/4 from the beginning.
+		// We'll try to respect those.
+		int timestamp0 = ((JSONObject) data.get(0)).getInt("time");
+		int timestamp1 = ((JSONObject) data.get(1)).getInt("time");;
+		int timestampDiff = timestamp1 - timestamp0;
+		return timestampDiff;
 	}
 	
 	private void convertAllValues(Unit from, Unit to) {

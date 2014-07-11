@@ -32,6 +32,18 @@ public class GraphHelper {
 		return list;
 	}
 	
+	public static String getDateLabelFromTimestamp(long jsonTimestamp) {
+		try {
+			long timestamp = jsonTimestamp*1000;
+			Date date = new Date(timestamp);
+			SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm");
+			return dateFormat.format(date);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return "";
+		}
+	}
+	
 	/**
 	 * Returns net / temp / dsl / switch from field
 	 * @param field

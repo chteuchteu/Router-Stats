@@ -295,6 +295,7 @@ public class NetHelper {
 				fields.put(f.getSerializedValue());
 			obj.put("fields", fields);
 			obj.put("date_start", Util.Times.getFrom(period));
+			obj.put("precision", 10);
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
