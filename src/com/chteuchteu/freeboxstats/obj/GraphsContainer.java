@@ -8,12 +8,15 @@ import org.json.JSONObject;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 
 public class GraphsContainer {
 	private ArrayList<String> serie;
 	private ArrayList<DataSet> dataSets;
+	private Period period;
+	public static final Period defaultPeriod = Period.HOUR;
 	private Unit valuesUnit;
 	public static final Unit defaultUnit = Unit.Mo;
 	private FieldType fieldType;
@@ -24,6 +27,7 @@ public class GraphsContainer {
 		this.dataSets = new ArrayList<DataSet>();
 		this.valuesUnit = defaultUnit;
 		this.fieldType = defaultFieldType;
+		this.period = defaultPeriod;
 	}
 	
 	public GraphsContainer(ArrayList<String> serie, ArrayList<DataSet> dataSets) {
@@ -31,10 +35,12 @@ public class GraphsContainer {
 		this.dataSets = dataSets;
 		this.valuesUnit = defaultUnit;
 		this.fieldType = defaultFieldType;
+		this.period = defaultPeriod;
 	}
 	
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType) {
-		// Construct things from raw data from the Freebox
+	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType, Period period) {
+		// Construct GraphsContainer from raw data from the Freebox
+		this.period = period;
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
 		if (fieldType == FieldType.DATA)
@@ -85,7 +91,7 @@ public class GraphsContainer {
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
-					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time")));
+					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time"), this.period));
 				} else {
 					for (Field f : fields) {
 						try {
@@ -110,8 +116,6 @@ public class GraphsContainer {
 				this.valuesUnit = bestUnit;
 			}
 		}
-		
-		//this.serie.addAll(GraphHelper.getDatesLabelsFromData(data));
 	}
 	
 	/**
@@ -178,9 +182,18 @@ public class GraphsContainer {
 		// becomes smaller at 3/4 from the beginning.
 		// We'll try to respect those.
 		int timestamp0 = ((JSONObject) data.get(0)).getInt("time");
-		int timestamp1 = ((JSONObject) data.get(1)).getInt("time");;
+		int timestamp1 = ((JSONObject) data.get(1)).getInt("time");
 		int timestampDiff = timestamp1 - timestamp0;
-		return timestampDiff;
+		
+		// Try with the next value (sometimes, the result returned is wrong)
+		int timestamp2 = ((JSONObject) data.get(2)).getInt("time");
+		int timestamp3 = ((JSONObject) data.get(3)).getInt("time");
+		int timestampDiff2 = timestamp3 - timestamp2;
+		
+		if (timestampDiff == timestampDiff2)
+			return timestampDiff;
+		else
+			return timestampDiff2;
 	}
 	
 	private void convertAllValues(Unit from, Unit to) {

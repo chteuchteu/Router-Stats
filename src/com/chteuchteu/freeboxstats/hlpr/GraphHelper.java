@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class GraphHelper {
@@ -32,11 +33,15 @@ public class GraphHelper {
 		return list;
 	}
 	
-	public static String getDateLabelFromTimestamp(long jsonTimestamp) {
+	public static String getDateLabelFromTimestamp(long jsonTimestamp, Period period) {
 		try {
 			long timestamp = jsonTimestamp*1000;
 			Date date = new Date(timestamp);
-			SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm");
+			SimpleDateFormat dateFormat;
+			if (period == Period.HOUR || period == Period.DAY)
+				dateFormat = new SimpleDateFormat("kk:mm");
+			else
+				dateFormat = new SimpleDateFormat("dd/MM:kk");
 			return dateFormat.format(date);
 		} catch (Exception ex) {
 			ex.printStackTrace();

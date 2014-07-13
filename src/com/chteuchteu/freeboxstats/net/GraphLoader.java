@@ -36,7 +36,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		netResponse = NetHelper.loadGraph(freebox, period, fields);
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
-				graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType);
+				graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
 			} catch (JSONException e) { e.printStackTrace(); }
 		}
 		

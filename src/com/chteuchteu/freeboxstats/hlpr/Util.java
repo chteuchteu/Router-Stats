@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -179,7 +180,16 @@ public class Util {
 						return "";
 					
 				case WEEK:
-					return "";
+					if (serie.equals(""))
+						return "";
+					
+					// Only display 01/02, 02/02, 03/02, ... at midday (12:00)
+					String dateLabel = serie.split(":")[0];
+					int hours3 = Integer.parseInt(serie.split(":")[1]);
+					if (hours3 == 12 && (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
+						return dateLabel;
+					else
+						return "";
 					
 				case MONTH:
 					return "";
@@ -224,11 +234,19 @@ public class Util {
 							}
 						}
 						break;
-					case MONTH:
-						// TODO
-						break;
 					case WEEK:
-						// TODO
+						if (serie.equals(""))
+							display = false;
+						else {
+							int hours3 = Integer.parseInt(serie.split(":")[1]);
+							if (hours3 == 24 && (currentText.equals("") || !serie.equals(currentText))) {
+								display = true;
+								currentText = serie;
+							}
+						}
+						break;
+					case MONTH:
+						display = false;
 						break;
 					default:
 						break;
