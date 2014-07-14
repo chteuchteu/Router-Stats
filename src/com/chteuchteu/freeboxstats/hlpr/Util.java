@@ -18,7 +18,6 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -55,9 +54,7 @@ public class Util {
 	public static boolean isOnline(Context c) {
 		ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting())
-			return true;
-		return false;
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
 	public static final class Streams {
@@ -141,6 +138,16 @@ public class Util {
 			return cal.getTime().getTime() / 1000;
 		}
 		
+		public static int getDayBeginFromTimestamp(int timestamp) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(timestamp*1000);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			return (int) cal.getTimeInMillis() / 1000;
+		}
+		
 		/**
 		 * Avoid printing a label for each drawn point :
 		 * returns an empty string or the label depending on the label value
@@ -192,7 +199,30 @@ public class Util {
 						return "";
 					
 				case MONTH:
-					return "";
+					if (serie.equals(""))
+						return "";
+					
+					// Only display one day out of X
+					int eachXdays = 5;
+					int dayTimestamp = Util.Times.getDayBeginFromTimestamp(
+							Integer.parseInt(serie));
+					int previousIndex = pos-1;
+					if (previousIndex < 0)
+						previousIndex = 0;
+					int previousTimestamp = Util.Times.getDayBeginFromTimestamp(Integer.parseInt(series.get(previousIndex)));
+					
+					if (previousTimestamp == dayTimestamp)
+						return "";
+					
+					int latestTimestamp = Util.Times.getDayBeginFromTimestamp(
+							Integer.parseInt(series.get(series.size()-1)));
+					
+					int mod = (latestTimestamp - dayTimestamp) % (eachXdays*24*60*60);
+					
+					if (mod == 0 && previousTimestamp != dayTimestamp)
+						return GraphHelper.getDateLabelFromTimestamp(dayTimestamp, null);
+					else
+						return "";
 				default: return "";
 			}
 		}
@@ -246,7 +276,26 @@ public class Util {
 						}
 						break;
 					case MONTH:
-						display = false;
+						// Only display one day out of X
+						int eachXdays = 5;
+						int dayTimestamp = Util.Times.getDayBeginFromTimestamp(
+								Integer.parseInt(serie));
+						int previousIndex = pos-1;
+						if (previousIndex < 0)
+							previousIndex = 0;
+						int previousTimestamp = Util.Times.getDayBeginFromTimestamp(Integer.parseInt(series.get(previousIndex)));
+						
+						if (previousTimestamp == dayTimestamp) {
+							display = false;
+						} else {
+							int latestTimestamp = Util.Times.getDayBeginFromTimestamp(
+									Integer.parseInt(series.get(series.size()-1)));
+							
+							int mod = (latestTimestamp - dayTimestamp) % (eachXdays*24*60*60);
+							
+							display = (mod == 0 && previousTimestamp != dayTimestamp);
+							currentText = serie;
+						}
 						break;
 					default:
 						break;

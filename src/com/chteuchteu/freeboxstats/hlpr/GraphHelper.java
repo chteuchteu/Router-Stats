@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,12 +41,27 @@ public class GraphHelper {
 			SimpleDateFormat dateFormat;
 			if (period == Period.HOUR || period == Period.DAY)
 				dateFormat = new SimpleDateFormat("kk:mm");
-			else
+			else if (period == Period.WEEK)
 				dateFormat = new SimpleDateFormat("dd/MM:kk");
+			else if (period == Period.MONTH) {
+				dateFormat = new SimpleDateFormat("dd/MM");
+				return String.valueOf(jsonTimestamp);
+			} else// (period == null)
+				dateFormat = new SimpleDateFormat("dd/MM");
+			
 			return dateFormat.format(date);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return "";
+		}
+	}
+	
+	public static Date getDateFromString(String s) {
+		try {
+			return new SimpleDateFormat("dd/MM").parse(s);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 	
