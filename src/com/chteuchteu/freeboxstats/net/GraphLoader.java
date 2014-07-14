@@ -55,8 +55,10 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 			if (netResponse != null) {
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
-					if (response.equals("auth_required"))
+					if (response.equals("auth_required")) {
+						cancel = false;
 						new SessionOpener(freebox, MainActivity.context).execute();
+					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

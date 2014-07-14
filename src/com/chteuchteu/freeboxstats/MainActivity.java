@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats;
 
+import com.crashlytics.android.Crashlytics;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -106,6 +107,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Crashlytics.start(this);
 		setContentView(R.layout.activity_main);
 		
 		context = this;
