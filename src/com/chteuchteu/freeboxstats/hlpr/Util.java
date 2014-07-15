@@ -29,8 +29,12 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class Util {
-	public static String getPref(Context c, String key) {
+	public static String getPrefString(Context c, String key) {
 		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getString(key, "");
+	}
+	
+	public static boolean getPrefBoolean(Context c, String key, boolean defaultValue) {
+		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getBoolean(key, defaultValue);
 	}
 	
 	public static void setPref(Context c, String key, String value) {
@@ -42,6 +46,13 @@ public class Util {
 			editor.putString(key, value);
 			editor.commit();
 		}
+	}
+	
+	public static void setPref(Context c, String key, boolean value) {
+		SharedPreferences prefs = c.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
 	}
 	
 	public static void removePref(Context c, String key) {

@@ -1,6 +1,8 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 
@@ -64,5 +66,29 @@ public class Enums {
 		private int index;
 		Unit(int index) { this.index = index; }
 		public int getIndex() { return this.index; }
+	}
+	
+	public enum GraphPrecision {
+		Max("Maximale"), Medium("Moyenne"), Min("Minimum");
+		private String label;
+		private static final GraphPrecision defaultValue = GraphPrecision.Max;
+		GraphPrecision(String label) { this.label = label; }
+		public String getLabel() { return this.label; }
+		public String getSerializedValue() { return this.name().toLowerCase(); }
+		public static GraphPrecision get(String serializedValue) {
+			for (GraphPrecision g : GraphPrecision.values()) {
+				if (g.getSerializedValue().equals(serializedValue))
+					return g;
+			}
+			return defaultValue;
+		}
+		public static GraphPrecision get(int index) { return GraphPrecision.values()[index]; }
+		public int getIndex() { return Arrays.asList(GraphPrecision.values()).indexOf(this); }
+		public static List<String> getStringArray() {
+			ArrayList<String> list = new ArrayList<String>();
+			for (GraphPrecision g : GraphPrecision.values())
+				list.add(g.getLabel());
+			return list;
+		}
 	}
 }

@@ -11,6 +11,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 
 public class GraphsContainer {
 	private ArrayList<String> serie;
@@ -57,6 +58,21 @@ public class GraphsContainer {
 			timestampDiff = getTimestampDiff(data);
 		} catch (JSONException ex) {
 			ex.printStackTrace();
+		}
+		
+		// Adjust precision
+		switch (SettingsHelper.getInstance().getGraphPrecision()) {
+			case Max:
+				// Do nothing
+				break;
+			case Medium:
+				timestampDiff = timestampDiff*3;
+				break;
+			case Min:
+				timestampDiff = timestampDiff*4;
+				break;
+			default:
+				break;
 		}
 		
 		int lastAddedTimestamp = -1;

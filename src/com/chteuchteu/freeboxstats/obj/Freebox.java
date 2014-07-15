@@ -47,9 +47,9 @@ public class Freebox {
 	
 	public String getApiCallUrl() {
 		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
-			return Freebox.ApiUri + this.apiBaseUrl + "v1/";
+			return Freebox.ApiUri + this.apiBaseUrl + "v3/";
 		else
-			return "http://" + this.ip + this.apiBaseUrl + "v1/";
+			return "http://" + this.ip + this.apiBaseUrl + "v3/";
 	}
 	
 	public void save(Context c) throws JSONException {
@@ -66,7 +66,7 @@ public class Freebox {
 	}
 	
 	public boolean isAlreadySaved(Context context) {
-		return !Util.getPref(context, "freebox").equals("");
+		return !Util.getPrefString(context, "freebox").equals("");
 	}
 	
 	public static Freebox load(String json) throws JSONException {

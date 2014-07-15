@@ -37,4 +37,6 @@
 			</ul>
 			<br />
 		</body>]]></string>
+	<string name="settings_autorefresh">Rafraîchissement auto</string>
+	<string name="settings_graphprecision">Précision des graphiques</string>
 </resources>

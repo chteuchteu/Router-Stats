@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
@@ -42,6 +43,8 @@ public class FooBox {
 			this.context = context;
 		this.session = new Session();
 		this.currentPeriod = Period.HOUR;
+		// Init settings
+		SettingsHelper.getInstance(context);
 	}
 	
 	public static synchronized FooBox getInstance(Context context) {
@@ -64,7 +67,7 @@ public class FooBox {
 		MainActivity.displayLoadingScreen();
 		MainActivity.appLoadingStep = 0;
 		
-		String savedFreebox = Util.getPref(this.context, "freebox");
+		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		if (!savedFreebox.equals("")) {
 			FooBox.log("Loading freebox from preferences");
 			// Load freebox

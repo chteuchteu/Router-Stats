@@ -1,6 +1,5 @@
 package com.chteuchteu.freeboxstats;
 
-import com.crashlytics.android.Crashlytics;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -43,8 +42,10 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,8 +67,10 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
+import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
@@ -75,6 +78,7 @@ import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.GraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
+import com.crashlytics.android.Crashlytics;
 
 public class MainActivity extends FragmentActivity {
 	private static FragmentActivity activity;
@@ -582,7 +586,43 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				// TODO
+				LayoutInflater inflater = LayoutInflater.from(context);
+				View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) findViewById(R.id.root_layout));
+				
+				final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
+				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
+				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				settings_graphPrecision.setAdapter(adapter);
+				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
+						SettingsHelper.getInstance().setGraphPrecision(
+								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
+						
+						if (settings_autorefresh.isChecked())
+							startRefreshThread();
+						else
+							stopRefreshThread();
+						
+						refreshGraph();
+					}
+				});
+				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+						settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
+						dialog.dismiss();
+					}
+				});
+				builder.setView(dialog_layout);
+				builder.show();
 			}
 		});
 		

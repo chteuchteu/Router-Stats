@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class SessionOpener extends AsyncTask<Void, Void, Void> {
@@ -31,7 +32,8 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		if (success) {
 			MainActivity.displayGraphs();
 			MainActivity.refreshGraph();
-			MainActivity.startRefreshThread();
+			if (SettingsHelper.getInstance().getAutoRefresh())
+				MainActivity.startRefreshThread();
 		} else
 			Toast.makeText(context, "Impossible de se connecter à la Freebox...", Toast.LENGTH_SHORT).show();
 		
