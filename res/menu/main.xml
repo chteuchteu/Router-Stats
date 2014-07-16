@@ -16,9 +16,5 @@
 		android:id="@+id/action_refresh"
 		android:title="Actualiser"
 		android:showAsAction="always" />
-	<item
-		android:id="@+id/action_valider"
-		android:title="Valider"
-		android:showAsAction="always" />
 	
 </menu>

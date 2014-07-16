@@ -38,8 +38,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -100,7 +98,6 @@ public class MainActivity extends FragmentActivity {
 	private static XYPlot plot3;
 	
 	private static MenuItem refreshMenuItem;
-	private static MenuItem okMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem spinningMenuItem;
 	
@@ -443,46 +440,8 @@ public class MainActivity extends FragmentActivity {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				//Toast.makeText(context, "Pairing terminé : " + aStatus.name() + ".", Toast.LENGTH_SHORT).show();
-				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text4), CustomFont.RobotoCondensed_Light);
-				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text5), CustomFont.RobotoCondensed_Light);
 				activity.findViewById(R.id.screen2).setVisibility(View.GONE);
-				activity.findViewById(R.id.screen3).setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.firstlaunch_ok2).setOnClickListener(new OnClickListener() {
-					@SuppressWarnings("deprecation")
-					@Override
-					public void onClick(View v) {
-						activity.findViewById(R.id.screen3).setVisibility(View.GONE);
-						activity.findViewById(R.id.screen4).setVisibility(View.VISIBLE);
-						okMenuItem.setVisible(true);
-						
-						WebView webView = (WebView) activity.findViewById(R.id.webview);
-						webView.getSettings().setJavaScriptEnabled(true);
-						webView.loadUrl("http://mafreebox.freebox.fr");
-						webView.getSettings().setDefaultTextEncodingName("utf-8");
-						// Avoid flickering during scroll
-						webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-						webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-						webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-						webView.getSettings().setBuiltInZoomControls(true);
-						webView.getSettings().setSupportZoom(true);
-						webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-						webView.getSettings().setLoadWithOverviewMode(true);
-						webView.getSettings().setUseWideViewPort(true);
-						webView.setInitialScale(90);
-						
-						WebView webViewInstructions = (WebView) activity.findViewById(R.id.webview_instructions);
-						webViewInstructions.setVerticalScrollBarEnabled(true);
-						webViewInstructions.getSettings().setDefaultTextEncodingName("utf-8");
-						webViewInstructions.setBackgroundColor(0x00000000);
-						String content = activity.getString(R.string.firstlaunch_instructions);
-						webViewInstructions.loadDataWithBaseURL(null, content, "text/html", "utf-8", null);
-						// Avoid flickering during scroll
-						webViewInstructions.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-						webViewInstructions.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-						webViewInstructions.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-					}
-				});
+				displayGraphs();
 			}
 		});
 	}
@@ -510,8 +469,6 @@ public class MainActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.setVisible(false);
-		okMenuItem = menu.findItem(R.id.action_valider);
-		okMenuItem.setVisible(false);
 		periodMenuItem = menu.findItem(R.id.period);
 		periodMenuItem.setVisible(false);
 		spinningMenuItem = menu.findItem(R.id.menu_progressbar);
@@ -655,11 +612,6 @@ public class MainActivity extends FragmentActivity {
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
 				refreshGraph(true);
-				break;
-			case R.id.action_valider:
-				okMenuItem.setVisible(false);
-				activity.findViewById(R.id.screen4).setVisibility(View.GONE);
-				displayGraphs();
 				break;
 			case R.id.period:
 				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);

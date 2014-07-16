@@ -80,63 +80,6 @@
 				
 			</LinearLayout>
 			
-			<LinearLayout
-				android:id="@+id/screen3"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:orientation="vertical"
-				android:gravity="center_vertical|center_horizontal">
-				
-				<TextView
-					android:id="@+id/firstlaunch_text4"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textSize="30sp"
-					android:textColor="#ffffff"
-					android:text="@string/firstlaunch_andnow" />
-				
-				<TextView
-					android:id="@+id/firstlaunch_text5"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textSize="19sp"
-					android:textColor="#ffffff"
-					android:text="@string/firstlaunch_aut_specialaut"
-					android:layout_marginTop="20dp"
-					android:gravity="center"
-					android:padding="20dp" />
-				
-				<Button
-					android:id="@+id/firstlaunch_ok2"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="40dp"
-					android:text="@string/ok" />
-				
-			</LinearLayout>
-			
-			<LinearLayout
-				android:id="@+id/screen4"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:orientation="vertical"
-				android:gravity="center_vertical|center_horizontal">
-				
-				<WebView
-					android:id="@+id/webview"
-					android:layout_width="match_parent"
-					android:layout_height="0dp"
-					android:layout_weight="3" />
-				
-				<WebView
-					android:id="@+id/webview_instructions"
-					android:layout_width="match_parent"
-					android:layout_height="0dp"
-					android:layout_marginTop="10dp"
-					android:layout_weight="1" />
-				
-			</LinearLayout>
-			
 		</LinearLayout>
 		
 		<LinearLayout
