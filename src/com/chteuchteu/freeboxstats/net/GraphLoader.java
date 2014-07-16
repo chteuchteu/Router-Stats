@@ -14,6 +14,7 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 
+@Deprecated
 public class GraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private Period period;

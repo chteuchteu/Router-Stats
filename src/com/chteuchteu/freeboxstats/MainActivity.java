@@ -3,7 +3,6 @@ package com.chteuchteu.freeboxstats;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
-import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +64,6 @@ import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -75,7 +73,7 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.BillingService;
-import com.chteuchteu.freeboxstats.net.GraphLoader;
+import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.crashlytics.android.Crashlytics;
@@ -105,8 +103,6 @@ public class MainActivity extends FragmentActivity {
 	private static MenuItem okMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem spinningMenuItem;
-	
-	private static int loadedGraphs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -394,8 +390,7 @@ public class MainActivity extends FragmentActivity {
 				
 				plot.redraw();
 				
-				loadedGraphs++;
-				if (loadedGraphs == 3)
+				if (plotIndex == 3)
 					toggleSpinningMenuItem(false);
 			}
 		});
@@ -418,27 +413,8 @@ public class MainActivity extends FragmentActivity {
 			justRefreshed = true;
 		
 		toggleSpinningMenuItem(true);
-		loadedGraphs = 0;
 		
-		// First tab
-		ArrayList<Field> fields = new ArrayList<Field>();
-		fields.add(Field.RATE_DOWN);
-		fields.add(Field.BW_DOWN);
-		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields, 1, FieldType.DATA).execute();
-		
-		// Second tab
-		ArrayList<Field> fields2 = new ArrayList<Field>();
-		fields2.add(Field.RATE_UP);
-		fields2.add(Field.BW_UP);
-		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields2, 2, FieldType.DATA).execute();
-		
-		// Third tab
-		ArrayList<Field> fields3 = new ArrayList<Field>();
-		fields3.add(Field.CPUM);
-		fields3.add(Field.CPUB);
-		fields3.add(Field.SW);
-		fields3.add(Field.HDD);
-		new GraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod(), fields3, 3, FieldType.TEMP).execute();
+		new ManualGraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod()).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {
