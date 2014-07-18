@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -127,6 +129,7 @@ public class GraphsContainer {
 		if (fieldType == FieldType.DATA) {
 			int highestValue = GraphHelper.getHighestValue(data, fields);
 			Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
+			Log.v("", "Took " + bestUnit.name() + " for value " + highestValue);
 			if (bestUnit != defaultUnit) {
 				convertAllValues(defaultUnit, bestUnit);
 				this.valuesUnit = bestUnit;

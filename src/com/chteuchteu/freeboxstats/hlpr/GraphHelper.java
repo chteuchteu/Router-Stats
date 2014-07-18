@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
@@ -108,14 +109,17 @@ public class GraphHelper {
 	 */
 	public static Unit getBestUnitByMaxVal(int maxVal) {
 		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
+		Log.v("", "valueKo = " + valueKo);
 		if (valueKo.doubleValue() <= 600)
 			return Unit.ko;
 		
 		Number valueMo = Util.convertUnit(Unit.o, Unit.Mo, maxVal);
+		Log.v("", "valueMo = " + valueMo);
 		if (valueMo.doubleValue() <= 600)
 			return Unit.Mo;
 		
 		Number valueGo = Util.convertUnit(Unit.o, Unit.Go, maxVal);
+		Log.v("", "valueGo = " + valueGo);
 		if (valueGo.doubleValue() <= 600)
 			return Unit.Go;
 		

@@ -8,30 +8,10 @@
 	<string name="ok">OK</string>
 	<string name="firstlaunch_enattente">En attente de l\'autorisation...</string>
 	<string name="loading">Chargement...</string>
-	<string name="firstlaunch_instructions"><![CDATA[
-		<head>
-		<style>
-			p { padding: 0px 10px; }
-			body { text-align: justify; color: #555; font-size:0.95em; color:#fff; }
-		</style>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		</head>
-		<body>
-			<p>Instructions</p>
-			<ul>
-				<li>Cliquez sur <u>Continuer avec la version web</u></li>
-				<li>Connectez-vous à l\'interface d\'administration</li>
-				<li>Ouvrez l\'<i>application</i> <u>Paramètres de la Freebox</u></li>
-				<li>Ouvrez la <u>Gestion des accès</u></li>
-				<li>Accédez à l\'onglet <u>Applications</u></li>
-				<li>Dans la liste, cherchez la ligne correspondant à <u>FreeboxStats (Android)</u></li>
-				<li>Cliquez sur le bouton de modification</li>
-				<li>Cochez la case <u>Modification des réglages de la Freebox</u></li>
-				<li>Cliquez sur OK</li>
-				<li>Cliquez sur <u>Valider</u>, en haut à droite de l\'application</li>
-			</ul>
-			<br />
-		</body>]]></string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
+	<string name="premium_text"><![CDATA[&#8226;  Accédez aux stats en-dehors de votre réseau local<br />\n
+								&#8226;  Pas de publicités<br />\n
+								&#8226;  Supportez le développement de l\'application<br />\n
+								&#8226;  Un seul achat pour toutes les fonctionnalités à venir]]></string>
 </resources>

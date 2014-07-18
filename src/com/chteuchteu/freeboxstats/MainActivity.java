@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats;
 
+import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -27,6 +28,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,6 +74,7 @@ import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
+import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.crashlytics.android.Crashlytics;
@@ -278,6 +281,9 @@ public class MainActivity extends FragmentActivity {
 		plot.setPlotMargins(10, 0, 0, 10);
 		plot.setPlotPadding(0, 0, 0, 0);
 		plot.setGridPadding(4, 10, 15, 0);
+		plot.getGraphWidget().setGridPaddingRight(15);
+		plot.getGraphWidget().setGridPaddingTop(15);
+		plot.getGraphWidget().setPaddingLeft(15);
 		plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
 		plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
 		plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
@@ -314,6 +320,13 @@ public class MainActivity extends FragmentActivity {
 				plot.redraw();
 			}
 		});
+		
+		// Set range label
+		if (plotIndex == 3)
+			plot.setRangeLabel("Température (°C)");
+		
+		if (plotIndex == 3)
+			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
 	
 	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final FieldType fieldType, final Unit unit) {
@@ -381,9 +394,6 @@ public class MainActivity extends FragmentActivity {
 				// Set range label
 				if (plotIndex == 1 || plotIndex == 2)
 					plot.setRangeLabel("Débit (" + unit.name() + "/s)");
-				else
-					plot.setRangeLabel("Température (°C)");
-				
 				
 				plot.redraw();
 				
@@ -393,12 +403,17 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
-	public static void toggleSpinningMenuItem(boolean visible) {
-		spinningMenuItem.setVisible(visible);
-		if (visible)
-			spinningMenuItem.setActionView(new ProgressBar(context));
-		else
-			spinningMenuItem.setActionView(null);
+	public static void toggleSpinningMenuItem(final boolean visible) {
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				spinningMenuItem.setVisible(visible);
+				if (visible)
+					spinningMenuItem.setActionView(new ProgressBar(context));
+				else
+					spinningMenuItem.setActionView(null);
+			}
+		});
 	}
 	
 	public static void refreshGraph() { refreshGraph(false); }
@@ -451,6 +466,19 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void run() {
 				Toast.makeText(context, "Erreur lors de la connexion avec la Freebox", Toast.LENGTH_SHORT).show();
+				if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+					// App loading
+					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+					activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+					activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+							activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+							new SessionOpener(FooBox.getInstance().getFreebox()).execute();
+						}
+					});
+				}
 			}
 		});
 	}
@@ -562,7 +590,28 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_premium).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				BillingService.getInstance().launchPurchase();
+				LayoutInflater inflater = LayoutInflater.from(context);
+				View dialog_layout = inflater.inflate(R.layout.premium_dialog, (ViewGroup) findViewById(R.id.root_layout));
+				
+				final TextView tv = (TextView) dialog_layout.findViewById(R.id.premium_tv);
+				tv.setText(Html.fromHtml(context.getString(R.string.premium_text)));
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				builder.setPositiveButton("Acheter", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						BillingService.getInstance().launchPurchase();
+					}
+				});
+				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				builder.setTitle("FreeboxStats : premium");
+				builder.setView(dialog_layout);
+				builder.show();
 			}
 		});
 	}
@@ -611,7 +660,11 @@ public class MainActivity extends FragmentActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
-				refreshGraph(true);
+				if (appLoadingStep == -2) {
+					FooBox.getInstance(this).reset();
+					startActivity(new Intent(MainActivity.this, MainActivity.class));
+				} else
+					refreshGraph(true);
 				break;
 			case R.id.period:
 				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);

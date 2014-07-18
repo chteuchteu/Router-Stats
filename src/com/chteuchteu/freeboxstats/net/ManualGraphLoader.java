@@ -79,7 +79,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 					// If the session has expired / hasn't beed opened, open it
 					if (response.equals("auth_required")) {
 						cancel = false;
-						new SessionOpener(freebox, MainActivity.context).execute();
+						new SessionOpener(freebox).execute();
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

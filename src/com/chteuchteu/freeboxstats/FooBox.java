@@ -78,7 +78,7 @@ public class FooBox {
 			}
 			
 			// Open session
-			new SessionOpener(this.freebox, this.context).execute();
+			new SessionOpener(this.freebox).execute();
 			// (once done, we'll update the graph)
 			// Init BillingService
 			BillingService.getInstance(this.context);

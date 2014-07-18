@@ -101,9 +101,18 @@
 				android:text="@string/loading" />
 				
 			<ProgressBar
+				android:id="@+id/loadingprogressbar"
 				android:layout_marginTop="40dp"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" />
+			
+			<Button
+				android:id="@+id/retrybutton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Réessayer"
+				android:visibility="gone"
+				android:layout_marginTop="20dp" />
 			
 			
 		</LinearLayout>

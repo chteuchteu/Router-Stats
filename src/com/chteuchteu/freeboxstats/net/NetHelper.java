@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
@@ -289,13 +290,15 @@ public class NetHelper {
 			String uri = freebox.getApiCallUrl() + "rrd/";
 			FooBox.log("Polling uri " + uri);
 			JSONObject obj = new JSONObject();
-			obj.put("db", GraphHelper.getDbFromField(fFields.get(0)).getSerializedValue());
+			Db db = GraphHelper.getDbFromField(fFields.get(0));
+			obj.put("db", db.getSerializedValue());
 			JSONArray fields = new JSONArray();
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());
 			obj.put("fields", fields);
 			obj.put("date_start", Util.Times.getFrom(period));
-			obj.put("precision", 10);
+			if (db == Db.TEMP)
+				obj.put("precision", 10);
 			httpPost = new HttpPost(uri);
 			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
 			httpPost.setEntity(postEntity);
