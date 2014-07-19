@@ -24,6 +24,8 @@ public class BillingService {
 	private ServiceConnection mServiceConn;
 	private Context activityContext;
 	
+	private boolean isBound = false;
+	
 	public static final String ITEM_ID = "premium";
 	public static final int REQUEST_CODE = 1664;
 	
@@ -49,10 +51,13 @@ public class BillingService {
 				MainActivity.appLoadingStep++;
 				if (MainActivity.appLoadingStep == 2)
 					MainActivity.hideLoadingScreen();
-				MainActivity.isPremium();
+				if (FooBox.getInstance().isPremium())
+					MainActivity.isPremium();
+				else
+					MainActivity.isntPremium();
 			}
 		};
-		activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
+		isBound = activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
 				Context.BIND_AUTO_CREATE);
 	}
 	
@@ -85,7 +90,7 @@ public class BillingService {
 	}
 	
 	public void unbind() {
-		if (mService != null)
+		if (mService != null && isBound)
 			activityContext.unbindService(mServiceConn);
 	}
 	

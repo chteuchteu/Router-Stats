@@ -62,6 +62,11 @@ import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
+import com.applovin.adview.AppLovinAdView;
+import com.applovin.sdk.AppLovinAd;
+import com.applovin.sdk.AppLovinAdLoadListener;
+import com.applovin.sdk.AppLovinAdSize;
+import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -103,6 +108,9 @@ public class MainActivity extends FragmentActivity {
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem spinningMenuItem;
+	
+	private static AppLovinAd cachedAd;
+	private static AppLovinAdView adView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -617,7 +625,30 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void isPremium() {
-		//TODO activity.findViewById(R.id.drawer_premium).setVisibility(View.GONE);
+		activity.findViewById(R.id.drawer_premium).setVisibility(View.GONE);
+	}
+	public static void isntPremium() {
+		loadAds();
+	}
+	/**
+	 * Load the ads once we now that the user isn't premium
+	 */
+	private static void loadAds() {
+		AppLovinSdk.initializeSdk(context);
+		adView = (AppLovinAdView) activity.findViewById(R.id.ad);
+		AppLovinSdk.getInstance(context).getAdService().loadNextAd(AppLovinAdSize.BANNER, new AppLovinAdLoadListener() {
+			@Override
+			public void adReceived(AppLovinAd ad) {
+				cachedAd = ad;
+				adView.renderAd(cachedAd);
+				adView.setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			public void failedToReceiveAd(int errorCode) {
+				adView.setVisibility(View.GONE);
+			}
+		});
 	}
 	
 	@Override
@@ -644,6 +675,10 @@ public class MainActivity extends FragmentActivity {
 					JSONObject jo = new JSONObject(purchaseData);
 					/*String sku = */jo.getString("productId");
 					Toast.makeText(context, "Merci d'avoir acheté la version premium !", Toast.LENGTH_SHORT);
+					
+					// Restart things
+					FooBox.getInstance().reset();
+					startActivity(new Intent(MainActivity.this, MainActivity.class));
 				} catch (JSONException e) {
 					Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
 					e.printStackTrace();

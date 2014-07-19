@@ -22,6 +22,7 @@ public class FooBox {
 	
 	private boolean premium;
 	public static final boolean DEBUG = true;
+	public static final boolean FORCE_NOTPREMIUM = true;
 	
 	private static FooBox instance;
 	private Context context;
@@ -125,6 +126,10 @@ public class FooBox {
 	public Period getPeriod() { return this.currentPeriod; }
 	public void setPeriod(Period val) { this.currentPeriod = val; }
 	
-	public boolean isPremium() { return this.premium || DEBUG; }
+	public boolean isPremium() {
+		if (FORCE_NOTPREMIUM)
+			return false;
+		return this.premium || DEBUG;
+	}
 	public void setIsPremium(boolean val) { this.premium = val; }
 }
