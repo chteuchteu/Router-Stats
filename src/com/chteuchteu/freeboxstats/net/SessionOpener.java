@@ -1,22 +1,31 @@
 package com.chteuchteu.freeboxstats.net;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
-import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	private boolean success;
 	private Freebox freebox;
+	private Context context;
 	
-	public SessionOpener(Freebox freebox) {
+	public SessionOpener(Freebox freebox, Context context) {
 		this.freebox = freebox;
+		this.success = false;
+		this.context = context;
 	}
 	
 	@Override
 	protected Void doInBackground(Void... params) {
 		success = NetHelper.openSession(freebox);
+		
+		if (!FooBox.getInstance().isPremium()) {
+			// Init BillingService
+			BillingService.getInstance(this.context);
+		}
 		
 		return null;
 	}
@@ -28,14 +37,9 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		if (success) {
 			MainActivity.displayGraphs();
 			MainActivity.refreshGraph();
-			if (SettingsHelper.getInstance().getAutoRefresh())
-				MainActivity.startRefreshThread();
-			MainActivity.appLoadingStep++;
-			if (MainActivity.appLoadingStep == 2)
-				MainActivity.hideLoadingScreen();
-		} else {
-			MainActivity.appLoadingStep = -2;
+			
+			MainActivity.finishedLoading();
+		} else
 			MainActivity.sessionOpenFailed();
-		}
 	}
 }

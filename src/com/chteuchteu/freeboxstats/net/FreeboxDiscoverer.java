@@ -17,6 +17,7 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 			FooBox.log("Found freebox", freebox.toString());
 			FooBox.getInstance().setFreebox(freebox);
 			
+			MainActivity.hideLoadingScreen();
 			MainActivity.displayLaunchPairingScreen();
 		}
 		else

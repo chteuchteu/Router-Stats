@@ -80,6 +80,20 @@
 				
 			</LinearLayout>
 			
+			<LinearLayout
+				android:id="@+id/screen3"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				android:visibility="gone">
+				
+				<WebView
+					android:id="@+id/firstlaunch_wv"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent" />
+				
+			</LinearLayout>
+			
 		</LinearLayout>
 		
 		<LinearLayout
@@ -219,13 +233,6 @@
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
-					
-					<LinearLayout
-						android:layout_width="match_parent"
-						android:layout_height="1dp"
-						android:background="#474A53"
-						android:orientation="vertical"
-						android:visibility="gone" />
 				</LinearLayout>
 				
 				<LinearLayout
@@ -241,7 +248,8 @@
 						android:layout_height="wrap_content"
 						android:background="@drawable/drawer_dark_button"
 						android:orientation="horizontal"
-						android:padding="@dimen/item_padding" >
+						android:padding="@dimen/item_padding"
+						android:visibility="gone" >
 						
 						<ImageView
 							android:layout_width="wrap_content"
@@ -264,13 +272,65 @@
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
+				</LinearLayout>
+				
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="#2BA1E4"
+					android:orientation="vertical"
+					android:paddingLeft="0dp" >
 					
 					<LinearLayout
+						android:id="@+id/drawer_freebox"
 						android:layout_width="match_parent"
-						android:layout_height="1dp"
-						android:background="#474A53"
-						android:orientation="vertical"
-						android:visibility="gone" />
+						android:layout_height="wrap_content"
+						android:background="@drawable/drawer_dark_button"
+						android:orientation="horizontal"
+						android:padding="@dimen/item_padding"
+						android:visibility="gone" >
+						
+						<ImageView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_gravity="center_vertical"
+							android:paddingLeft="7dp"
+							android:paddingRight="15dp"
+							android:paddingTop="-5dp"
+							android:src="@drawable/action_settings" />
+						
+						<LinearLayout
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:orientation="vertical">
+							
+							<TextView
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_marginTop="3dp"
+								android:shadowColor="@color/colorPrimaryDark"
+								android:shadowDx="0"
+								android:shadowDy="1"
+								android:shadowRadius="2"
+								android:text="Freebox"
+								android:textColor="#ffffff"
+								android:textSize="@dimen/drawer_font_size" />
+							
+							<TextView
+								android:id="@+id/drawer_freebox_uri"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_marginTop="1dp"
+								android:shadowColor="@color/colorPrimaryDark"
+								android:shadowDx="0"
+								android:shadowDy="1"
+								android:shadowRadius="2"
+								android:text="Freebox"
+								android:textColor="#aaffffff"
+								android:textSize="@dimen/drawer_font_size_small" />
+							
+						</LinearLayout>
+					</LinearLayout>
 				</LinearLayout>
 			</LinearLayout>
 			

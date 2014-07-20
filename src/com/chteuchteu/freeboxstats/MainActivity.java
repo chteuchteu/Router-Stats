@@ -8,7 +8,6 @@ import java.text.ParsePosition;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,12 +36,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -95,7 +92,6 @@ public class MainActivity extends FragmentActivity {
 	private static boolean justRefreshed;
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
-	public static int appLoadingStep; // steps : 0/1/2=finished
 	
 	private static final String tab1Title = "Débit down";
 	private static final String tab2Title = "Débit up";
@@ -108,6 +104,9 @@ public class MainActivity extends FragmentActivity {
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem spinningMenuItem;
+	private static MenuItem validerMenuItem;
+	
+	public static boolean appStarted = false;
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
@@ -139,7 +138,8 @@ public class MainActivity extends FragmentActivity {
 		actionBar.setTitle("");
 		
 		
-		FooBox.getInstance(this).init();
+		FooBox.getInstance(this);
+		FooBox.getInstance().init();
 		
 		// Set font
 		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
@@ -147,26 +147,18 @@ public class MainActivity extends FragmentActivity {
 	
 	public static void displayLoadingScreen() {
 		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.RobotoCondensed_Light);
-		((Activity) context).findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 	
 	public static void hideLoadingScreen() {
-		Animation fadeOut = AnimationUtils.loadAnimation(context, android.R.anim.fade_out);
-		fadeOut.setDuration(10000);
-		final LinearLayout loadingView = (LinearLayout) ((Activity) context).findViewById(R.id.ll_loading);
-		fadeOut.setAnimationListener(new AnimationListener() {
-			@Override public void onAnimationStart(Animation animation) { }
-			@Override public void onAnimationRepeat(Animation animation) { }
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				loadingView.setVisibility(View.GONE);
-			}
-		});
-		loadingView.startAnimation(fadeOut);
+		activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
 	
-	public static void startRefreshThread() {
+	private static void startRefreshThread() {
 		if (FooBox.getInstance(context).getFreebox() == null)
+			return;
+		
+		if (!SettingsHelper.getInstance().getAutoRefresh())
 			return;
 		
 		if (refreshThread != null && refreshThread.isAlive())
@@ -321,14 +313,6 @@ public class MainActivity extends FragmentActivity {
 		plot.getLegendWidget().position(160, XLayoutStyle.ABSOLUTE_FROM_LEFT,
 				40, YLayoutStyle.ABSOLUTE_FROM_TOP, AnchorPosition.LEFT_TOP);
 		
-		plot.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				plot.getLegendWidget().setVisible(!plot.getLegendWidget().isVisible());
-				plot.redraw();
-			}
-		});
-		
 		// Set range label
 		if (plotIndex == 3)
 			plot.setRangeLabel("Température (°C)");
@@ -337,91 +321,80 @@ public class MainActivity extends FragmentActivity {
 			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
 	
+	@SuppressWarnings("serial")
 	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final FieldType fieldType, final Unit unit) {
-		((Activity) context).runOnUiThread(new Runnable() {
-			@SuppressWarnings("serial")
-			@SuppressLint("SimpleDateFormat")
-			@Override
-			public void run() {
-				XYPlot plot = null;
-				switch (plotIndex) {
-					case 1: plot = plot1; break;
-					case 2: plot = plot2; break;
-					case 3: plot = plot3; break;
-				}
-				plot.setVisibility(View.VISIBLE);
-				
-				// Reset plot
-				plot.clear();
-				plot.getSeriesSet().clear();
-				plot.removeMarkers();
-				
-				for (DataSet dSet : graphsContainer.getDataSets()) {
-					XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
-					
-					LineAndPointFormatter serieFormat = new LineAndPointFormatter();
-					serieFormat.setPointLabelFormatter(new PointLabelFormatter());
-					
-					int xmlRef = -1;
-					switch (dSet.getField()) {
-						case BW_DOWN:
-						case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
-						case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
-						case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
-						case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
-						case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
-						case SW:		xmlRef = R.xml.serieformat_sw;		break;
-						case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
-						default: break;
-					}
-					if (xmlRef != -1)
-						serieFormat.configure(context, xmlRef);
-					
-					plot.addSeries(serie, serieFormat);
-				}
-				
-				// Add markers (vertical lines)
-				for (XValueMarker m : Util.Times.getMarkers(period, graphsContainer.getSerie())) {
-					m.getLinePaint().setARGB(30, 255, 255, 255);
-					plot.addMarker(m);
-				}
-				
-				// Add labels
-				plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
-				plot.setDomainValueFormat(new Format() {
-					@Override
-					public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-						int position = ((Number) obj).intValue();
-						String label = Util.Times.getLabel(period, graphsContainer.getSerie().get(position), position, graphsContainer.getSerie());
-						return new StringBuffer(label);
-					}
-					
-					@Override public Object parseObject(String source, ParsePosition pos) { return null; }
-				});
-				
-				// Set range label
-				if (plotIndex == 1 || plotIndex == 2)
-					plot.setRangeLabel("Débit (" + unit.name() + "/s)");
-				
-				plot.redraw();
-				
-				if (plotIndex == 3)
-					toggleSpinningMenuItem(false);
+		XYPlot plot = null;
+		switch (plotIndex) {
+			case 1: plot = plot1; break;
+			case 2: plot = plot2; break;
+			case 3: plot = plot3; break;
+		}
+		plot.setVisibility(View.VISIBLE);
+		
+		// Reset plot
+		plot.clear();
+		plot.getSeriesSet().clear();
+		plot.removeMarkers();
+		
+		for (DataSet dSet : graphsContainer.getDataSets()) {
+			XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
+			
+			LineAndPointFormatter serieFormat = new LineAndPointFormatter();
+			serieFormat.setPointLabelFormatter(new PointLabelFormatter());
+			
+			int xmlRef = -1;
+			switch (dSet.getField()) {
+				case BW_DOWN:
+				case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
+				case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
+				case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
+				case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
+				case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
+				case SW:		xmlRef = R.xml.serieformat_sw;		break;
+				case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
+				default: break;
 			}
+			if (xmlRef != -1)
+				serieFormat.configure(context, xmlRef);
+			
+			plot.addSeries(serie, serieFormat);
+		}
+		
+		// Add markers (vertical lines)
+		for (XValueMarker m : Util.Times.getMarkers(period, graphsContainer.getSerie())) {
+			m.getLinePaint().setARGB(30, 255, 255, 255);
+			plot.addMarker(m);
+		}
+		
+		// Add labels
+		plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
+		plot.setDomainValueFormat(new Format() {
+			@Override
+			public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+				int position = ((Number) obj).intValue();
+				String label = Util.Times.getLabel(period, graphsContainer.getSerie().get(position), position, graphsContainer.getSerie());
+				return new StringBuffer(label);
+			}
+			
+			@Override public Object parseObject(String source, ParsePosition pos) { return null; }
 		});
+		
+		// Set range label
+		if (plotIndex == 1 || plotIndex == 2)
+			plot.setRangeLabel("Débit (" + unit.name() + "/s)");
+		
+		plot.redraw();
+		
+		if (plotIndex == 3)
+			toggleSpinningMenuItem(false);
 	}
 	
 	public static void toggleSpinningMenuItem(final boolean visible) {
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				spinningMenuItem.setVisible(visible);
-				if (visible)
-					spinningMenuItem.setActionView(new ProgressBar(context));
-				else
-					spinningMenuItem.setActionView(null);
-			}
-		});
+		spinningMenuItem.setVisible(visible);
+		if (visible)
+			spinningMenuItem.setActionView(new ProgressBar(context));
+		else
+			spinningMenuItem.setActionView(null);
 	}
 	
 	public static void refreshGraph() { refreshGraph(false); }
@@ -470,25 +443,20 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void sessionOpenFailed() {
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(context, "Erreur lors de la connexion avec la Freebox", Toast.LENGTH_SHORT).show();
-				if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
-					// App loading
-					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-					activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-					activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-							activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-							new SessionOpener(FooBox.getInstance().getFreebox()).execute();
-						}
-					});
+		Toast.makeText(context, "Erreur lors de la connexion avec la Freebox...", Toast.LENGTH_SHORT).show();
+		if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+			// App loading
+			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+			activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+					new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
 				}
-			}
-		});
+			});
+		}
 	}
 	
 	public static void graphLoadingFailed() {
@@ -498,43 +466,6 @@ public class MainActivity extends FragmentActivity {
 				Toast.makeText(context, "Erreur lors du chargement des graphiques", Toast.LENGTH_SHORT).show();
 			}
 		});
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setVisible(false);
-		periodMenuItem = menu.findItem(R.id.period);
-		periodMenuItem.setVisible(false);
-		spinningMenuItem = menu.findItem(R.id.menu_progressbar);
-		
-		return true;
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-		if (spinningMenuItem != null) // if true, that means that the app has already started
-			refreshGraph();
-		
-		if (refreshThread != null)
-			startRefreshThread();
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		
-		if (refreshThread != null)
-			stopRefreshThread();
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		BillingService.getInstance().unbind();
 	}
 	
 	private void initDrawer() {
@@ -622,14 +553,50 @@ public class MainActivity extends FragmentActivity {
 				builder.show();
 			}
 		});
+		
+		findViewById(R.id.drawer_freebox).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO
+			}
+		});
 	}
 	
-	public static void isPremium() {
-		activity.findViewById(R.id.drawer_premium).setVisibility(View.GONE);
+	public static void finishedLoading() {
+		TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
+		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
+		activity.findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
+		
+		appStarted = true;
+		
+		hideLoadingScreen();
+		
+		if (SettingsHelper.getInstance().getAutoRefresh())
+			MainActivity.startRefreshThread();
+		
+		if (!FooBox.getInstance().isPremium()) {
+			activity.findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
+			loadAds();
+		}
 	}
-	public static void isntPremium() {
-		loadAds();
+	
+	@SuppressWarnings("deprecation")
+	public static void displayNeedAuthScreen() {
+		validerMenuItem.setVisible(true);
+		
+		WebView wv = (WebView) activity.findViewById(R.id.firstlaunch_wv);
+		wv.setVerticalScrollBarEnabled(true);
+		wv.getSettings().setDefaultTextEncodingName("utf-8");
+		wv.setBackgroundColor(0x00000000);
+		wv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		wv.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+		wv.loadUrl("file:///android_asset/tuto/index.html");
+		
+		activity.findViewById(R.id.screen3).setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
 	}
+	
 	/**
 	 * Load the ads once we now that the user isn't premium
 	 */
@@ -664,6 +631,47 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		refreshMenuItem = menu.findItem(R.id.action_refresh);
+		refreshMenuItem.setVisible(false);
+		periodMenuItem = menu.findItem(R.id.period);
+		periodMenuItem.setVisible(false);
+		spinningMenuItem = menu.findItem(R.id.menu_progressbar);
+		validerMenuItem = menu.findItem(R.id.action_valider);
+		validerMenuItem.setVisible(false);
+		
+		return true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		if (appStarted) {
+			if (spinningMenuItem != null) // if true, that means that the app has already started
+				refreshGraph();
+			
+			if (refreshThread != null)
+				startRefreshThread();
+		}
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		if (refreshThread != null)
+			stopRefreshThread();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		BillingService.getInstance().unbind();
+	}
+	
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
 		if (requestCode == BillingService.REQUEST_CODE) {           
 			//int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
@@ -675,6 +683,8 @@ public class MainActivity extends FragmentActivity {
 					JSONObject jo = new JSONObject(purchaseData);
 					/*String sku = */jo.getString("productId");
 					Toast.makeText(context, "Merci d'avoir acheté la version premium !", Toast.LENGTH_SHORT);
+					
+					Util.setPref(context, "premium", true);
 					
 					// Restart things
 					FooBox.getInstance().reset();
@@ -695,11 +705,7 @@ public class MainActivity extends FragmentActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.action_refresh:
-				if (appLoadingStep == -2) {
-					FooBox.getInstance(this).reset();
-					startActivity(new Intent(MainActivity.this, MainActivity.class));
-				} else
-					refreshGraph(true);
+				refreshGraph(true);
 				break;
 			case R.id.period:
 				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
@@ -717,6 +723,12 @@ public class MainActivity extends FragmentActivity {
 					}
 				});
 				builderSingle.show();
+				break;
+			case R.id.action_valider:
+				validerMenuItem.setVisible(false);
+				activity.findViewById(R.id.screen3).setVisibility(View.GONE);
+				refreshGraph();
+				// TODO
 				break;
 			default: super.onOptionsItemSelected(item); break;
 		}

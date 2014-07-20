@@ -52,6 +52,13 @@ public class Freebox {
 			return "http://" + this.ip + this.apiBaseUrl + "v3/";
 	}
 	
+	public String getDisplayUrl() {
+		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
+			return Freebox.ApiUri.substring(7);
+		else
+			return this.ip;
+	}
+	
 	public void save(Context c) throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("uid", this.uid);

@@ -20,5 +20,6 @@
 	<dimen name="listview_horizontal_margin">0dp</dimen>
 	<dimen name="listview_inner_horizontal_margin">0dp</dimen>
 	<dimen name="drawer_font_size">26sp</dimen>
+	<dimen name="drawer_font_size_small">18sp</dimen>
 	
 </resources>

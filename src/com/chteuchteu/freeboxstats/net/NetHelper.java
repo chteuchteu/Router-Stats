@@ -17,6 +17,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,11 +37,21 @@ import com.chteuchteu.freeboxstats.obj.NetResponse;
 
 public class NetHelper {
 	/**
+	 * Get HttpParams with timeout and all
+	 */
+	private static HttpParams getHttpParams() {
+		HttpParams httpParameters = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
+		HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+		return httpParameters;
+	}
+	
+	/**
 	 * Check if a Freebox is discoverable on this network
 	 */
 	public static Freebox checkFreebox() {
 		String apiCallUri = Freebox.ApiUri + "/api_version";
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
 		try {
 			HttpGet httpget = new HttpGet(apiCallUri);
@@ -75,7 +88,7 @@ public class NetHelper {
 		NetResponse netResponse = null;
 		
 		try {
-			httpClient = new DefaultHttpClient();
+			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "login/authorize/";
 			FooBox.log("Polling uri " + uri);
 			httpPost = new HttpPost(uri);
@@ -119,7 +132,7 @@ public class NetHelper {
 		AuthorizeStatus authorizeStatus = null;
 		
 		String apiCallUri = freebox.getApiCallUrl() + "login/authorize/" + trackId;
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
 		try {
 			HttpGet httpget = new HttpGet(apiCallUri);
@@ -187,7 +200,7 @@ public class NetHelper {
 	private static NetResponse getChallenge(Freebox freebox) {
 		NetResponse netResponse = null;
 		String apiCallUri = freebox.getApiCallUrl() + "login/";
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
 		try {
 			HttpGet httpget = new HttpGet(apiCallUri);
@@ -223,7 +236,7 @@ public class NetHelper {
 		NetResponse netResponse = null;
 		
 		try {
-			httpClient = new DefaultHttpClient();
+			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "login/session/";
 			FooBox.log("Polling uri " + uri);
 			// We have to provide app_id and password
@@ -286,7 +299,7 @@ public class NetHelper {
 		NetResponse netResponse = null;
 		
 		try {
-			httpClient = new DefaultHttpClient();
+			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "rrd/";
 			FooBox.log("Polling uri " + uri);
 			JSONObject obj = new JSONObject();
@@ -341,7 +354,7 @@ public class NetHelper {
 	public static String getPublicIP(Freebox freebox) {
 		String apiCallUri = freebox.getApiCallUrl() + "connection/config";
 		FooBox.log("Polling URI " + apiCallUri);
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
 		try {
 			HttpGet httpget = new HttpGet(apiCallUri);

@@ -6,6 +6,7 @@ import org.json.JSONException;
 
 import android.os.AsyncTask;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -18,19 +19,49 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private Period period;
 	
+	private GraphsContainer graph1;
+	private GraphsContainer graph2;
+	private GraphsContainer graph3;
+	
+	private boolean graphLoadingFailed;
+	private boolean needAuth;
+	
 	public ManualGraphLoader(Freebox freebox, Period period) {
 		this.freebox = freebox;
 		this.period = period;
+		this.graph1 = null;
+		this.graph2 = null;
+		this.graph3 = null;
+		this.graphLoadingFailed = false;
+		this.needAuth = false;
 	}
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		
-		loadGraph(1);
-		loadGraph(2);
-		loadGraph(3);
+		graph1 = loadGraph(1);
+		graph2 = loadGraph(2);
+		graph3 = loadGraph(3);
 		
 		return null;
+	}
+	
+	@Override
+	protected void onPostExecute(Void res) {
+		if (graph1 != null)
+			MainActivity.loadGraph(1, graph1, period, FieldType.DATA, graph1.getValuesUnit());
+		if (graph2 != null)
+			MainActivity.loadGraph(2, graph2, period, FieldType.DATA, graph2.getValuesUnit());
+		if (graph3 != null)
+			MainActivity.loadGraph(3, graph3, period, FieldType.TEMP, graph3.getValuesUnit());
+		
+		if (graphLoadingFailed) {
+			MainActivity.toggleSpinningMenuItem(false);
+			MainActivity.graphLoadingFailed();
+		}
+		
+		if (needAuth) {
+			MainActivity.displayNeedAuthScreen();
+		}
 	}
 	
 	/**
@@ -38,7 +69,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	 * PlotIndex from 1 to 3
 	 * @param plotIndex
 	 */
-	private void loadGraph(int plotIndex) {
+	private GraphsContainer loadGraph(int plotIndex) {
 		ArrayList<Field> fields = new ArrayList<Field>();
 		FieldType fieldType = null;
 		
@@ -66,10 +97,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
-				GraphsContainer graphsContainer = new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
-				
-				MainActivity.loadGraph(plotIndex, graphsContainer, period, fieldType, graphsContainer.getValuesUnit());
-			} catch (JSONException e) { e.printStackTrace(); }
+				return new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
+			} catch (JSONException e) { e.printStackTrace(); return null; }
 		} else {
 			boolean cancel = true;
 			
@@ -79,17 +108,19 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 					// If the session has expired / hasn't beed opened, open it
 					if (response.equals("auth_required")) {
 						cancel = false;
-						new SessionOpener(freebox).execute();
+						new SessionOpener(freebox, FooBox.getInstance().getContext()).execute();
+					} else if (response.equals("insufficient_rights")) {
+						cancel = true;
+						needAuth = true;
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 			
-			if (cancel) {
-				MainActivity.toggleSpinningMenuItem(false);
-				MainActivity.graphLoadingFailed();
-			}
+			graphLoadingFailed = cancel;
+			
+			return null;
 		}
 	}
 }

@@ -8,7 +8,6 @@ import android.util.Log;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -66,7 +65,8 @@ public class FooBox {
 	 */
 	public void init() {
 		MainActivity.displayLoadingScreen();
-		MainActivity.appLoadingStep = 0;
+		
+		this.premium = Util.getPrefBoolean(context, "premium", false);
 		
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		if (!savedFreebox.equals("")) {
@@ -79,14 +79,11 @@ public class FooBox {
 			}
 			
 			// Open session
-			new SessionOpener(this.freebox).execute();
+			new SessionOpener(this.freebox, this.context).execute();
 			// (once done, we'll update the graph)
-			// Init BillingService
-			BillingService.getInstance(this.context);
 		} else {
 			// Discover Freebox
 			new FreeboxDiscoverer().execute();
-			MainActivity.appLoadingStep++;
 		}
 	}
 	
@@ -131,5 +128,5 @@ public class FooBox {
 			return false;
 		return this.premium || DEBUG;
 	}
-	public void setIsPremium(boolean val) { this.premium = val; }
+	//public void setIsPremium(boolean val) { this.premium = val; }
 }
