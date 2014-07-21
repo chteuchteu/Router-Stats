@@ -78,6 +78,7 @@ import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
+import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.crashlytics.android.Crashlytics;
 
@@ -135,7 +136,6 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
-		actionBar.setTitle("");
 		
 		
 		FooBox.getInstance(this);
@@ -418,6 +418,8 @@ public class MainActivity extends FragmentActivity {
 				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
 				
 				activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.screen1).setVisibility(View.VISIBLE);
+				
 				
 				activity.findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
 					@Override
@@ -557,7 +559,23 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_freebox).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO
+				new AlertDialog.Builder(context)
+					.setMessage("Voulez-vous dissocier l'application de cette Freebox ?")
+					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Freebox.delete(context);
+							FooBox.getInstance().reset();
+							startActivity(new Intent(MainActivity.this, MainActivity.class));
+						}
+					})
+					.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).setIcon(android.R.drawable.ic_dialog_alert)
+					.show();
 			}
 		});
 	}
@@ -580,21 +598,21 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void displayNeedAuthScreen() {
 		validerMenuItem.setVisible(true);
+		refreshMenuItem.setVisible(false);
+		periodMenuItem.setVisible(false);
 		
 		WebView wv = (WebView) activity.findViewById(R.id.firstlaunch_wv);
 		wv.setVerticalScrollBarEnabled(true);
 		wv.getSettings().setDefaultTextEncodingName("utf-8");
-		wv.setBackgroundColor(0x00000000);
-		wv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 		wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		wv.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
 		wv.loadUrl("file:///android_asset/tuto/index.html");
+		wv.setBackgroundColor(0x00000000);
 		
 		activity.findViewById(R.id.screen3).setVisibility(View.VISIBLE);
-		activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.firstlaunch).setVisibility(View.GONE);
 	}
 	
 	/**
@@ -726,9 +744,10 @@ public class MainActivity extends FragmentActivity {
 				break;
 			case R.id.action_valider:
 				validerMenuItem.setVisible(false);
+				refreshMenuItem.setVisible(true);
+				periodMenuItem.setVisible(true);
 				activity.findViewById(R.id.screen3).setVisibility(View.GONE);
 				refreshGraph();
-				// TODO
 				break;
 			default: super.onOptionsItemSelected(item); break;
 		}

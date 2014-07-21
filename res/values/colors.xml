@@ -4,4 +4,5 @@
 	<color name="colorPrimaryDarker">#2C5BBF</color>
 	<color name="colorPrimary">#4285F4</color>
 	<color name="backgroundColor">#303030</color>
+	<color name="textShadowColor">#2C5BBF</color>
 </resources>

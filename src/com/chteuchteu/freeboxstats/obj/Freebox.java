@@ -55,8 +55,11 @@ public class Freebox {
 	public String getDisplayUrl() {
 		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
 			return Freebox.ApiUri.substring(7);
-		else
+		else {
+			if (this.ip.contains(":"))
+				return this.ip.substring(0, this.ip.indexOf(':'));
 			return this.ip;
+		}
 	}
 	
 	public void save(Context c) throws JSONException {
@@ -70,6 +73,10 @@ public class Freebox {
 		obj.put("publicIp", this.ip);
 		
 		Util.setPref(c, "freebox", obj.toString());
+	}
+	
+	public static void delete(Context c) {
+		Util.removePref(c, "freebox");
 	}
 	
 	public boolean isAlreadySaved(Context context) {
