@@ -40,7 +40,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,7 +103,6 @@ public class MainActivity extends FragmentActivity {
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
-	private static MenuItem spinningMenuItem;
 	private static MenuItem validerMenuItem;
 	
 	public static boolean appStarted = false;
@@ -116,6 +114,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Crashlytics.start(this);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 		
 		context = this;
@@ -389,12 +388,8 @@ public class MainActivity extends FragmentActivity {
 			toggleSpinningMenuItem(false);
 	}
 	
-	public static void toggleSpinningMenuItem(final boolean visible) {
-		spinningMenuItem.setVisible(visible);
-		if (visible)
-			spinningMenuItem.setActionView(new ProgressBar(context));
-		else
-			spinningMenuItem.setActionView(null);
+	public static void toggleSpinningMenuItem(boolean visible) {
+		activity.setProgressBarIndeterminateVisibility(visible);
 	}
 	
 	public static void refreshGraph() { refreshGraph(false); }
@@ -655,7 +650,6 @@ public class MainActivity extends FragmentActivity {
 		refreshMenuItem.setVisible(false);
 		periodMenuItem = menu.findItem(R.id.period);
 		periodMenuItem.setVisible(false);
-		spinningMenuItem = menu.findItem(R.id.menu_progressbar);
 		validerMenuItem = menu.findItem(R.id.action_valider);
 		validerMenuItem.setVisible(false);
 		
@@ -667,8 +661,7 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		
 		if (appStarted) {
-			if (spinningMenuItem != null) // if true, that means that the app has already started
-				refreshGraph();
+			refreshGraph();
 			
 			if (refreshThread != null)
 				startRefreshThread();
