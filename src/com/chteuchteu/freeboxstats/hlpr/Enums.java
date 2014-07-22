@@ -91,4 +91,6 @@ public class Enums {
 			return list;
 		}
 	}
+	
+	public enum UpdateKind { INCREMENTAL, FULL }
 }

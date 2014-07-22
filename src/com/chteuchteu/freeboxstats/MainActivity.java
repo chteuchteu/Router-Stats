@@ -56,7 +56,6 @@ import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.sdk.AppLovinAd;
@@ -110,6 +109,8 @@ public class MainActivity extends FragmentActivity {
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
 	
+	public static boolean updating;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,6 +122,11 @@ public class MainActivity extends FragmentActivity {
 		activity = this;
 		graphsDisplayed = false;
 		justRefreshed = false;
+		updating = false;
+		
+		plot1 = null;
+		plot2 = null;
+		plot3 = null;
 		
 		initDrawer();
 		
@@ -135,7 +141,7 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
-		
+		actionBar.setTitle("");
 		
 		FooBox.getInstance(this);
 		FooBox.getInstance().init();
@@ -321,7 +327,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@SuppressWarnings("serial")
-	public static void loadGraph(final int plotIndex, final GraphsContainer graphsContainer, final Period period, final FieldType fieldType, final Unit unit) {
+	public static void loadGraph(int plotIndex, final GraphsContainer graphsContainer, final Period period, FieldType fieldType, Unit unit) {
 		XYPlot plot = null;
 		switch (plotIndex) {
 			case 1: plot = plot1; break;
@@ -336,7 +342,7 @@ public class MainActivity extends FragmentActivity {
 		plot.removeMarkers();
 		
 		for (DataSet dSet : graphsContainer.getDataSets()) {
-			XYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
+			SimpleXYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
 			
 			LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 			serieFormat.setPointLabelFormatter(new PointLabelFormatter());
@@ -396,6 +402,10 @@ public class MainActivity extends FragmentActivity {
 	public static void refreshGraph(boolean manualRefresh) {
 		if (FooBox.getInstance(context).getFreebox() == null)
 			return;
+		if (updating)
+			return;
+		
+		updating = true;
 		
 		if (manualRefresh)
 			justRefreshed = true;
@@ -433,8 +443,10 @@ public class MainActivity extends FragmentActivity {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				activity.findViewById(R.id.screen2).setVisibility(View.GONE);
-				displayGraphs();
+				if (aStatus == AuthorizeStatus.GRANTED) {
+					activity.findViewById(R.id.screen2).setVisibility(View.GONE);
+					displayGraphs();
+				}
 			}
 		});
 	}
@@ -445,12 +457,23 @@ public class MainActivity extends FragmentActivity {
 			// App loading
 			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
 			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+			final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+			chargement.setText("Connexion échouée");
+			final TextView loadingFail = (TextView) activity.findViewById(R.id.sessionfailmessage);
+			if (FooBox.getInstance().isPremium())
+				loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error).toString()));
+			else
+				loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error_notpremium).toString()));
+			
+			loadingFail.setVisibility(View.VISIBLE);
 			activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
 					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
 					new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
+					chargement.setText("Chargement...");
+					loadingFail.setVisibility(View.GONE);
 				}
 			});
 		}
@@ -493,6 +516,10 @@ public class MainActivity extends FragmentActivity {
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				settings_graphPrecision.setAdapter(adapter);
 				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
+				if (!FooBox.getInstance().isPremium()) {
+					dialog_layout.findViewById(R.id.settings_graphprecisiondisabled).setVisibility(View.VISIBLE);
+					settings_graphPrecision.setEnabled(false);
+				}
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -506,8 +533,6 @@ public class MainActivity extends FragmentActivity {
 							startRefreshThread();
 						else
 							stopRefreshThread();
-						
-						refreshGraph();
 					}
 				});
 				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -556,7 +581,7 @@ public class MainActivity extends FragmentActivity {
 			public void onClick(View v) {
 				new AlertDialog.Builder(context)
 					.setMessage("Voulez-vous dissocier l'application de cette Freebox ?")
-					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Freebox.delete(context);
@@ -564,7 +589,7 @@ public class MainActivity extends FragmentActivity {
 							startActivity(new Intent(MainActivity.this, MainActivity.class));
 						}
 					})
-					.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+					.setNegativeButton("Non", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();

@@ -47,6 +47,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
+		MainActivity.updating = false;
+		
 		if (graph1 != null)
 			MainActivity.loadGraph(1, graph1, period, FieldType.DATA, graph1.getValuesUnit());
 		if (graph2 != null)
@@ -59,9 +61,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 			MainActivity.graphLoadingFailed();
 		}
 		
-		if (needAuth) {
+		if (needAuth)
 			MainActivity.displayNeedAuthScreen();
-		}
 	}
 	
 	/**

@@ -25,22 +25,6 @@ public class GraphsContainer {
 	private FieldType fieldType;
 	public static final FieldType defaultFieldType = FieldType.DATA;
 	
-	public GraphsContainer() {
-		this.serie = new ArrayList<String>();
-		this.dataSets = new ArrayList<DataSet>();
-		this.valuesUnit = defaultUnit;
-		this.fieldType = defaultFieldType;
-		this.period = defaultPeriod;
-	}
-	
-	public GraphsContainer(ArrayList<String> serie, ArrayList<DataSet> dataSets) {
-		this.serie = serie;
-		this.dataSets = dataSets;
-		this.valuesUnit = defaultUnit;
-		this.fieldType = defaultFieldType;
-		this.period = defaultPeriod;
-	}
-	
 	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType, Period period) {
 		// Construct GraphsContainer from raw data from the Freebox
 		this.period = period;
@@ -109,6 +93,7 @@ public class GraphsContainer {
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
+					
 					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time"), this.period));
 				} else {
 					for (Field f : fields) {

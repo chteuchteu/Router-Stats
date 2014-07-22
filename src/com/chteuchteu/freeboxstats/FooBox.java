@@ -21,7 +21,7 @@ public class FooBox {
 	
 	private boolean premium;
 	public static final boolean DEBUG = true;
-	public static final boolean FORCE_NOTPREMIUM = false;
+	public static final boolean FORCE_NOTPREMIUM = true;
 	
 	private static FooBox instance;
 	private Context context;
