@@ -92,10 +92,6 @@ public class MainActivity extends FragmentActivity {
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
-	private static final String tab1Title = "Débit down";
-	private static final String tab2Title = "Débit up";
-	private static final String tab3Title = "Temp.";
-	
 	private static XYPlot plot1;
 	private static XYPlot plot2;
 	private static XYPlot plot3;
@@ -249,10 +245,10 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case 0: return tab1Title;
-				case 1: return tab2Title;
-				case 2: return tab3Title;
-				default: return "Unknown";
+				case 0: return activity.getString(R.string.tab1_name);
+				case 1: return activity.getString(R.string.tab2_name);
+				case 2: return activity.getString(R.string.tab3_name);
+				default: return "";
 			}
 		}
 	}
@@ -320,7 +316,7 @@ public class MainActivity extends FragmentActivity {
 		
 		// Set range label
 		if (plotIndex == 3)
-			plot.setRangeLabel("Température (°C)");
+			plot.setRangeLabel(activity.getString(R.string.temp));
 		
 		if (plotIndex == 3)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
@@ -386,7 +382,7 @@ public class MainActivity extends FragmentActivity {
 		
 		// Set range label
 		if (plotIndex == 1 || plotIndex == 2)
-			plot.setRangeLabel("Débit (" + unit.name() + "/s)");
+			plot.setRangeLabel(activity.getString(R.string.rate) + " (" + unit.name() + "/s)");
 		
 		plot.redraw();
 		
@@ -452,13 +448,13 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void sessionOpenFailed() {
-		Toast.makeText(context, "Erreur lors de la connexion avec la Freebox...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, R.string.freebox_connection_fail, Toast.LENGTH_SHORT).show();
 		if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
 			// App loading
 			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
 			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
 			final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
-			chargement.setText("Connexion échouée");
+			chargement.setText(R.string.connection_failed);
 			final TextView loadingFail = (TextView) activity.findViewById(R.id.sessionfailmessage);
 			if (FooBox.getInstance().isPremium())
 				loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error).toString()));
@@ -472,7 +468,7 @@ public class MainActivity extends FragmentActivity {
 					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
 					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
 					new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
-					chargement.setText("Chargement...");
+					chargement.setText(R.string.loading);
 					loadingFail.setVisibility(View.GONE);
 				}
 			});
@@ -483,7 +479,7 @@ public class MainActivity extends FragmentActivity {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(context, "Erreur lors du chargement des graphiques", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.graphs_loading_fail, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
@@ -522,7 +518,7 @@ public class MainActivity extends FragmentActivity {
 				}
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
@@ -535,7 +531,7 @@ public class MainActivity extends FragmentActivity {
 							stopRefreshThread();
 					}
 				});
-				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
@@ -558,19 +554,19 @@ public class MainActivity extends FragmentActivity {
 				tv.setText(Html.fromHtml(context.getString(R.string.premium_text)));
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setPositiveButton("Acheter", new DialogInterface.OnClickListener() {
+				builder.setPositiveButton(R.string.buy, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						BillingService.getInstance().launchPurchase();
 					}
 				});
-				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
 					}
 				});
-				builder.setTitle("FreeboxStats : premium");
+				builder.setTitle(R.string.freeboxstats_premium);
 				builder.setView(dialog_layout);
 				builder.show();
 			}
@@ -580,8 +576,8 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				new AlertDialog.Builder(context)
-					.setMessage("Voulez-vous dissocier l'application de cette Freebox ?")
-					.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+					.setMessage(R.string.dissociate)
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Freebox.delete(context);
@@ -589,7 +585,7 @@ public class MainActivity extends FragmentActivity {
 							startActivity(new Intent(MainActivity.this, MainActivity.class));
 						}
 					})
-					.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+					.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
@@ -718,7 +714,7 @@ public class MainActivity extends FragmentActivity {
 				try {
 					JSONObject jo = new JSONObject(purchaseData);
 					/*String sku = */jo.getString("productId");
-					Toast.makeText(context, "Merci d'avoir acheté la version premium !", Toast.LENGTH_SHORT);
+					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG);
 					
 					Util.setPref(context, "premium", true);
 					
@@ -726,11 +722,11 @@ public class MainActivity extends FragmentActivity {
 					FooBox.getInstance().reset();
 					startActivity(new Intent(MainActivity.this, MainActivity.class));
 				} catch (JSONException e) {
-					Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
+					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT);
 					e.printStackTrace();
 				}
 			} else
-				Toast.makeText(context, "Erreur lors de l'achat, veuillez réessayer...", Toast.LENGTH_SHORT);
+				Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT);
 		}
 	}
 	
