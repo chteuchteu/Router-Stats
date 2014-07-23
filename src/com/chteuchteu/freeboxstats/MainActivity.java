@@ -152,7 +152,12 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void hideLoadingScreen() {
-		activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
+			}
+		});
 	}
 	
 	private static void startRefreshThread() {
