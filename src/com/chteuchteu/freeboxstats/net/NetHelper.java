@@ -6,17 +6,21 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -294,7 +298,7 @@ public class NetHelper {
 			return null;
 		
 		HttpClient httpClient = null;
-		HttpPost httpPost = null;
+		HttpGet httpGet = null;
 		InputStream inStream = null;
 		NetResponse netResponse = null;
 		
@@ -302,24 +306,25 @@ public class NetHelper {
 			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "rrd/";
 			FooBox.log("Polling uri " + uri);
-			JSONObject obj = new JSONObject();
+			
 			Db db = GraphHelper.getDbFromField(fFields.get(0));
-			obj.put("db", db.getSerializedValue());
 			JSONArray fields = new JSONArray();
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());
-			obj.put("fields", fields);
-			obj.put("date_start", Util.Times.getFrom(period));
+			
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			nameValuePairs.add(new BasicNameValuePair("db", db.getSerializedValue()));
+			nameValuePairs.add(new BasicNameValuePair("fields", fields.toString()));
+			nameValuePairs.add(new BasicNameValuePair("date_start", Util.Times.getFrom(period) + ""));
 			if (db == Db.TEMP)
-				obj.put("precision", 10);
-			httpPost = new HttpPost(uri);
-			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
-			httpPost.setEntity(postEntity);
-			httpPost.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			httpPost.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+				nameValuePairs.add(new BasicNameValuePair("precision", "10"));
+			String paramsString = URLEncodedUtils.format(nameValuePairs, "UTF-8");
+			httpGet = new HttpGet(uri + "?" + paramsString);
+			httpGet.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+			httpGet.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
 			
 			// Execute and get the response
-			HttpResponse response = httpClient.execute(httpPost);
+			HttpResponse response = httpClient.execute(httpGet);
 			HttpEntity entity = response.getEntity();
 			
 			if (entity != null) {
