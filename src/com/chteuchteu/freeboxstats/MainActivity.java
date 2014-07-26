@@ -101,6 +101,7 @@ public class MainActivity extends FragmentActivity {
 	private static MenuItem validerMenuItem;
 	
 	public static boolean appStarted = false;
+	private static boolean adsLoaded;
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
@@ -119,6 +120,7 @@ public class MainActivity extends FragmentActivity {
 		graphsDisplayed = false;
 		justRefreshed = false;
 		updating = false;
+		adsLoaded = false;
 		
 		plot1 = null;
 		plot2 = null;
@@ -386,8 +388,11 @@ public class MainActivity extends FragmentActivity {
 		
 		plot.redraw();
 		
-		if (plotIndex == 3)
+		if (plotIndex == 3) {
 			toggleSpinningMenuItem(false);
+			if (!adsLoaded)
+				loadAds();
+		}
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
@@ -603,10 +608,8 @@ public class MainActivity extends FragmentActivity {
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			MainActivity.startRefreshThread();
 		
-		if (!FooBox.getInstance().isPremium()) {
+		if (!FooBox.getInstance().isPremium())
 			activity.findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
-			loadAds();
-		}
 	}
 	
 	public static void displayNeedAuthScreen() {
@@ -630,6 +633,9 @@ public class MainActivity extends FragmentActivity {
 	 * Load the ads once we now that the user isn't premium
 	 */
 	private static void loadAds() {
+		if (adsLoaded)
+			return;
+		
 		AppLovinSdk.initializeSdk(context);
 		adView = (AppLovinAdView) activity.findViewById(R.id.ad);
 		AppLovinSdk.getInstance(context).getAdService().loadNextAd(AppLovinAdSize.BANNER, new AppLovinAdLoadListener() {
