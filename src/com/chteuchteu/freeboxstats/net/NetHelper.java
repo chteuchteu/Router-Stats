@@ -53,7 +53,7 @@ public class NetHelper {
 	/**
 	 * Check if a Freebox is discoverable on this network
 	 */
-	public static Freebox checkFreebox() {
+	public static Freebox checkFreebox() { // TODO
 		String apiCallUri = Freebox.ApiUri + "/api_version";
 		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";

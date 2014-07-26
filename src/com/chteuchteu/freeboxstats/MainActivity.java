@@ -73,6 +73,7 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.BillingService;
+import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
@@ -468,6 +469,27 @@ public class MainActivity extends FragmentActivity {
 					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
 					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
 					new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
+					chargement.setText(R.string.loading);
+					loadingFail.setVisibility(View.GONE);
+				}
+			});
+		}
+	}
+	
+	public static void displayFreeboxSearchFailedScreen() {
+		if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+			final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+			chargement.setText(R.string.connection_failed);
+			final TextView loadingFail = (TextView) activity.findViewById(R.id.freeboxsearchfailmessage);
+			loadingFail.setVisibility(View.VISIBLE);
+			activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+					new FreeboxDiscoverer(context).execute();
 					chargement.setText(R.string.loading);
 					loadingFail.setVisibility(View.GONE);
 				}

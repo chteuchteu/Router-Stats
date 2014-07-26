@@ -27,6 +27,7 @@
 	<string name="loading">Chargement...</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
+	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
 	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
 	<string name="settings_graphprecisiondisabled">(désactivé dans la version gratuite)</string>
 	

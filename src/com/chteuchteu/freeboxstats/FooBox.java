@@ -83,7 +83,7 @@ public class FooBox {
 			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer().execute();
+			new FreeboxDiscoverer(context).execute();
 		}
 	}
 	
