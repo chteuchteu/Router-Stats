@@ -7,11 +7,21 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
+	private Freebox freebox;
+	
+	
 	public FreeboxDiscoverer() { }
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		Freebox freebox = NetHelper.checkFreebox();
+		freebox = NetHelper.checkFreebox();
+		
+		return null;
+	}
+	
+	@Override
+	protected void onPostExecute(Void res) {
+		super.onPostExecute(res);
 		
 		if (freebox != null) {
 			FooBox.log("Found freebox", freebox.toString());
@@ -22,12 +32,5 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 		}
 		else
 			FooBox.log("Not found", "Error while trying to find Freebox");
-		
-		return null;
-	}
-	
-	@Override
-	protected void onPostExecute(Void res) {
-		super.onPostExecute(res);
 	}
 }

@@ -104,6 +104,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (ok) {
+			MainActivity.finishedLoading();
 			// Load graphs
 			MainActivity.refreshGraph();
 		}

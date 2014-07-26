@@ -86,6 +86,8 @@ public class BillingService {
 			activityContext.unbindService(mServiceConn);
 	}
 	
+	public static boolean isLoaded() { return instance != null; }
+	
 	public static BillingService getInstance() { return instance; }
 	
 	public static synchronized BillingService getInstance(Context activityContext) {

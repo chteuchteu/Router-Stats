@@ -152,12 +152,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void hideLoadingScreen() {
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
-			}
-		});
+		activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
 	
 	private static void startRefreshThread() {
@@ -417,25 +412,20 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void displayLaunchPairingScreen() {
-		activity.runOnUiThread(new Runnable() {
+		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
+		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
+		
+		activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.screen1).setVisibility(View.VISIBLE);
+		
+		
+		activity.findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
 			@Override
-			public void run() {
-				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
-				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
-				
-				activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.screen1).setVisibility(View.VISIBLE);
-				
-				
-				activity.findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
-						activity.findViewById(R.id.screen1).setVisibility(View.GONE);
-						activity.findViewById(R.id.screen2).setVisibility(View.VISIBLE);
-						new AskForAppToken(FooBox.getInstance().getFreebox(), context).execute();
-					}
-				});
+			public void onClick(View v) {
+				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
+				activity.findViewById(R.id.screen1).setVisibility(View.GONE);
+				activity.findViewById(R.id.screen2).setVisibility(View.VISIBLE);
+				new AskForAppToken(FooBox.getInstance().getFreebox(), context).execute();
 			}
 		});
 	}
@@ -705,7 +695,8 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		BillingService.getInstance().unbind();
+		if (BillingService.isLoaded())
+			BillingService.getInstance().unbind();
 	}
 	
 	@Override

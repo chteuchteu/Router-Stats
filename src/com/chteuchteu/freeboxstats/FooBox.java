@@ -20,7 +20,7 @@ public class FooBox {
 	public static final String DEVICE_NAME = "Android";
 	
 	private boolean premium;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;
