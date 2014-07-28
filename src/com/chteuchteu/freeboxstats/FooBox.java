@@ -10,6 +10,7 @@ import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
+import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 
@@ -29,6 +30,7 @@ public class FooBox {
 	private Freebox freebox;
 	private String authToken;
 	private int trackId;
+	private ErrorsLogger errorsLogger;
 	
 	private Session session;
 	
@@ -43,6 +45,7 @@ public class FooBox {
 			this.context = context;
 		this.session = new Session();
 		this.currentPeriod = Period.HOUR;
+		this.errorsLogger = new ErrorsLogger();
 		// Init settings
 		SettingsHelper.getInstance(context);
 	}
@@ -123,10 +126,27 @@ public class FooBox {
 	public Period getPeriod() { return this.currentPeriod; }
 	public void setPeriod(Period val) { this.currentPeriod = val; }
 	
+	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
+	
 	public boolean isPremium() {
 		if (FORCE_NOTPREMIUM)
 			return false;
 		return this.premium || DEBUG;
+	}
+	public void updateIsPremium(boolean newVal) {
+		boolean valChanged = newVal != this.premium;
+		
+		if (valChanged) {
+			this.premium = newVal;
+			if (this.premium) {
+				MainActivity.dismissAds();
+			}
+		}
+		
+		// Load ads if needed
+		MainActivity.adsLoadingPrerequisite2 = true;
+		if (MainActivity.adsLoadingPrerequisite1 && MainActivity.adsLoadingPrerequisite2)
+			MainActivity.loadAds();
 	}
 	//public void setIsPremium(boolean val) { this.premium = val; }
 }

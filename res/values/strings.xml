@@ -16,6 +16,7 @@
 	<string name="yes">Oui</string>
 	<string name="no">Non</string>
 	<string name="buy">Acheter</string>
+	<string name="send_dev">Envoyer au développeur</string>
 	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
 	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer...</string>
 	<string name="freeboxstats_premium">Freebox Stats : premium</string>
@@ -30,6 +31,9 @@
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
 	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
 	<string name="settings_graphprecisiondisabled">(désactivé dans la version gratuite)</string>
+	<string name="send_errors">Envoyer le rapport d\'erreurs</string>
+	<string name="send_errors_explanation">La liste des erreurs va être envoyée au développeur. Merci d\'ajouter le plus détails possibles à propos de cette/ces erreur(s).</string>
+	<string name="send">Envoyer</string>
 	
 	<string name="premium_text"><![CDATA[&#8226;  Accédez aux stats en-dehors de votre réseau local<br />\n
 								&#8226;  Pas de publicités<br />\n

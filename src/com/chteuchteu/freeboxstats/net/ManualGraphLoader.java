@@ -104,6 +104,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 			boolean cancel = true;
 			
 			if (netResponse != null) {
+				FooBox.getInstance().getErrorsLogger().logError(netResponse);
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
 					// If the session has expired / hasn't beed opened, open it
@@ -117,6 +118,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+			} else {
+				FooBox.getInstance().getErrorsLogger().logError("GraphLoader - error 401");
 			}
 			
 			graphLoadingFailed = cancel;

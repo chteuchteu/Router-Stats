@@ -40,60 +40,60 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		NetResponse response = NetHelper.authorize(freebox, obj.toString());
 		
 		
-		if (response != null) {
-			if (response.hasSucceeded()) {
-				JSONObject res = response.getJsonObject();
+		if (response != null && response.hasSucceeded()) {
+			JSONObject res = response.getJsonObject();
+			
+			int trackId = -1;
+			
+			try {
+				trackId = res.getInt("track_id");
+				String appTocken = res.getString("app_token");
 				
-				int trackId = -1;
+				FooBox.getInstance().setTrackId(trackId);
+				FooBox.getInstance().saveAppToken(appTocken);
 				
-				try {
-					trackId = res.getInt("track_id");
-					String appTocken = res.getString("app_token");
-					
-					FooBox.getInstance().setTrackId(trackId);
-					FooBox.getInstance().saveAppToken(appTocken);
-					
-					ok = true;
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				// Watch for token status
-				boolean check = true;
-				while (check) {
-					// Check the status returned by the Freebox
-					AuthorizeStatus astatus = NetHelper.getAuthorizeStatus(freebox, trackId);
-					if (astatus == AuthorizeStatus.TIMEOUT || astatus == AuthorizeStatus.GRANTED || astatus == AuthorizeStatus.DENIED) {
-						MainActivity.pairingFinished(astatus);
-						check = false;
-					} else {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				
-				// Once done, open session
-				boolean success = NetHelper.openSession(freebox);
-				if (success) {
-					// Get Freebox IP
-					String freeboxIP = NetHelper.getPublicIP(freebox);
-					if (freeboxIP != null && !freeboxIP.equals(""))
-						freebox.setIp(freeboxIP);
-					FooBox.log("Found IP " + freeboxIP);
-					
-					// Save Freebox
+				ok = true;
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			// Watch for token status
+			boolean check = true;
+			while (check) {
+				// Check the status returned by the Freebox
+				AuthorizeStatus astatus = NetHelper.getAuthorizeStatus(freebox, trackId);
+				if (astatus == AuthorizeStatus.TIMEOUT || astatus == AuthorizeStatus.GRANTED || astatus == AuthorizeStatus.DENIED) {
+					MainActivity.pairingFinished(astatus);
+					check = false;
+				} else {
 					try {
-						freebox.save(context);
-					} catch (JSONException e) {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				else
-					MainActivity.sessionOpenFailed();
 			}
+			
+			// Once done, open session
+			boolean success = NetHelper.openSession(freebox);
+			if (success) {
+				// Get Freebox IP
+				String freeboxIP = NetHelper.getPublicIP(freebox);
+				if (freeboxIP != null && !freeboxIP.equals(""))
+					freebox.setIp(freeboxIP);
+				FooBox.log("Found IP " + freeboxIP);
+				
+				// Save Freebox
+				try {
+					freebox.save(context);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			else
+				MainActivity.sessionOpenFailed();
+		} else {
+			FooBox.getInstance().getErrorsLogger().logError(response);
 		}
 		
 		return null;

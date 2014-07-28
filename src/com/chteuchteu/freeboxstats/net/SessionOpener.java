@@ -3,7 +3,6 @@ package com.chteuchteu.freeboxstats.net;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
@@ -22,10 +21,8 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	protected Void doInBackground(Void... params) {
 		success = NetHelper.openSession(freebox);
 		
-		if (!FooBox.getInstance().isPremium()) {
-			// Init BillingService
-			BillingService.getInstance(this.context);
-		}
+		// Init BillingService
+		BillingService.getInstance(this.context);
 		
 		return null;
 	}

@@ -48,7 +48,7 @@ public class BillingService {
 				mService = IInAppBillingService.Stub.asInterface(service);
 				
 				// Binding finished : check if premium
-				//FooBox.getInstance(activityContext).setIsPremium(checkIfHasPurchased());
+				FooBox.getInstance(activityContext).updateIsPremium(checkIfHasPurchased());
 			}
 		};
 		isBound = activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
@@ -68,7 +68,7 @@ public class BillingService {
 	}
 	
 	public void displayErrorToast() {
-		Toast.makeText(activityContext, R.string.buying_failed, Toast.LENGTH_SHORT);
+		Toast.makeText(activityContext, R.string.buying_failed, Toast.LENGTH_SHORT).show();
 	}
 	
 	public boolean checkIfHasPurchased() {

@@ -24,6 +24,17 @@ public class NetResponse {
 		}
 	}
 	
+	public String getError() {
+		if (this.success)
+			return "";
+		try {
+			return this.completeResponse.getString("error_code") + " => " + this.completeResponse.getString("msg");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
 	public boolean hasSucceeded() { return this.success; }
 	public JSONObject getJsonObject() { return this.result; }
 	public JSONObject getCompleteResponse() { return this.completeResponse; }

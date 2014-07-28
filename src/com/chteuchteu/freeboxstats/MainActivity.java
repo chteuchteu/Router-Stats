@@ -8,6 +8,7 @@ import java.text.ParsePosition;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -40,6 +42,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,12 +106,18 @@ public class MainActivity extends FragmentActivity {
 	
 	public static boolean appStarted = false;
 	private static boolean adsLoaded;
+	// Loads ads when
+	//	* we know that the user isn't premium
+	//	* the graphs have loaded
+	public static boolean adsLoadingPrerequisite1 = false;
+	public static boolean adsLoadingPrerequisite2 = false;
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
 	
 	public static boolean updating;
 	
+	@SuppressLint("InlinedApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -391,9 +400,76 @@ public class MainActivity extends FragmentActivity {
 		
 		if (plotIndex == 3) {
 			toggleSpinningMenuItem(false);
-			if (!adsLoaded)
+			
+			// Load ads if needed
+			adsLoadingPrerequisite1 = true;
+			if (adsLoadingPrerequisite1 && adsLoadingPrerequisite2)
 				loadAds();
 		}
+	}
+	
+	public static void displayDebugMenuItem() {
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				activity.findViewById(R.id.drawer_debug).setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.drawer_debug).setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						LayoutInflater inflater = LayoutInflater.from(context);
+						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+						
+						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
+						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, FooBox.getInstance().getErrorsLogger().getErrors());
+						lv.setAdapter(arrayAdapter);
+						
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder.setPositiveButton(R.string.send_dev, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+								
+								new AlertDialog.Builder(context)
+								.setTitle(R.string.send_errors)
+								.setMessage(R.string.send_errors_explanation)
+								.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int which) {
+										String txt = "Explication de l'erreur rencontrée : \r\n\r\n\r\n\r\nListe des erreurs : \r\n"
+												+ FooBox.getInstance().getErrorsLogger().getErrorsString();
+										Intent send = new Intent(Intent.ACTION_SENDTO);
+										String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") + 
+												"?subject=" + Uri.encode("Rapport de bug") + 
+												"&body=" + Uri.encode(txt);
+										Uri uri = Uri.parse(uriText);
+										
+										send.setData(uri);
+										activity.startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
+									}
+								})
+								.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int which) { 
+										dialog.dismiss();
+									}
+								})
+								.setIcon(R.drawable.ic_action_error_light)
+								.show();
+							}
+						});
+						builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+						builder.setTitle(R.string.freeboxstats_premium);
+						builder.setView(dialog_layout);
+						// Avoid error when the app is closing or something
+						if (!activity.isFinishing())
+							builder.show();
+					}
+				});
+			}
+		});
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
@@ -511,6 +587,7 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
+	@SuppressLint("NewApi")
 	private void initDrawer() {
 		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -524,7 +601,8 @@ public class MainActivity extends FragmentActivity {
 		};
 		drawerLayout.setDrawerListener(drawerToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+			getActionBar().setHomeButtonEnabled(true);
 		
 		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
 			@Override
@@ -607,21 +685,21 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-					.setMessage(R.string.dissociate)
-					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Freebox.delete(context);
-							FooBox.getInstance().reset();
-							startActivity(new Intent(MainActivity.this, MainActivity.class));
-						}
-					})
-					.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					}).setIcon(android.R.drawable.ic_dialog_alert);
+				.setMessage(R.string.dissociate)
+				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Freebox.delete(context);
+						FooBox.getInstance().reset();
+						startActivity(new Intent(MainActivity.this, MainActivity.class));
+					}
+				})
+				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert);
 				// Avoid error when the app is closing or something
 				if (!MainActivity.this.isFinishing())
 					builder.show();
@@ -665,8 +743,10 @@ public class MainActivity extends FragmentActivity {
 	/**
 	 * Load the ads once we now that the user isn't premium
 	 */
-	private static void loadAds() {
+	public static void loadAds() {
 		if (FooBox.getInstance().isPremium() || adsLoaded)
+			return;
+		if (!adsLoadingPrerequisite1 && !adsLoadingPrerequisite2)
 			return;
 		
 		AppLovinSdk.initializeSdk(context);
@@ -684,6 +764,13 @@ public class MainActivity extends FragmentActivity {
 				adView.setVisibility(View.GONE);
 			}
 		});
+	}
+	
+	public static void dismissAds() {
+		if (!adsLoaded || !FooBox.getInstance().isPremium())
+			return;
+		
+		adView.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -716,6 +803,9 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		
 		if (appStarted) {
+			context = this;
+			activity = this;
+			
 			refreshGraph();
 			
 			if (refreshThread != null)
@@ -749,7 +839,7 @@ public class MainActivity extends FragmentActivity {
 				try {
 					JSONObject jo = new JSONObject(purchaseData);
 					/*String sku = */jo.getString("productId");
-					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG);
+					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
 					
 					Util.setPref(context, "premium", true);
 					
@@ -757,11 +847,11 @@ public class MainActivity extends FragmentActivity {
 					FooBox.getInstance().reset();
 					startActivity(new Intent(MainActivity.this, MainActivity.class));
 				} catch (JSONException e) {
-					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT);
+					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
 					e.printStackTrace();
 				}
 			} else
-				Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT);
+				Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
 		}
 	}
 	

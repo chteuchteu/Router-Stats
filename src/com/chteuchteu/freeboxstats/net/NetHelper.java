@@ -53,7 +53,7 @@ public class NetHelper {
 	/**
 	 * Check if a Freebox is discoverable on this network
 	 */
-	public static Freebox checkFreebox() { // TODO
+	public static Freebox checkFreebox() {
 		String apiCallUri = Freebox.ApiUri + "/api_version";
 		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
@@ -78,7 +78,6 @@ public class NetHelper {
 			JSONObject obj = new JSONObject(responseBody);
 			return new Freebox(obj.getString("uid"), obj.getString("device_name"), obj.getString("api_version"),
 					obj.getString("api_base_url"), obj.getString("device_type"));
-			
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -185,7 +184,10 @@ public class NetHelper {
 				e.printStackTrace();
 				return false;
 			}
-		} else return false;
+		} else {
+			FooBox.getInstance().getErrorsLogger().logError(response);
+			return false;
+		}
 		
 		// Begin session
 		NetResponse response2 = beginSession(freebox, challenge);
@@ -198,7 +200,10 @@ public class NetHelper {
 				e.printStackTrace();
 				return false;
 			}
-		} else return false;
+		} else {
+			FooBox.getInstance().getErrorsLogger().logError(response2);
+			return false;
+		}
 	}
 	
 	private static NetResponse getChallenge(Freebox freebox) {
