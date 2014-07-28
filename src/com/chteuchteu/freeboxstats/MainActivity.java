@@ -449,31 +449,36 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void sessionOpenFailed() {
-		Toast.makeText(context, R.string.freebox_connection_fail, Toast.LENGTH_SHORT).show();
-		if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
-			// App loading
-			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-			final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
-			chargement.setText(R.string.connection_failed);
-			final TextView loadingFail = (TextView) activity.findViewById(R.id.sessionfailmessage);
-			if (FooBox.getInstance().isPremium())
-				loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error).toString()));
-			else
-				loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error_notpremium).toString()));
-			
-			loadingFail.setVisibility(View.VISIBLE);
-			activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-					new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
-					chargement.setText(R.string.loading);
-					loadingFail.setVisibility(View.GONE);
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, R.string.freebox_connection_fail, Toast.LENGTH_SHORT).show();
+				if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+					// App loading
+					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+					activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+					final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+					chargement.setText(R.string.connection_failed);
+					final TextView loadingFail = (TextView) activity.findViewById(R.id.sessionfailmessage);
+					if (FooBox.getInstance().isPremium())
+						loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error).toString()));
+					else
+						loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error_notpremium).toString()));
+					
+					loadingFail.setVisibility(View.VISIBLE);
+					activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+							activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+							new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
+							chargement.setText(R.string.loading);
+							loadingFail.setVisibility(View.GONE);
+						}
+					});
 				}
-			});
-		}
+			}
+		});
 	}
 	
 	public static void displayFreeboxSearchFailedScreen() {
@@ -566,6 +571,8 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 		
+		context = this;
+		activity = this;
 		findViewById(R.id.drawer_premium).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -575,7 +582,7 @@ public class MainActivity extends FragmentActivity {
 				final TextView tv = (TextView) dialog_layout.findViewById(R.id.premium_tv);
 				tv.setText(Html.fromHtml(context.getString(R.string.premium_text)));
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 				builder.setPositiveButton(R.string.buy, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -590,14 +597,16 @@ public class MainActivity extends FragmentActivity {
 				});
 				builder.setTitle(R.string.freeboxstats_premium);
 				builder.setView(dialog_layout);
-				builder.show();
+				// Avoid error when the app is closing or something
+				if (!activity.isFinishing())
+					builder.show();
 			}
 		});
 		
 		findViewById(R.id.drawer_freebox).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new AlertDialog.Builder(context)
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
 					.setMessage(R.string.dissociate)
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 						@Override
@@ -612,8 +621,10 @@ public class MainActivity extends FragmentActivity {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
 						}
-					}).setIcon(android.R.drawable.ic_dialog_alert)
-					.show();
+					}).setIcon(android.R.drawable.ic_dialog_alert);
+				// Avoid error when the app is closing or something
+				if (!MainActivity.this.isFinishing())
+					builder.show();
 			}
 		});
 	}
@@ -655,7 +666,7 @@ public class MainActivity extends FragmentActivity {
 	 * Load the ads once we now that the user isn't premium
 	 */
 	private static void loadAds() {
-		if (adsLoaded)
+		if (FooBox.getInstance().isPremium() || adsLoaded)
 			return;
 		
 		AppLovinSdk.initializeSdk(context);

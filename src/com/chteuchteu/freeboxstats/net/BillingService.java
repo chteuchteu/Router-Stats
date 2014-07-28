@@ -12,9 +12,11 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.R;
 
 public class BillingService {
 	private static BillingService instance;
@@ -60,8 +62,13 @@ public class BillingService {
 			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
 		}
-		catch (RemoteException ex) { ex.printStackTrace(); }
-		catch (SendIntentException ex) { ex.printStackTrace(); }
+		catch (RemoteException ex) { ex.printStackTrace(); displayErrorToast(); }
+		catch (SendIntentException ex) { ex.printStackTrace(); displayErrorToast(); }
+		catch (NullPointerException ex) { ex.printStackTrace(); displayErrorToast(); }
+	}
+	
+	public void displayErrorToast() {
+		Toast.makeText(activityContext, R.string.buying_failed, Toast.LENGTH_SHORT);
 	}
 	
 	public boolean checkIfHasPurchased() {
@@ -82,8 +89,11 @@ public class BillingService {
 	}
 	
 	public void unbind() {
-		if (mService != null && isBound)
-			activityContext.unbindService(mServiceConn);
+		if (mService != null && isBound) {
+			try {
+				activityContext.unbindService(mServiceConn);
+			} catch (Exception ex) { ex.printStackTrace(); }
+		}
 	}
 	
 	public static boolean isLoaded() { return instance != null; }
