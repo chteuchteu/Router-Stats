@@ -19,7 +19,7 @@ public class ErrorsLogger {
 		if (netResponse != null)
 			this.errors.add(netResponse.getError());
 		else
-			this.errors.add("Unknown error...");
+			this.errors.add("Error 418");
 		MainActivity.displayDebugMenuItem();
 	}
 	public boolean hasErrors() { return this.errors.size() > 0; }
