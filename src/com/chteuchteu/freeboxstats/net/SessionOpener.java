@@ -32,9 +32,7 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (success) {
-			MainActivity.displayGraphs();
-			MainActivity.refreshGraph();
-			
+			MainActivity.appLoadingPrereq1 = true;
 			MainActivity.finishedLoading();
 		} else
 			MainActivity.sessionOpenFailed();

@@ -31,11 +31,17 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (freebox != null) {
-			FooBox.log("Found freebox", freebox.toString());
-			FooBox.getInstance().setFreebox(freebox);
-			
-			MainActivity.hideLoadingScreen();
-			MainActivity.displayLaunchPairingScreen();
+			if (freebox.isApiVersionOk()) {
+				FooBox.log("Found freebox", freebox.toString());
+				FooBox.getInstance().setFreebox(freebox);
+				
+				MainActivity.hideLoadingScreen();
+				MainActivity.displayLaunchPairingScreen();
+			} else {
+				// The API version is < 3.0 (actually, the needed version is 3.0.2
+				// 	but we only get 3.0)
+				MainActivity.displayFreeboxUpdateNeededScreenBeforePairing();
+			}
 		} else {
 			FooBox.log("Not found", "Error while trying to find Freebox");
 			MainActivity.displayFreeboxSearchFailedScreen();

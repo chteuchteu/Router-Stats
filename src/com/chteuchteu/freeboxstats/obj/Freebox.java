@@ -45,6 +45,14 @@ public class Freebox {
 				+ ", apiBaseUrl=" + this.apiBaseUrl + ", deviceType=" + this.deviceType + "]";
 	}
 	
+	public boolean isApiVersionOk() {
+		int val = Util.versionCompare(this.apiVersion, "3.0");
+		// val == 0 : OK
+		// val  < 0 => str1<str2
+		// val  > 0 => str1>str2
+		return val >= 0;
+	}
+	
 	public String getApiCallUrl() {
 		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
 			return Freebox.ApiUri + this.apiBaseUrl + "v3/";

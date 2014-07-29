@@ -104,13 +104,18 @@ public class MainActivity extends FragmentActivity {
 	private static MenuItem periodMenuItem;
 	private static MenuItem validerMenuItem;
 	
+	/**
+	 * Only display the main activity when
+	 * 	- we know if the user is premium or not
+	 *  - we are connected to the freebox
+	 */
+	public static boolean appLoadingPrereq1 = false;
+	public static boolean appLoadingPrereq2 = false;
 	public static boolean appStarted = false;
-	private static boolean adsLoaded;
-	// Loads ads when
-	//	* we know that the user isn't premium
-	//	* the graphs have loaded
-	public static boolean adsLoadingPrerequisite1 = false;
-	public static boolean adsLoadingPrerequisite2 = false;
+	/**
+	 * If the app should load ads the next time this boolean is checked
+	 */
+	private static boolean loadAds;
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
@@ -130,7 +135,7 @@ public class MainActivity extends FragmentActivity {
 		graphsDisplayed = false;
 		justRefreshed = false;
 		updating = false;
-		adsLoaded = false;
+		loadAds = false;
 		
 		plot1 = null;
 		plot2 = null;
@@ -342,6 +347,21 @@ public class MainActivity extends FragmentActivity {
 			case 2: plot = plot2; break;
 			case 3: plot = plot3; break;
 		}
+		// If the plot hasn't been inited correctly
+		if (plot == null) {
+			switch (plotIndex) {
+				case 1: initPlot(plot1, 1); break;
+				case 2: initPlot(plot2, 2); break;
+				case 3: initPlot(plot3, 3); break;
+			}
+			switch (plotIndex) {
+				case 1: plot = plot1; break;
+				case 2: plot = plot2; break;
+				case 3: plot = plot3; break;
+			}
+			if (plot == null)
+				return;
+		}
 		plot.setVisibility(View.VISIBLE);
 		
 		// Reset plot
@@ -402,8 +422,7 @@ public class MainActivity extends FragmentActivity {
 			toggleSpinningMenuItem(false);
 			
 			// Load ads if needed
-			adsLoadingPrerequisite1 = true;
-			if (adsLoadingPrerequisite1 && adsLoadingPrerequisite2)
+			if (loadAds)
 				loadAds();
 		}
 	}
@@ -558,24 +577,71 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void displayFreeboxSearchFailedScreen() {
-		if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
-			activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-			activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-			final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
-			chargement.setText(R.string.connection_failed);
-			final TextView loadingFail = (TextView) activity.findViewById(R.id.freeboxsearchfailmessage);
-			loadingFail.setVisibility(View.VISIBLE);
-			activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-					activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-					new FreeboxDiscoverer(context).execute();
-					chargement.setText(R.string.loading);
-					loadingFail.setVisibility(View.GONE);
-				}
-			});
-		}
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+				
+				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+				activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+				final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+				chargement.setText(R.string.connection_failed);
+				final TextView loadingFail = (TextView) activity.findViewById(R.id.freeboxsearchfailmessage);
+				loadingFail.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+						activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+						new FreeboxDiscoverer(context).execute();
+						chargement.setText(R.string.loading);
+						loadingFail.setVisibility(View.GONE);
+					}
+				});
+			}
+		});
+	}
+	
+	public static void displayFreeboxUpdateNeededScreen() {
+		activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+		
+		activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+		activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+		final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+		chargement.setText(R.string.connection_failed);
+		final TextView loadingFail = (TextView) activity.findViewById(R.id.updatefreeboxmessage);
+		loadingFail.setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+				chargement.setText(R.string.loading);
+				loadingFail.setVisibility(View.GONE);
+				activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
+				refreshGraph();
+			}
+		});
+	}
+	
+	public static void displayFreeboxUpdateNeededScreenBeforePairing() {
+		activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+		activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+		final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+		chargement.setText(R.string.connection_failed);
+		final TextView loadingFail = (TextView) activity.findViewById(R.id.updatefreeboxmessage);
+		loadingFail.setVisibility(View.VISIBLE);
+		
+		activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+				new FreeboxDiscoverer(context).execute();
+				chargement.setText(R.string.loading);
+				loadingFail.setVisibility(View.GONE);
+			}
+		});
 	}
 	
 	public static void graphLoadingFailed() {
@@ -708,6 +774,11 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void finishedLoading() {
+		// Only finish if we know that is premium _and_
+		//	the freebox configuration is ready and connected
+		if (!appLoadingPrereq1 || !appLoadingPrereq2)
+			return;
+		
 		TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
 		activity.findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
@@ -716,11 +787,17 @@ public class MainActivity extends FragmentActivity {
 		
 		hideLoadingScreen();
 		
+		MainActivity.displayGraphs();
+		MainActivity.refreshGraph();
+		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			MainActivity.startRefreshThread();
 		
-		if (!FooBox.getInstance().isPremium())
+		if (!FooBox.getInstance().isPremium()) {
 			activity.findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
+			// Load the ads the next time this boolean will be checked
+			loadAds = true;
+		}
 	}
 	
 	public static void displayNeedAuthScreen() {
@@ -744,9 +821,7 @@ public class MainActivity extends FragmentActivity {
 	 * Load the ads once we now that the user isn't premium
 	 */
 	public static void loadAds() {
-		if (FooBox.getInstance().isPremium() || adsLoaded)
-			return;
-		if (!adsLoadingPrerequisite1 && !adsLoadingPrerequisite2)
+		if (FooBox.getInstance().isPremium() || !loadAds)
 			return;
 		
 		AppLovinSdk.initializeSdk(context);
@@ -767,9 +842,6 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void dismissAds() {
-		if (!adsLoaded || !FooBox.getInstance().isPremium())
-			return;
-		
 		adView.setVisibility(View.GONE);
 	}
 	
@@ -837,11 +909,10 @@ public class MainActivity extends FragmentActivity {
 			
 			if (resultCode == RESULT_OK) {
 				try {
+					// We're premium
 					JSONObject jo = new JSONObject(purchaseData);
 					/*String sku = */jo.getString("productId");
 					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
-					
-					Util.setPref(context, "premium", true);
 					
 					// Restart things
 					FooBox.getInstance().reset();

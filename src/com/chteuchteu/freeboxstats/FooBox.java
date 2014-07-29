@@ -21,7 +21,7 @@ public class FooBox {
 	public static final String DEVICE_NAME = "Android";
 	
 	private boolean premium;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;
@@ -69,9 +69,10 @@ public class FooBox {
 	public void init() {
 		MainActivity.displayLoadingScreen();
 		
-		this.premium = Util.getPrefBoolean(context, "premium", false);
+		this.premium = false;
 		
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
+		
 		if (!savedFreebox.equals("")) {
 			FooBox.log("Loading freebox from preferences");
 			// Load freebox
@@ -134,19 +135,7 @@ public class FooBox {
 		return this.premium || DEBUG;
 	}
 	public void updateIsPremium(boolean newVal) {
-		boolean valChanged = newVal != this.premium;
-		
-		if (valChanged) {
-			this.premium = newVal;
-			if (this.premium) {
-				MainActivity.dismissAds();
-			}
-		}
-		
-		// Load ads if needed
-		MainActivity.adsLoadingPrerequisite2 = true;
-		if (MainActivity.adsLoadingPrerequisite1 && MainActivity.adsLoadingPrerequisite2)
-			MainActivity.loadAds();
+		this.premium = newVal;
 	}
 	//public void setIsPremium(boolean val) { this.premium = val; }
 }

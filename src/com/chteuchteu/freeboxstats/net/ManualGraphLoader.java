@@ -25,6 +25,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	private boolean graphLoadingFailed;
 	private boolean needAuth;
+	private boolean needUpdate;
 	
 	public ManualGraphLoader(Freebox freebox, Period period) {
 		this.freebox = freebox;
@@ -34,13 +35,16 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		this.graph3 = null;
 		this.graphLoadingFailed = false;
 		this.needAuth = false;
+		this.needUpdate = false;
 	}
 	
 	@Override
 	protected Void doInBackground(Void... params) {
 		graph1 = loadGraph(1);
-		graph2 = loadGraph(2);
-		graph3 = loadGraph(3);
+		if (!graphLoadingFailed) {
+			graph2 = loadGraph(2);
+			graph3 = loadGraph(3);
+		}
 		
 		return null;
 	}
@@ -49,12 +53,14 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(Void res) {
 		MainActivity.updating = false;
 		
-		if (graph1 != null)
-			MainActivity.loadGraph(1, graph1, period, FieldType.DATA, graph1.getValuesUnit());
-		if (graph2 != null)
-			MainActivity.loadGraph(2, graph2, period, FieldType.DATA, graph2.getValuesUnit());
-		if (graph3 != null)
-			MainActivity.loadGraph(3, graph3, period, FieldType.TEMP, graph3.getValuesUnit());
+		if (!graphLoadingFailed) {
+			if (graph1 != null)
+				MainActivity.loadGraph(1, graph1, period, FieldType.DATA, graph1.getValuesUnit());
+			if (graph2 != null)
+				MainActivity.loadGraph(2, graph2, period, FieldType.DATA, graph2.getValuesUnit());
+			if (graph3 != null)
+				MainActivity.loadGraph(3, graph3, period, FieldType.TEMP, graph3.getValuesUnit());
+		}
 		
 		if (graphLoadingFailed) {
 			MainActivity.toggleSpinningMenuItem(false);
@@ -63,6 +69,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		
 		if (needAuth)
 			MainActivity.displayNeedAuthScreen();
+		if (needUpdate)
+			MainActivity.displayFreeboxUpdateNeededScreen();
 	}
 	
 	/**
@@ -108,12 +116,16 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
 					// If the session has expired / hasn't beed opened, open it
+					
 					if (response.equals("auth_required")) {
 						cancel = false;
 						new SessionOpener(freebox, FooBox.getInstance().getContext()).execute();
 					} else if (response.equals("insufficient_rights")) {
 						cancel = true;
 						needAuth = true;
+					} else if (response.equals("invalid_request")) {
+						cancel = true;
+						needUpdate = true;
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.R;
 
 public class BillingService {
@@ -49,6 +50,8 @@ public class BillingService {
 				
 				// Binding finished : check if premium
 				FooBox.getInstance(activityContext).updateIsPremium(checkIfHasPurchased());
+				MainActivity.appLoadingPrereq2 = true;
+				MainActivity.finishedLoading();
 			}
 		};
 		isBound = activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,

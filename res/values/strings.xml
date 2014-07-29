@@ -28,6 +28,9 @@
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
+	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.
+		Veuillez la redémarrer afin de la mettre à jour. Sans cela, l\'application ne pourra pas accéder aux statistiques.</string>
+	<string name="freeboxupdateneededtitle">Mise à jour nécessaire</string>
 	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
 	<string name="settings_graphprecisiondisabled">(désactivé dans la version gratuite)</string>
 	<string name="send_errors">Envoyer le rapport d\'erreurs</string>
@@ -39,12 +42,12 @@
 								&#8226;  Supportez le développement de l\'application<br />\n
 								&#8226;  Un seul achat pour toutes les fonctionnalités à venir]]></string>
 	<string name="sessionopening_error"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
-								&#8226;  Votre Freebox n\'est pas à jour
+								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
 								&#8226;  Votre téléphone a un problème de connexion ]]></string>
 	<string name="sessionopening_error_notpremium"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
 								&#8226;  Vous tentez d\'accéder à votre Freebox en-dehors de votre réseau local (le pack de fonctionnalités Premium est nécessaire)<br />\n
-								&#8226;  Votre Freebox n\'est pas à jour
+								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
 								&#8226;  Votre téléphone a un problème de connexion ]]></string>
 </resources>
