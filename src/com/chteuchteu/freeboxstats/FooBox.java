@@ -13,6 +13,7 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
+import com.crashlytics.android.Crashlytics;
 
 public class FooBox {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
@@ -78,8 +79,9 @@ public class FooBox {
 			// Load freebox
 			try {
 				this.freebox = Freebox.load(savedFreebox);
-			} catch (JSONException e) {
-				e.printStackTrace();
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+				Crashlytics.logException(ex);
 			}
 			
 			// Open session
@@ -102,8 +104,9 @@ public class FooBox {
 		if (freebox.isAlreadySaved(context)) {
 			try {
 				this.freebox.save(this.context);
-			} catch (JSONException e) {
-				e.printStackTrace();
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+				Crashlytics.logException(ex);
 			}
 		}
 	}

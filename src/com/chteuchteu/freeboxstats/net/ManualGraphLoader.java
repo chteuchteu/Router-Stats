@@ -14,6 +14,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
+import com.crashlytics.android.Crashlytics;
 
 public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
@@ -107,7 +108,11 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
 				return new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
-			} catch (JSONException e) { e.printStackTrace(); return null; }
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+				Crashlytics.logException(ex);
+				return null;
+			}
 		} else {
 			boolean cancel = true;
 			
@@ -127,8 +132,10 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 						cancel = true;
 						needUpdate = true;
 					}
-				} catch (JSONException e) {
-					e.printStackTrace();
+				} catch (JSONException ex) {
+					Crashlytics.logException(ex);
+					ex.printStackTrace();
+					return null;
 				}
 			} else {
 				FooBox.getInstance().getErrorsLogger().logError("GraphLoader - error 401");

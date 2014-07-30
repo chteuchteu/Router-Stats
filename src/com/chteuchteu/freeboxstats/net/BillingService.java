@@ -67,9 +67,21 @@ public class BillingService {
 			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
 		}
-		catch (RemoteException ex) { ex.printStackTrace(); displayErrorToast(); }
-		catch (SendIntentException ex) { ex.printStackTrace(); displayErrorToast(); }
-		catch (NullPointerException ex) { ex.printStackTrace(); displayErrorToast(); }
+		catch (RemoteException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
+			displayErrorToast();
+		}
+		catch (SendIntentException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
+			displayErrorToast();
+		}
+		catch (NullPointerException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
+			displayErrorToast();
+		}
 	}
 	
 	public void displayErrorToast() {

@@ -202,9 +202,8 @@ public class MainActivity extends FragmentActivity {
 								});
 							}
 						} else return;
-					} catch (InterruptedException e) {
-						if (FooBox.DEBUG)
-							e.printStackTrace();
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
 						Thread.currentThread().interrupt();
 						return;
 					}
@@ -902,27 +901,31 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
-		if (requestCode == BillingService.REQUEST_CODE) {           
-			//int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-			String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-			//String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-			
-			if (resultCode == RESULT_OK) {
-				try {
-					// We're premium
-					JSONObject jo = new JSONObject(purchaseData);
-					/*String sku = */jo.getString("productId");
-					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
-					
-					// Restart things
-					FooBox.getInstance().reset();
-					startActivity(new Intent(MainActivity.this, MainActivity.class));
-				} catch (JSONException e) {
+		switch (requestCode) {
+			case BillingService.REQUEST_CODE:
+				//int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+				String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+				//String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+				
+				if (resultCode == RESULT_OK) {
+					try {
+						// We're premium
+						JSONObject jo = new JSONObject(purchaseData);
+						/*String sku = */jo.getString("productId");
+						Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
+						
+						// Restart things
+						FooBox.getInstance().reset();
+						startActivity(new Intent(MainActivity.this, MainActivity.class));
+					} catch (JSONException ex) {
+						Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
+						ex.printStackTrace();
+						Crashlytics.logException(ex);
+					}
+				} else
 					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
-					e.printStackTrace();
-				}
-			} else
-				Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
+				
+				break;
 		}
 	}
 	

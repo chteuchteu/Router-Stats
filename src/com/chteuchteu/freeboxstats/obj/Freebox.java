@@ -46,6 +46,9 @@ public class Freebox {
 	}
 	
 	public boolean isApiVersionOk() {
+		if (this.apiVersion.equals("null"))
+			return false;
+		
 		int val = Util.versionCompare(this.apiVersion, "3.0");
 		// val == 0 : OK
 		// val  < 0 => str1<str2

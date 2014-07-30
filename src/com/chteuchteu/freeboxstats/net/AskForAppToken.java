@@ -11,6 +11,7 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
+import com.crashlytics.android.Crashlytics;
 
 public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 	private boolean ok;
@@ -33,8 +34,9 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 			obj.put("app_name", FooBox.APP_NAME);
 			obj.put("app_version", FooBox.APP_VERSION);
 			obj.put("device_name", FooBox.DEVICE_NAME);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
 		}
 		
 		NetResponse response = NetHelper.authorize(freebox, obj.toString());
@@ -53,8 +55,9 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				FooBox.getInstance().saveAppToken(appTocken);
 				
 				ok = true;
-			} catch (JSONException e) {
-				e.printStackTrace();
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+				Crashlytics.logException(ex);
 			}
 			
 			// Watch for token status
@@ -68,8 +71,9 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				} else {
 					try {
 						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+						Crashlytics.logException(ex);
 					}
 				}
 			}
@@ -86,8 +90,9 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				// Save Freebox
 				try {
 					freebox.save(context);
-				} catch (JSONException e) {
-					e.printStackTrace();
+				} catch (JSONException ex) {
+					ex.printStackTrace();
+					Crashlytics.logException(ex);
 				}
 			}
 			else

@@ -37,6 +37,7 @@ import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
+import com.crashlytics.android.Crashlytics;
 
 
 public class NetHelper {
@@ -62,10 +63,10 @@ public class NetHelper {
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (ClientProtocolException ex) {
+			ex.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}
@@ -78,8 +79,9 @@ public class NetHelper {
 			JSONObject obj = new JSONObject(responseBody);
 			return new Freebox(obj.getString("uid"), obj.getString("device_name"), obj.getString("api_version"),
 					obj.getString("api_base_url"), obj.getString("device_type"));
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
 			return null;
 		}
 	}
@@ -114,16 +116,16 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
-		} catch (IOException exception) {
-			exception.printStackTrace();
-		} catch (JSONException exception) {
-			exception.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (JSONException ex) {
+			ex.printStackTrace();
 		} finally {
 			if (inStream != null) {
 				try {
 					inStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
 			}
 		}

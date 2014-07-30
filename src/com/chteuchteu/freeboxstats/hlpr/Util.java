@@ -412,4 +412,15 @@ public class Util {
 			return Integer.signum(vals1.length - vals2.length);
 		}
 	}
+	
+	public static double calculateAverage(ArrayList<Integer> values) {
+		if (values.isEmpty())
+			return 0;
+		
+		Integer sum = 0;
+		for (Integer value : values)
+			sum += value;
+		
+		return sum.doubleValue() / values.size();
+	}
 }

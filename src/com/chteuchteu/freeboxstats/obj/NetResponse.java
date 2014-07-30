@@ -3,6 +3,8 @@ package com.chteuchteu.freeboxstats.obj;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.crashlytics.android.Crashlytics;
+
 public class NetResponse {
 	private boolean success;
 	private JSONObject result;
@@ -19,8 +21,9 @@ public class NetResponse {
 			if (success)
 				this.result = response.getJSONObject("result");
 			
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
 		}
 	}
 	
@@ -29,8 +32,8 @@ public class NetResponse {
 			return "";
 		try {
 			return this.completeResponse.getString("error_code") + " => " + this.completeResponse.getString("msg");
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException ex) {
+			ex.printStackTrace();
 			return "";
 		}
 	}
