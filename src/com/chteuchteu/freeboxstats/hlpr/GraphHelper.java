@@ -34,6 +34,23 @@ public class GraphHelper {
 		return list;
 	}
 	
+	public static ArrayList<Integer> getTimestampsFromData(JSONArray dataArray) {
+		ArrayList<Integer> timestamps = new ArrayList<Integer>();
+		
+		for (int i=0; i<dataArray.length(); i++) {
+			try {
+				JSONObject jsonObj = dataArray.getJSONObject(i);
+				int timestamp = jsonObj.getInt("time")*1000;
+				timestamps.add(timestamp);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		return timestamps;
+	}
+	
+	@SuppressLint("SimpleDateFormat")
 	public static String getDateLabelFromTimestamp(long jsonTimestamp, Period period) {
 		try {
 			long timestamp = jsonTimestamp*1000;
@@ -56,6 +73,7 @@ public class GraphHelper {
 		}
 	}
 	
+	@SuppressLint("SimpleDateFormat")
 	public static Date getDateFromString(String s) {
 		try {
 			return new SimpleDateFormat("dd/MM").parse(s);

@@ -4,18 +4,42 @@ public class Outage {
 	private int from;
 	private int to;
 	
-	public Outage() {
-		this.from = -1;
-		this.to = -1;
-	}
+	private int outageLengthSecs;
+	private int outageLength;
+	private TimeUnit outageLengthUnit;
+	
+	public enum TimeUnit { SECONDS, MINUTES, HOURS, DAYS }
 	
 	public Outage(int from, int to) {
 		this.from = from;
 		this.to = to;
+		
+		int outageLengthTimestamp = to - from;
+		// TODO convert in seconds
+		
+		this.outageLengthSecs = outageLengthTimestamp;
+		
 	}
 	
-	public int getDuration() {
-		// TODO convert in seconds
-		return this.to - this.from;
+	public static TimeUnit getBestUnit(int outageLengthSecs) {
+		long outageLength = outageLengthSecs;
+		
+		if (outageLength <= 60)
+			return TimeUnit.SECONDS;
+		
+		outageLength = outageLength / 60;
+		if (outageLength <= 60)
+			return TimeUnit.MINUTES;
+		
+		outageLength = outageLength / 60;
+		if (outageLength <= 60)
+			return TimeUnit.HOURS;
+		
+		return TimeUnit.DAYS;
+	}
+	
+	public static long convert() {
+		// TODO convert
+		return 0;
 	}
 }

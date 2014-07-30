@@ -18,6 +18,7 @@ import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.R;
+import com.chteuchteu.freeboxstats.ex.BillingServiceBadResponse;
 import com.crashlytics.android.Crashlytics;
 
 public class BillingService {
@@ -95,10 +96,11 @@ public class BillingService {
 			if (response == 0) {
 				ArrayList<String> purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
 				FooBox.log("Purchased items : " + purchaseDataList.toString());
+				
 				return purchaseDataList.size() > 0;
 			}
 			else {
-				Crashlytics.log("Bad response from billing service - " + response);
+				Crashlytics.logException(new BillingServiceBadResponse("RESPONSE_CODE = " + response));
 				return false;
 			}
 		} catch (RemoteException ex) {

@@ -46,7 +46,8 @@ public class Freebox {
 	}
 	
 	public boolean isApiVersionOk() {
-		if (this.apiVersion.equals("null"))
+		// Sometimes, the apiVersion is "null", which can make the versionCompare fail
+		if (this.apiVersion == null || this.apiVersion.equals("null"))
 			return false;
 		
 		int val = Util.versionCompare(this.apiVersion, "3.0");
