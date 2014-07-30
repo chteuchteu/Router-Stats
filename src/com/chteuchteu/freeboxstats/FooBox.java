@@ -134,8 +134,5 @@ public class FooBox {
 			return false;
 		return this.premium || DEBUG;
 	}
-	public void updateIsPremium(boolean newVal) {
-		this.premium = newVal;
-	}
-	//public void setIsPremium(boolean val) { this.premium = val; }
+	public void setIsPremium(boolean val) { this.premium = val; }
 }

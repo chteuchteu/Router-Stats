@@ -18,6 +18,7 @@ import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.R;
+import com.crashlytics.android.Crashlytics;
 
 public class BillingService {
 	private static BillingService instance;
@@ -49,7 +50,8 @@ public class BillingService {
 				mService = IInAppBillingService.Stub.asInterface(service);
 				
 				// Binding finished : check if premium
-				FooBox.getInstance(activityContext).updateIsPremium(checkIfHasPurchased());
+				boolean premium = checkIfHasPurchased();
+				FooBox.getInstance(activityContext).setIsPremium(premium);
 				MainActivity.appLoadingPrereq2 = true;
 				MainActivity.finishedLoading();
 			}
@@ -83,10 +85,13 @@ public class BillingService {
 				FooBox.log("Purchased items : " + purchaseDataList.toString());
 				return purchaseDataList.size() > 0;
 			}
-			else
+			else {
+				Crashlytics.log("Bad response from billing service - " + response);
 				return false;
+			}
 		} catch (RemoteException ex) {
 			ex.printStackTrace();
+			Crashlytics.logException(ex);
 			return false;
 		}
 	}
@@ -100,7 +105,6 @@ public class BillingService {
 	}
 	
 	public static boolean isLoaded() { return instance != null; }
-	
 	public static BillingService getInstance() { return instance; }
 	
 	public static synchronized BillingService getInstance(Context activityContext) {
