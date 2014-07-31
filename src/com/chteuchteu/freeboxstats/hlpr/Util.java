@@ -13,6 +13,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -413,14 +414,10 @@ public class Util {
 		}
 	}
 	
-	public static double calculateAverage(ArrayList<Integer> values) {
-		if (values.isEmpty())
-			return 0;
-		
-		Integer sum = 0;
-		for (Integer value : values)
-			sum += value;
-		
-		return sum.doubleValue() / values.size();
+	public static void restartApp(Context context) {
+		Intent i = context.getPackageManager()
+				.getLaunchIntentForPackage(context.getPackageName());
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(i);
 	}
 }

@@ -128,7 +128,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 					} else if (response.equals("insufficient_rights")) {
 						cancel = true;
 						needAuth = true;
-					} else if (response.equals("invalid_request")) {
+					} else if (response.equals("invalid_request")
+							|| response.equals("invalid_api_version")) {
 						cancel = true;
 						needUpdate = true;
 					}

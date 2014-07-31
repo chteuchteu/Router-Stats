@@ -1,20 +1,20 @@
 package com.chteuchteu.freeboxstats.obj;
 
 public class Outage {
-	private int from;
-	private int to;
+	private Long from;
+	private Long to;
 	
-	private int outageLengthSecs;
-	private int outageLength;
+	private Long outageLengthSecs;
+	private Long outageLength;
 	private TimeUnit outageLengthUnit;
 	
 	public enum TimeUnit { SECONDS, MINUTES, HOURS, DAYS }
 	
-	public Outage(int from, int to) {
+	public Outage(Long from, Long to) {
 		this.from = from;
 		this.to = to;
 		
-		int outageLengthTimestamp = to - from;
+		Long outageLengthTimestamp = to - from;
 		// TODO convert in seconds
 		
 		this.outageLengthSecs = outageLengthTimestamp;
@@ -41,5 +41,10 @@ public class Outage {
 	public static long convert() {
 		// TODO convert
 		return 0;
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + this.from + " -> " + this.to + " = " + this.outageLength + "]";
 	}
 }

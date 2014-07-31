@@ -2,7 +2,10 @@ package com.chteuchteu.freeboxstats;
 
 import org.json.JSONException;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -15,13 +18,15 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 import com.crashlytics.android.Crashlytics;
 
-public class FooBox {
+public class FooBox extends Application {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
-	public static final String APP_VERSION = "1.0";
 	public static final String DEVICE_NAME = "Android";
 	
-	private boolean premium;
+	private boolean inited;
+	
+	public enum Premium { TRUE, FALSE, UNKNOWN }
+	private Premium premium;
 	public static final boolean DEBUG = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
@@ -37,13 +42,15 @@ public class FooBox {
 	
 	private Period currentPeriod;
 	
-	private FooBox(Context context) {
-		loadInstance(context);
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		this.context = getApplicationContext();
+		instance = this;
+		loadInstance();
 	}
 	
-	private void loadInstance(Context context) {
-		if (context != null)
-			this.context = context;
+	private void loadInstance() {
 		this.session = new Session();
 		this.currentPeriod = Period.HOUR;
 		this.errorsLogger = new ErrorsLogger();
@@ -51,15 +58,7 @@ public class FooBox {
 		SettingsHelper.getInstance(context);
 	}
 	
-	public static synchronized FooBox getInstance(Context context) {
-		if (instance == null)
-			instance = new FooBox(context);
-		return instance;
-	}
-	
-	public static FooBox getInstance() {
-		return getInstance(null);
-	}
+	public static synchronized FooBox getInstance() { return instance; }
 	
 	/**
 	 * Checks if a Freebox has already been discovered on this network
@@ -68,9 +67,12 @@ public class FooBox {
 	 * Then, ask for auth_token.
 	 */
 	public void init() {
+		if (this.inited)
+			return;
+		
 		MainActivity.displayLoadingScreen();
 		
-		this.premium = false;
+		this.premium = Premium.UNKNOWN;
 		
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		
@@ -91,12 +93,6 @@ public class FooBox {
 			// Discover Freebox
 			new FreeboxDiscoverer(context).execute();
 		}
-	}
-	
-	public void reset() {
-		Context context = this.context;
-		instance = null;
-		loadInstance(context);
 	}
 	
 	public void saveAppToken(String appToken) {
@@ -133,9 +129,29 @@ public class FooBox {
 	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
 	
 	public boolean isPremium() {
+		Log.v("", "isPremium() => " + this.premium.name());
 		if (FORCE_NOTPREMIUM)
 			return false;
-		return this.premium || DEBUG;
+		return this.premium == Premium.TRUE || DEBUG;
 	}
-	public void setIsPremium(boolean val) { this.premium = val; }
+	public void setIsPremium(Premium val) { this.premium = val; }
+	public void setIsPremium(boolean val) {
+		if (val)
+			this.premium = Premium.TRUE;
+		else
+			this.premium = Premium.FALSE;
+	}
+	
+	public String getAppVersion() {
+		String versionName = "";
+		
+		try {
+			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+			versionName = pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		return versionName;
+	}
 }

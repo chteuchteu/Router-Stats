@@ -4,31 +4,30 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.obj.Outage;
 import com.crashlytics.android.Crashlytics;
 
 public class OutagesHelper {
+	/**
+	 * Get all the values where BW_DOWN = 0. Then check the value before, and this value to get the time diff.
+	 * Simple as fuck.
+	 */
+	
+	
 	public static ArrayList<Outage> getOutages(JSONArray values) {
 		ArrayList<Outage> outages = new ArrayList<Outage>();
 		
 		try {
-			ArrayList<Integer> timestampsList = GraphHelper.getTimestampsFromData(values);
-			
-			// Get normal difference between two values
-			// => foreach : x = n-(n-1) => average(x)
-			int averageTimestampDiff = getAverageTimestampDiff(timestampsList);
-			
-			// Foreach value in values : check if (n-(n-1)) is > x
-			// If true : get diff and construct Outage object
-			for (int i=1; i<timestampsList.size(); i++) {
-				int from = timestampsList.get(i-1);
-				int to = timestampsList.get(i);
-				int diff = to - from;
-				// We're looking on significant outages => averageTimestampDiff*2
-				if (diff > (averageTimestampDiff*2)) {
-					Outage outage = new Outage(from, to);
-					outages.add(outage);
+			for (int i=1; i<values.length(); i++) {
+				JSONObject obj = values.getJSONObject(i);
+				int bw_down = obj.getInt("bw_down");
+				if (bw_down == 0) { // Here's an outage!
+					long timestamp1 = values.getJSONObject(i-1).getLong("time");
+					long timestamp2 = obj.getLong("time");
+					outages.add(new Outage(timestamp1, timestamp2));
 				}
 			}
 		} catch (JSONException ex) {
@@ -41,15 +40,9 @@ public class OutagesHelper {
 		
 		return outages;
 	}
-
-	private static int getAverageTimestampDiff(ArrayList<Integer> values) throws JSONException {
-		ArrayList<Integer> diffs = new ArrayList<Integer>();
-
-		for (int i=1; i<values.size(); i++) {
-			int diff = values.get(i) - values.get(i-1);
-			diffs.add(diff);
-		}
-		
-		return (int) Util.calculateAverage(diffs);
+	
+	public static void logOutages(ArrayList<Outage> outages) {
+		for (Outage outage : outages)
+			FooBox.log(outage.toString());
 	}
 }

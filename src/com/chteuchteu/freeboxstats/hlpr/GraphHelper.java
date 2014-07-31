@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
@@ -34,14 +35,15 @@ public class GraphHelper {
 		return list;
 	}
 	
-	public static ArrayList<Integer> getTimestampsFromData(JSONArray dataArray) {
-		ArrayList<Integer> timestamps = new ArrayList<Integer>();
+	public static ArrayList<Long> getTimestampsFromData(JSONArray dataArray) {
+		ArrayList<Long> timestamps = new ArrayList<Long>();
 		
 		for (int i=0; i<dataArray.length(); i++) {
 			try {
 				JSONObject jsonObj = dataArray.getJSONObject(i);
-				int timestamp = jsonObj.getInt("time")*1000;
+				long timestamp = (long) jsonObj.getLong("time")*1000;
 				timestamps.add(timestamp);
+				Log.v("", "timestamp = " + timestamp);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

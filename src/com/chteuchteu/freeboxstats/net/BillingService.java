@@ -52,7 +52,9 @@ public class BillingService {
 				
 				// Binding finished : check if premium
 				boolean premium = checkIfHasPurchased();
-				FooBox.getInstance(activityContext).setIsPremium(premium);
+				// TODO
+				premium = true;
+				FooBox.getInstance().setIsPremium(premium);
 				MainActivity.appLoadingPrereq2 = true;
 				MainActivity.finishedLoading();
 			}
@@ -113,6 +115,7 @@ public class BillingService {
 	public void unbind() {
 		if (mService != null && isBound) {
 			try {
+				isBound = false;
 				activityContext.unbindService(mServiceConn);
 			} catch (Exception ex) { ex.printStackTrace(); }
 		}

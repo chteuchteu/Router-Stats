@@ -5,9 +5,6 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -78,6 +75,7 @@ import com.chteuchteu.freeboxstats.net.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
+import com.chteuchteu.freeboxstats.net.OutagesFetcher;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -156,11 +154,10 @@ public class MainActivity extends FragmentActivity {
 		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
 		actionBar.setTitle("");
 		
-		FooBox.getInstance(this);
-		FooBox.getInstance().init();
-		
 		// Set font
 		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
+		
+		FooBox.getInstance().init();
 	}
 	
 	public static void displayLoadingScreen() {
@@ -173,7 +170,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private static void startRefreshThread() {
-		if (FooBox.getInstance(context).getFreebox() == null)
+		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		
 		if (!SettingsHelper.getInstance().getAutoRefresh())
@@ -452,7 +449,8 @@ public class MainActivity extends FragmentActivity {
 								.setMessage(R.string.send_errors_explanation)
 								.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int which) {
-										String txt = "Explication de l'erreur rencontrée : \r\n\r\n\r\n\r\nListe des erreurs : \r\n"
+										String txt = "Version de l'application : " + FooBox.getInstance().getAppVersion() + "\r\n"
+												+ "Explication de l'erreur rencontrée : \r\n\r\n\r\n\r\nListe des erreurs : \r\n"
 												+ FooBox.getInstance().getErrorsLogger().getErrorsString();
 										Intent send = new Intent(Intent.ACTION_SENDTO);
 										String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") + 
@@ -496,7 +494,7 @@ public class MainActivity extends FragmentActivity {
 	
 	public static void refreshGraph() { refreshGraph(false); }
 	public static void refreshGraph(boolean manualRefresh) {
-		if (FooBox.getInstance(context).getFreebox() == null)
+		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		if (updating)
 			return;
@@ -755,8 +753,7 @@ public class MainActivity extends FragmentActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Freebox.delete(context);
-						FooBox.getInstance().reset();
-						startActivity(new Intent(MainActivity.this, MainActivity.class));
+						Util.restartApp(context);
 					}
 				})
 				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -768,6 +765,13 @@ public class MainActivity extends FragmentActivity {
 				// Avoid error when the app is closing or something
 				if (!MainActivity.this.isFinishing())
 					builder.show();
+			}
+		});
+		
+		findViewById(R.id.drawer_outages).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				new OutagesFetcher(FooBox.getInstance().getFreebox(), Period.MONTH).execute();
 			}
 		});
 	}
@@ -903,25 +907,13 @@ public class MainActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
 		switch (requestCode) {
 			case BillingService.REQUEST_CODE:
-				//int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-				String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-				//String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-				
 				if (resultCode == RESULT_OK) {
-					try {
-						// We're premium
-						JSONObject jo = new JSONObject(purchaseData);
-						/*String sku = */jo.getString("productId");
-						Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
-						
-						// Restart things
-						FooBox.getInstance().reset();
-						startActivity(new Intent(MainActivity.this, MainActivity.class));
-					} catch (JSONException ex) {
-						Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
-						ex.printStackTrace();
-						Crashlytics.logException(ex);
-					}
+					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
+					
+					FooBox.getInstance().setIsPremium(true);
+					dismissAds();
+					TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
+					freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
 				} else
 					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
 				

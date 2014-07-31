@@ -32,7 +32,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		try {
 			obj.put("app_id", FooBox.APP_ID);
 			obj.put("app_name", FooBox.APP_NAME);
-			obj.put("app_version", FooBox.APP_VERSION);
+			obj.put("app_version", FooBox.getInstance().getAppVersion());
 			obj.put("device_name", FooBox.DEVICE_NAME);
 		} catch (JSONException ex) {
 			ex.printStackTrace();
