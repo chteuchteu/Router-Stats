@@ -23,17 +23,14 @@ public class OutagesHelper {
 		try {
 			for (int i=1; i<values.length(); i++) {
 				JSONObject obj = values.getJSONObject(i);
-				int bw_down = obj.getInt("bw_down");
-				if (bw_down == 0) { // Here's an outage!
+				
+				if (!obj.has("bw_down") || obj.getInt("bw_down") == 0) { // Here's an outage!
 					long timestamp1 = values.getJSONObject(i-1).getLong("time");
 					long timestamp2 = obj.getLong("time");
 					outages.add(new Outage(timestamp1, timestamp2));
 				}
 			}
 		} catch (JSONException ex) {
-			ex.printStackTrace();
-			Crashlytics.logException(ex);
-		} catch (Exception ex) {
 			ex.printStackTrace();
 			Crashlytics.logException(ex);
 		}

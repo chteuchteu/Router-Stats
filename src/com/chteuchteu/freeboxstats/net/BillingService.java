@@ -52,8 +52,6 @@ public class BillingService {
 				
 				// Binding finished : check if premium
 				boolean premium = checkIfHasPurchased();
-				// TODO
-				premium = true;
 				FooBox.getInstance().setIsPremium(premium);
 				MainActivity.appLoadingPrereq2 = true;
 				MainActivity.finishedLoading();

@@ -407,7 +407,8 @@
 					android:layout_height="wrap_content"
 					android:background="#2BA1E4"
 					android:orientation="vertical"
-					android:paddingLeft="0dp" >
+					android:paddingLeft="0dp"
+					android:visibility="gone" >
 					
 					<LinearLayout
 						android:id="@+id/drawer_outages"
