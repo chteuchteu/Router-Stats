@@ -11,12 +11,6 @@ import com.chteuchteu.freeboxstats.obj.Outage;
 import com.crashlytics.android.Crashlytics;
 
 public class OutagesHelper {
-	/**
-	 * Get all the values where BW_DOWN = 0. Then check the value before, and this value to get the time diff.
-	 * Simple as fuck.
-	 */
-	
-	
 	public static ArrayList<Outage> getOutages(JSONArray values) {
 		ArrayList<Outage> outages = new ArrayList<Outage>();
 		

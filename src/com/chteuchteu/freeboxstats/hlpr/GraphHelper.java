@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
@@ -43,7 +42,6 @@ public class GraphHelper {
 				JSONObject jsonObj = dataArray.getJSONObject(i);
 				long timestamp = (long) jsonObj.getLong("time")*1000;
 				timestamps.add(timestamp);
-				Log.v("", "timestamp = " + timestamp);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -55,8 +53,7 @@ public class GraphHelper {
 	@SuppressLint("SimpleDateFormat")
 	public static String getDateLabelFromTimestamp(long jsonTimestamp, Period period) {
 		try {
-			long timestamp = jsonTimestamp*1000;
-			Date date = new Date(timestamp);
+			Date date = new Date((jsonTimestamp * 1000));
 			SimpleDateFormat dateFormat;
 			if (period == Period.HOUR || period == Period.DAY)
 				dateFormat = new SimpleDateFormat("kk:mm");

@@ -85,6 +85,7 @@ import com.crashlytics.android.Crashlytics;
 public class MainActivity extends FragmentActivity {
 	private static FragmentActivity activity;
 	public static Context context;
+	private static final int NB_TABS = 3;
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
 	private ActionBarDrawerToggle drawerToggle;
@@ -227,7 +228,7 @@ public class MainActivity extends FragmentActivity {
 		viewPager.setAdapter(pagerAdapter);
 		
 		// Let Android load all the tabs at once (= disable lazy load)
-		viewPager.setOffscreenPageLimit(2);
+		viewPager.setOffscreenPageLimit(NB_TABS - 1);
 		
 		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) activity.findViewById(R.id.tabs);
 		tabs.setViewPager(viewPager);
