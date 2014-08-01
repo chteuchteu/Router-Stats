@@ -19,8 +19,8 @@ public class OutagesHelper {
 				JSONObject obj = values.getJSONObject(i);
 				
 				if (!obj.has("bw_down") || obj.getInt("bw_down") == 0) { // Here's an outage!
-					long timestamp1 = values.getJSONObject(i-1).getLong("time");
-					long timestamp2 = obj.getLong("time");
+					long timestamp1 = values.getJSONObject(i-1).getInt("time");
+					long timestamp2 = obj.getInt("time");
 					outages.add(new Outage(timestamp1, timestamp2));
 				}
 			}
@@ -35,5 +35,12 @@ public class OutagesHelper {
 	public static void logOutages(ArrayList<Outage> outages) {
 		for (Outage outage : outages)
 			FooBox.log(outage.toString());
+	}
+	
+	public static ArrayList<String> getOutagesAsString(ArrayList<Outage> outages) {
+		ArrayList<String> strings = new ArrayList<String>();
+		for (Outage outage : outages)
+			strings.add(outage.toString());
+		return strings;
 	}
 }

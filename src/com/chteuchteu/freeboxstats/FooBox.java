@@ -27,7 +27,7 @@ public class FooBox extends Application {
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;

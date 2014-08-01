@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -68,6 +69,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.hlpr.OutagesHelper;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
@@ -80,6 +82,7 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
+import com.chteuchteu.freeboxstats.obj.Outage;
 import com.crashlytics.android.Crashlytics;
 
 public class MainActivity extends FragmentActivity {
@@ -89,6 +92,7 @@ public class MainActivity extends FragmentActivity {
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
 	private ActionBarDrawerToggle drawerToggle;
+	private DrawerLayout drawerLayout;
 	
 	private static Thread refreshThread;
 	private static boolean justRefreshed;
@@ -489,6 +493,28 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
+	public static void displayOutagesDialog(ArrayList<Outage> outages) {
+		LayoutInflater inflater = LayoutInflater.from(context);
+		View dialog_layout = inflater.inflate(R.layout.outages_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+		
+		final ListView lv = (ListView) dialog_layout.findViewById(R.id.outages_lv);
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, OutagesHelper.getOutagesAsString(outages));
+		lv.setAdapter(arrayAdapter);
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.setTitle(R.string.outages);
+		builder.setView(dialog_layout);
+		// Avoid error when the app is closing or something
+		if (!activity.isFinishing())
+			builder.show();
+	}
+	
 	public static void toggleSpinningMenuItem(boolean visible) {
 		activity.setProgressBarIndeterminateVisibility(visible);
 	}
@@ -653,7 +679,7 @@ public class MainActivity extends FragmentActivity {
 	
 	@SuppressLint("NewApi")
 	private void initDrawer() {
-		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
 				R.drawable.ic_navigation_drawer, R.string.app_name, R.string.app_name) {
 			public void onDrawerClosed(View view) {
@@ -671,6 +697,7 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				drawerLayout.closeDrawers();
 				LayoutInflater inflater = LayoutInflater.from(context);
 				View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) findViewById(R.id.root_layout));
 				
@@ -718,6 +745,7 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_premium).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				drawerLayout.closeDrawers();
 				LayoutInflater inflater = LayoutInflater.from(context);
 				View dialog_layout = inflater.inflate(R.layout.premium_dialog, (ViewGroup) findViewById(R.id.root_layout));
 				
@@ -748,6 +776,7 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_freebox).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				drawerLayout.closeDrawers();
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
 				.setMessage(R.string.dissociate)
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -772,6 +801,7 @@ public class MainActivity extends FragmentActivity {
 		findViewById(R.id.drawer_outages).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				drawerLayout.closeDrawers();
 				new OutagesFetcher(FooBox.getInstance().getFreebox(), Period.MONTH).execute();
 			}
 		});

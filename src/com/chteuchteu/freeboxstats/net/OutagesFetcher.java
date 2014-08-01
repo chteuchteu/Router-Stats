@@ -7,6 +7,7 @@ import org.json.JSONException;
 
 import android.os.AsyncTask;
 
+import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.OutagesHelper;
@@ -17,6 +18,7 @@ import com.chteuchteu.freeboxstats.obj.Outage;
 public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private Period period;
+	private ArrayList<Outage> outages;
 	
 	public OutagesFetcher(Freebox freebox, Period period) {
 		this.freebox = freebox;
@@ -26,16 +28,14 @@ public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... params) {
 		
-		ArrayList<Outage> outages = loadData();
-		
-		if (outages != null)
-			OutagesHelper.logOutages(outages);
+		this.outages = loadData();
 		
 		return null;
 	}
 	
 	@Override
 	protected void onPostExecute(Void res) {
+		MainActivity.displayOutagesDialog(outages);
 	}
 	
 	/**
