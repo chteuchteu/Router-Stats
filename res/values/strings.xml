@@ -50,4 +50,10 @@
 								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
 								&#8226;  Votre téléphone a un problème de connexion ]]></string>
+								
+	<string name="settings">Paramètres</string>
+	<string name="premium">Premium</string>
+	<string name="freebox">Freebox</string>
+	<string name="debug">Debug</string>
+	<string name="outages">Coupures</string>
 </resources>

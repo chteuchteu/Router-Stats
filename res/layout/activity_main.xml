@@ -259,7 +259,7 @@
 							android:shadowDx="0"
 							android:shadowDy="1"
 							android:shadowRadius="2"
-							android:text="Paramètres"
+							android:text="@string/settings"
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
@@ -298,7 +298,7 @@
 							android:shadowDx="0"
 							android:shadowDy="1"
 							android:shadowRadius="2"
-							android:text="Premium"
+							android:text="@string/premium"
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
@@ -342,7 +342,7 @@
 								android:shadowDx="0"
 								android:shadowDy="1"
 								android:shadowRadius="2"
-								android:text="Freebox"
+								android:text="@string/freebox"
 								android:textColor="#ffffff"
 								android:textSize="@dimen/drawer_font_size" />
 							
@@ -355,7 +355,6 @@
 								android:shadowDx="0"
 								android:shadowDy="1"
 								android:shadowRadius="3"
-								android:text="Freebox"
 								android:textColor="#ccffffff"
 								android:textSize="@dimen/drawer_font_size_small" />
 							
@@ -396,7 +395,7 @@
 							android:shadowDx="0"
 							android:shadowDy="1"
 							android:shadowRadius="2"
-							android:text="Debug"
+							android:text="@string/debug"
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
@@ -415,7 +414,8 @@
 						android:layout_height="wrap_content"
 						android:background="@drawable/drawer_dark_button"
 						android:orientation="horizontal"
-						android:padding="@dimen/item_padding" >
+						android:padding="@dimen/item_padding"
+						android:visibility="gone" >
 						
 						<ImageView
 							android:layout_width="wrap_content"
@@ -434,7 +434,7 @@
 							android:shadowDx="0"
 							android:shadowDy="1"
 							android:shadowRadius="2"
-							android:text="Coupures"
+							android:text="@string/outages"
 							android:textColor="#ffffff"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>

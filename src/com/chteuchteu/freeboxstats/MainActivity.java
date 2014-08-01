@@ -775,6 +775,7 @@ public class MainActivity extends FragmentActivity {
 				new OutagesFetcher(FooBox.getInstance().getFreebox(), Period.MONTH).execute();
 			}
 		});
+		//findViewById(R.id.drawer_outages).setVisibility(View.VISIBLE);
 	}
 	
 	public static void finishedLoading() {
