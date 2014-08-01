@@ -158,7 +158,7 @@ public class MainActivity extends FragmentActivity {
 		// Set font
 		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
 		
-		FooBox.getInstance().init();
+		FooBox.getInstance().init(this);
 	}
 	
 	public static void displayLoadingScreen() {

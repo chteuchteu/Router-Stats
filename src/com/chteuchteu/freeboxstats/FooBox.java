@@ -27,7 +27,7 @@ public class FooBox extends Application {
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;
@@ -45,7 +45,6 @@ public class FooBox extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		this.context = getApplicationContext();
 		instance = this;
 		loadInstance();
 	}
@@ -55,7 +54,7 @@ public class FooBox extends Application {
 		this.currentPeriod = Period.HOUR;
 		this.errorsLogger = new ErrorsLogger();
 		// Init settings
-		SettingsHelper.getInstance(context);
+		SettingsHelper.getInstance(getApplicationContext());
 	}
 	
 	public static synchronized FooBox getInstance() { return instance; }
@@ -66,9 +65,11 @@ public class FooBox extends Application {
 	 * 		-> ask for app_token
 	 * Then, ask for auth_token.
 	 */
-	public void init() {
+	public void init(Context context) {
 		if (this.inited)
 			return;
+		
+		this.context = context;
 		
 		MainActivity.displayLoadingScreen();
 		
