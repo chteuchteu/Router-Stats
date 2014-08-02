@@ -61,4 +61,6 @@
 	<string name="since">Du</string>
 	<string name="to">au</string>
 	<string name="at">à</string>
+	<string name="goodnews">Bonne nouvelle :)</string>
+	<string name="outages_nooutage">Aucune coupure entre le FROM et le TO</string>
 </resources>

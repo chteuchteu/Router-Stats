@@ -38,25 +38,25 @@ public class Outage {
 	
 	public String getFromDateString() {
 		Date date = new Date(this.from * 1000);
-		SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
 		return formater.format(date);
 	}
 	
 	public String getFromHourString() {
 		Date date = new Date(this.from * 1000);
-		SimpleDateFormat formater = new SimpleDateFormat("hh:mm:ss");
+		SimpleDateFormat formater = new SimpleDateFormat("hh:mm");
 		return formater.format(date);
 	}
 	
 	public String getToDateString() {
 		Date date = new Date(this.to * 1000);
-		SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
 		return formater.format(date);
 	}
 	
 	public String getToHourString() {
 		Date date = new Date(this.to * 1000);
-		SimpleDateFormat formater = new SimpleDateFormat("hh:mm:ss");
+		SimpleDateFormat formater = new SimpleDateFormat("hh:mm");
 		return formater.format(date);
 	}
 }

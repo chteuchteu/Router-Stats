@@ -5,8 +5,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.crypto.Mac;
@@ -158,6 +160,19 @@ public class Util {
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			return cal.getTimeInMillis() / 1000;
+		}
+		
+		public static String getDate_oneMonthAgo() {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.MONTH, -1);
+			SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
+			return formater.format(calendar.getTime());
+		}
+		
+		public static String getDate_today() {
+			Date date = new Date();
+			SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
+			return formater.format(date);
 		}
 		
 		/**

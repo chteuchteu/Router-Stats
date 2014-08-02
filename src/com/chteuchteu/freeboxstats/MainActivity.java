@@ -40,7 +40,6 @@ import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -497,9 +496,6 @@ public class MainActivity extends FragmentActivity {
 		
 		Util.Fonts.setFont(context, (TextView) dialog_layout.findViewById(R.id.outages_text), CustomFont.RobotoCondensed_Light);
 		
-		ListView lv = (ListView) dialog_layout.findViewById(R.id.outages_lv);
-		ProgressBar pb = (ProgressBar) dialog_layout.findViewById(R.id.outages_loading);
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 			@Override
@@ -512,7 +508,7 @@ public class MainActivity extends FragmentActivity {
 		if (!activity.isFinishing())
 			builder.show();
 		
-		new OutagesFetcher(this, FooBox.getInstance().getFreebox(), Period.MONTH, lv, pb).execute();
+		new OutagesFetcher(this, FooBox.getInstance().getFreebox(), Period.MONTH, dialog_layout).execute();
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
