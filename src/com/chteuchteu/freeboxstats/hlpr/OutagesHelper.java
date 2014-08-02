@@ -43,4 +43,13 @@ public class OutagesHelper {
 			strings.add(outage.toString());
 		return strings;
 	}
+	
+	public static ArrayList<Outage> reverseOrder(ArrayList<Outage> outages) {
+		ArrayList<Outage> newList = new ArrayList<Outage>();
+		
+		for (int i=outages.size()-1; i>= 0; i--)
+			newList.add(outages.get(i));
+		
+		return newList;
+	}
 }

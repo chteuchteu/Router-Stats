@@ -68,6 +68,16 @@ public class BillingService {
 			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
 		}
+		catch (Exception ex) { launchPurchase_retry(); }
+	}
+	
+	public void launchPurchase_retry() {
+		try {
+			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
+			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+			MainActivity.activity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+		}
 		catch (RemoteException ex) {
 			ex.printStackTrace();
 			Crashlytics.logException(ex);

@@ -15,6 +15,7 @@
 	<string name="yes">Oui</string>
 	<string name="no">Non</string>
 	<string name="buy">Acheter</string>
+	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
 	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
 	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer...</string>
@@ -56,4 +57,8 @@
 	<string name="freebox">Freebox</string>
 	<string name="debug">Debug</string>
 	<string name="outages">Coupures</string>
+	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté.</string>
+	<string name="since">Du</string>
+	<string name="to">au</string>
+	<string name="at">à</string>
 </resources>

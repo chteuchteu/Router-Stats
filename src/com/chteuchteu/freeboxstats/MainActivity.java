@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
-import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -41,6 +40,7 @@ import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,7 +69,6 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
-import com.chteuchteu.freeboxstats.hlpr.OutagesHelper;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
@@ -82,11 +81,10 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
-import com.chteuchteu.freeboxstats.obj.Outage;
 import com.crashlytics.android.Crashlytics;
 
 public class MainActivity extends FragmentActivity {
-	private static FragmentActivity activity;
+	public static FragmentActivity activity;
 	public static Context context;
 	private static final int NB_TABS = 3;
 	private static MainActivityPagerAdapter pagerAdapter;
@@ -482,7 +480,7 @@ public class MainActivity extends FragmentActivity {
 								dialog.dismiss();
 							}
 						});
-						builder.setTitle(R.string.freeboxstats_premium);
+						builder.setTitle(R.string.debug);
 						builder.setView(dialog_layout);
 						// Avoid error when the app is closing or something
 						if (!activity.isFinishing())
@@ -493,26 +491,28 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
-	public static void displayOutagesDialog(ArrayList<Outage> outages) {
+	private void displayOutagesDialog() {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View dialog_layout = inflater.inflate(R.layout.outages_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
 		
-		final ListView lv = (ListView) dialog_layout.findViewById(R.id.outages_lv);
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, OutagesHelper.getOutagesAsString(outages));
-		lv.setAdapter(arrayAdapter);
+		Util.Fonts.setFont(context, (TextView) dialog_layout.findViewById(R.id.outages_text), CustomFont.RobotoCondensed_Light);
+		
+		ListView lv = (ListView) dialog_layout.findViewById(R.id.outages_lv);
+		ProgressBar pb = (ProgressBar) dialog_layout.findViewById(R.id.outages_loading);
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+		builder.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 			}
 		});
-		builder.setTitle(R.string.outages);
 		builder.setView(dialog_layout);
 		// Avoid error when the app is closing or something
 		if (!activity.isFinishing())
 			builder.show();
+		
+		new OutagesFetcher(this, FooBox.getInstance().getFreebox(), Period.MONTH, lv, pb).execute();
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
@@ -802,10 +802,9 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onClick(View arg0) {
 				drawerLayout.closeDrawers();
-				new OutagesFetcher(FooBox.getInstance().getFreebox(), Period.MONTH).execute();
+				displayOutagesDialog();
 			}
 		});
-		//findViewById(R.id.drawer_outages).setVisibility(View.VISIBLE);
 	}
 	
 	public static void finishedLoading() {

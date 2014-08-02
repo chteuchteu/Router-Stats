@@ -5,9 +5,14 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 
-import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.OutagesAdapter;
+import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.OutagesHelper;
@@ -16,13 +21,19 @@ import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.Outage;
 
 public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
+	private Context context;
 	private Freebox freebox;
 	private Period period;
 	private ArrayList<Outage> outages;
+	private ListView listView;
+	private ProgressBar progressBar;
 	
-	public OutagesFetcher(Freebox freebox, Period period) {
+	public OutagesFetcher(Context context, Freebox freebox, Period period, ListView listView, ProgressBar progressBar) {
+		this.context = context;
 		this.freebox = freebox;
 		this.period = period;
+		this.listView = listView;
+		this.progressBar = progressBar;
 	}
 	
 	@Override
@@ -35,7 +46,9 @@ public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
-		MainActivity.displayOutagesDialog(outages);
+		this.progressBar.setVisibility(View.GONE);
+		OutagesAdapter outagesAdapter = new OutagesAdapter(context, R.layout.outage_item, OutagesHelper.reverseOrder(outages));
+		this.listView.setAdapter(outagesAdapter);
 	}
 	
 	/**
