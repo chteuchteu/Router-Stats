@@ -16,6 +16,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:textSize="18sp"
+		android:paddingLeft="10dp"
 		android:text="@string/settings_graphprecision" />
 	<TextView
 		android:layout_width="match_parent"
@@ -37,5 +38,12 @@
 		android:paddingLeft="25dp"
 		android:textColor="@color/textSecondary"
 		android:text="@string/settings_graphprecisiondisabled" />
+	
+	<CheckBox
+		android:id="@+id/settings_displayxdsltab"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/settings_displayxdsltab"
+		android:layout_marginBottom="20dp" />
 	
 </LinearLayout>

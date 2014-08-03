@@ -10,6 +10,7 @@ public class SettingsHelper {
 	
 	/* Settings */
 	private boolean autoRefresh;
+	private boolean displayXdslTab;
 	private GraphPrecision graphPrecision;
 	
 	
@@ -17,6 +18,7 @@ public class SettingsHelper {
 		this.context = context;
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
 		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
+		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", true);
 	}
 	
 	public static synchronized SettingsHelper getInstance(Context context) {
@@ -37,5 +39,11 @@ public class SettingsHelper {
 	public void setGraphPrecision(GraphPrecision val) {
 		this.graphPrecision = val;
 		Util.setPref(context, "settings_graphPrecision", val.getSerializedValue());
+	}
+	
+	public boolean getDisplayXdslTab() { return this.displayXdslTab; }
+	public void setDisplayXdslTab(boolean val) {
+		this.displayXdslTab = val;
+		Util.setPref(context, "settings_displayXdslTab", val);
 	}
 }

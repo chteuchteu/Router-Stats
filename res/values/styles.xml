@@ -24,6 +24,7 @@
 		<item name="pstsUnderlineColor">@color/colorPrimaryDark</item>
 		<item name="pstsIndicatorHeight">4dp</item>
 		<item name="pstsShouldExpand">true</item>
+		<item name="pstsTabPaddingLeftRight">0dp</item>
 	</style>
 
 </resources>

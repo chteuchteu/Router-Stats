@@ -4,8 +4,10 @@
 	<string name="tab1_name">Débit down</string>
 	<string name="tab2_name">Débit up</string>
 	<string name="tab3_name">Temp.</string>
+	<string name="tab4_name">xDSL</string>
 	<string name="rate">Débit</string>
 	<string name="temp">Température (°C)</string>
+	<string name="noise">Marge de bruit (dB)</string>
 	<string name="connection_failed">Connection échouée</string>
 	<string name="freebox_connection_fail">Erreur lors de la connexion avec la Freebox...</string>
 	<string name="loading">Chargement...</string>
@@ -27,6 +29,7 @@
 	<string name="firstlaunch_enattente">En attente de l\'autorisation...</string>
 	<string name="loading">Chargement...</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
+	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.
@@ -57,10 +60,13 @@
 	<string name="freebox">Freebox</string>
 	<string name="debug">Debug</string>
 	<string name="outages">Coupures</string>
-	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté.</string>
+	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté. Seules les coupures d\'il y a moins d\'un mois sont affichées.</string>
+	<string name="the">Le</string>
+	<string name="since2">de</string>
 	<string name="since">Du</string>
 	<string name="to">au</string>
 	<string name="at">à</string>
 	<string name="goodnews">Bonne nouvelle :)</string>
 	<string name="outages_nooutage">Aucune coupure entre le FROM et le TO</string>
+	<string name="outages_error">Erreur lors du chargement des coupures</string>
 </resources>

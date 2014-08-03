@@ -39,11 +39,11 @@ public class Enums {
 		NET, TEMP, DSL, SWITCH;
 		public String getSerializedValue() { return this.name().toLowerCase(); }
 	}
-	public enum FieldType { DATA, TEMP }
+	public enum FieldType { DATA, TEMP, NOISE }
 	public enum Field {
 		BW_UP("Débit maximum"), BW_DOWN("Débit maximum"), RATE_UP("Débit up"), RATE_DOWN("Débit down"), VPN_RATE_UP, VPN_RATE_DOWN,
 		CPUM("CpuM"), CPUB("CpuB"), SW("SW"), HDD("HDD"), FAN_SPEED("Ventilateur"),
-		DSL_RATE_UP, DSL_RATE_DOWN, SNR_UP, SNR_DOWN,
+		DSL_RATE_UP, DSL_RATE_DOWN, SNR_UP("Upload"), SNR_DOWN("Download"),
 		RW_1, TX_1, RX_2, TX_2, RX_3, TX_3, RX_4, TX_4;
 		
 		private String displayName;
@@ -62,7 +62,7 @@ public class Enums {
 	}
 	
 	public enum Unit {
-		C(-1), o(0), ko(1), Mo(2), Go(3), To(4);
+		dB(-2), C(-1), o(0), ko(1), Mo(2), Go(3), To(4);
 		private int index;
 		Unit(int index) { this.index = index; }
 		public int getIndex() { return this.index; }

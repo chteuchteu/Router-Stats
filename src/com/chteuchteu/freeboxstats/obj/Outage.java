@@ -59,4 +59,8 @@ public class Outage {
 		SimpleDateFormat formater = new SimpleDateFormat("hh:mm");
 		return formater.format(date);
 	}
+	
+	public boolean isSingleDay() {
+		return getFromDateString().equals(getToDateString());
+	}
 }

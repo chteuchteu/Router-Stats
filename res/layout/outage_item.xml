@@ -25,10 +25,78 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="10dp"
-			android:textSize="28sp"
-			android:text="@string/outagestext" />
+			android:textSize="28sp" />
 		
 		<LinearLayout
+			android:id="@+id/outage_fromto_oneday"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/the"
+				android:textColor="#BBBBBB"
+				android:layout_marginRight="5dp" />
+			
+			<TextView
+				android:id="@+id/outage_date_oneday"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="15dp"
+				android:textSize="14sp"
+				android:textColor="@color/colorPrimary"
+				android:shadowColor="#BBBBBB"
+				android:shadowDx="0"
+				android:shadowDy="1"
+				android:shadowRadius="2"
+				android:layout_marginRight="5dp" />
+			
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/since2"
+				android:textColor="#BBBBBB"
+				android:layout_marginRight="5dp" />
+			
+			<TextView
+				android:id="@+id/outage_from_hour_oneday"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="15dp"
+				android:textSize="14sp"
+				android:textColor="@color/colorPrimary"
+				android:shadowColor="#BBBBBB"
+				android:shadowDx="0"
+				android:shadowDy="1"
+				android:shadowRadius="2"
+				android:layout_marginRight="5dp" />
+			
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/at"
+				android:textColor="#BBBBBB"
+				android:layout_marginRight="5dp" />
+			
+			<TextView
+				android:id="@+id/outage_to_hour_oneday"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="15dp"
+				android:textSize="14sp"
+				android:textColor="@color/colorPrimary"
+				android:shadowColor="#BBBBBB"
+				android:shadowDx="0"
+				android:shadowDy="1"
+				android:shadowRadius="2"
+				android:layout_marginRight="5dp" />
+			
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id="@+id/outage_fromto_severaldays"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">

@@ -50,6 +50,8 @@ public class DataSet {
 	public void addValue(Unit unit, int value) {
 		if (unit == Unit.C)
 			this.values.add(value/10);
+		else if (unit == Unit.dB)
+			this.values.add((double)value/10);
 		else
 			this.values.add(Util.convertUnit(unit, valuesUnit, value));
 	}

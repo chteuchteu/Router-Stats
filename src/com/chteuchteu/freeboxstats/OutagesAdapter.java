@@ -40,16 +40,29 @@ public class OutagesAdapter extends ArrayAdapter<Outage> {
 		
 		if (o != null) {
 			TextView tv_duration = (TextView) v.findViewById(R.id.outage_duration);
-			TextView tv_from_date = (TextView) v.findViewById(R.id.outage_from_date);
-			TextView tv_from_hour = (TextView) v.findViewById(R.id.outage_from_hour);
-			TextView tv_to_date = (TextView) v.findViewById(R.id.outage_to_date);
-			TextView tv_to_hour = (TextView) v.findViewById(R.id.outage_to_hour);
-			
 			tv_duration.setText(o.getDurationString());
-			tv_from_date.setText(o.getFromDateString());
-			tv_from_hour.setText(o.getFromHourString());
-			tv_to_date.setText(o.getToDateString());
-			tv_to_hour.setText(o.getToHourString());
+			
+			if (o.isSingleDay()) {
+				v.findViewById(R.id.outage_fromto_severaldays).setVisibility(View.GONE);
+				TextView tv_date = (TextView) v.findViewById(R.id.outage_date_oneday);
+				TextView tv_from_hour = (TextView) v.findViewById(R.id.outage_from_hour_oneday);
+				TextView tv_to_hour = (TextView) v.findViewById(R.id.outage_to_hour_oneday);
+				
+				tv_date.setText(o.getFromDateString());
+				tv_from_hour.setText(o.getFromHourString());
+				tv_to_hour.setText(o.getToHourString());
+			} else {
+				v.findViewById(R.id.outage_fromto_oneday).setVisibility(View.GONE);
+				TextView tv_from_date = (TextView) v.findViewById(R.id.outage_from_date);
+				TextView tv_from_hour = (TextView) v.findViewById(R.id.outage_from_hour);
+				TextView tv_to_date = (TextView) v.findViewById(R.id.outage_to_date);
+				TextView tv_to_hour = (TextView) v.findViewById(R.id.outage_to_hour);
+				
+				tv_from_date.setText(o.getFromDateString());
+				tv_from_hour.setText(o.getFromHourString());
+				tv_to_date.setText(o.getToDateString());
+				tv_to_hour.setText(o.getToHourString());
+			}
 		}
 		
 		return v;

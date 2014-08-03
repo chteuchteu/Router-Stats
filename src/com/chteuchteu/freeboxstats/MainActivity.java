@@ -85,7 +85,7 @@ import com.crashlytics.android.Crashlytics;
 public class MainActivity extends FragmentActivity {
 	public static FragmentActivity activity;
 	public static Context context;
-	private static final int NB_TABS = 3;
+	private static final int NB_TABS = 4;
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static ViewPager viewPager;
 	private ActionBarDrawerToggle drawerToggle;
@@ -99,6 +99,7 @@ public class MainActivity extends FragmentActivity {
 	private static XYPlot plot1;
 	private static XYPlot plot2;
 	private static XYPlot plot3;
+	private static XYPlot plot4;
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
@@ -140,6 +141,7 @@ public class MainActivity extends FragmentActivity {
 		plot1 = null;
 		plot2 = null;
 		plot3 = null;
+		plot4 = null;
 		
 		initDrawer();
 		
@@ -254,7 +256,10 @@ public class MainActivity extends FragmentActivity {
 		
 		@Override
 		public int getCount() {
-			return 3;
+			if (SettingsHelper.getInstance().getDisplayXdslTab())
+				return 4;
+			else
+				return 3;
 		}
 		
 		@Override
@@ -263,6 +268,7 @@ public class MainActivity extends FragmentActivity {
 				case 0: return activity.getString(R.string.tab1_name);
 				case 1: return activity.getString(R.string.tab2_name);
 				case 2: return activity.getString(R.string.tab3_name);
+				case 3: return activity.getString(R.string.tab4_name);
 				default: return "";
 			}
 		}
@@ -282,6 +288,7 @@ public class MainActivity extends FragmentActivity {
 				case 1: plot1 = plot; break;
 				case 2: plot2 = plot; break;
 				case 3: plot3 = plot; break;
+				case 4: plot4 = plot; break;
 			}
 			initPlot(plot, index);
 			
@@ -313,10 +320,13 @@ public class MainActivity extends FragmentActivity {
 		if (plotIndex == 3) {
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
 			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
+		} else if (plotIndex == 4) {
+			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
+			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
 		}
 		
 		// Legend
-		if (plotIndex == 1 || plotIndex == 2)
+		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4)
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
 		else
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
@@ -332,8 +342,10 @@ public class MainActivity extends FragmentActivity {
 		// Set range label
 		if (plotIndex == 3)
 			plot.setRangeLabel(activity.getString(R.string.temp));
+		else if (plotIndex == 4)
+			plot.setRangeLabel(activity.getString(R.string.noise));
 		
-		if (plotIndex == 3)
+		if (plotIndex == 3 || plotIndex == 4)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
 	
@@ -344,6 +356,7 @@ public class MainActivity extends FragmentActivity {
 			case 1: plot = plot1; break;
 			case 2: plot = plot2; break;
 			case 3: plot = plot3; break;
+			case 4: plot = plot4; break;
 		}
 		// If the plot hasn't been inited correctly
 		if (plot == null) {
@@ -351,11 +364,13 @@ public class MainActivity extends FragmentActivity {
 				case 1: initPlot(plot1, 1); break;
 				case 2: initPlot(plot2, 2); break;
 				case 3: initPlot(plot3, 3); break;
+				case 4: initPlot(plot4, 4); break;
 			}
 			switch (plotIndex) {
 				case 1: plot = plot1; break;
 				case 2: plot = plot2; break;
 				case 3: plot = plot3; break;
+				case 4: plot = plot4; break;
 			}
 			if (plot == null)
 				return;
@@ -383,6 +398,8 @@ public class MainActivity extends FragmentActivity {
 				case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
 				case SW:		xmlRef = R.xml.serieformat_sw;		break;
 				case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
+				case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
+				case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break; 
 				default: break;
 			}
 			if (xmlRef != -1)
@@ -416,7 +433,11 @@ public class MainActivity extends FragmentActivity {
 		
 		plot.redraw();
 		
-		if (plotIndex == 3) {
+		int plotIndexTreshold = 3;
+		if (SettingsHelper.getInstance().getDisplayXdslTab())
+			plotIndexTreshold = 4;
+		
+		if (plotIndex == plotIndexTreshold) {
 			toggleSpinningMenuItem(false);
 			
 			// Load ads if needed
@@ -505,10 +526,11 @@ public class MainActivity extends FragmentActivity {
 		});
 		builder.setView(dialog_layout);
 		// Avoid error when the app is closing or something
-		if (!activity.isFinishing())
-			builder.show();
-		
-		new OutagesFetcher(this, FooBox.getInstance().getFreebox(), Period.MONTH, dialog_layout).execute();
+		if (!activity.isFinishing()) {
+			AlertDialog dialog = builder.show();
+			
+			new OutagesFetcher(this, FooBox.getInstance().getFreebox(), dialog, dialog_layout).execute();
+		}
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
@@ -699,6 +721,8 @@ public class MainActivity extends FragmentActivity {
 				
 				final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
+				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -714,6 +738,9 @@ public class MainActivity extends FragmentActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
+						boolean displayXdslTabChanged = SettingsHelper.getInstance().getDisplayXdslTab()
+								!= settings_displayXdslTab.isChecked();
+						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 						SettingsHelper.getInstance().setGraphPrecision(
 								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
 						
@@ -721,6 +748,10 @@ public class MainActivity extends FragmentActivity {
 							startRefreshThread();
 						else
 							stopRefreshThread();
+						
+						// Remove tab
+						if (displayXdslTabChanged)
+							activity.startActivity(new Intent(MainActivity.this, MainActivity.class));
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

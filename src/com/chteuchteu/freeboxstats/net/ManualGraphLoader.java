@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -23,6 +24,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private GraphsContainer graph1;
 	private GraphsContainer graph2;
 	private GraphsContainer graph3;
+	private GraphsContainer graph4;
 	
 	private boolean graphLoadingFailed;
 	private boolean needAuth;
@@ -45,6 +47,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		if (!graphLoadingFailed) {
 			graph2 = loadGraph(2);
 			graph3 = loadGraph(3);
+			if (SettingsHelper.getInstance().getDisplayXdslTab())
+				graph4 = loadGraph(4);
 		}
 		
 		return null;
@@ -61,6 +65,8 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				MainActivity.loadGraph(2, graph2, period, FieldType.DATA, graph2.getValuesUnit());
 			if (graph3 != null)
 				MainActivity.loadGraph(3, graph3, period, FieldType.TEMP, graph3.getValuesUnit());
+			if (graph4 != null)
+				MainActivity.loadGraph(4, graph4, period, FieldType.NOISE, graph4.getValuesUnit());
 		}
 		
 		if (graphLoadingFailed) {
@@ -100,6 +106,11 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				fields.add(Field.SW);
 				fields.add(Field.HDD);
 				fieldType = FieldType.TEMP;
+				break;
+			case 4:
+				fields.add(Field.SNR_DOWN);
+				fields.add(Field.SNR_UP);
+				fieldType = FieldType.NOISE;
 				break;
 		}
 		

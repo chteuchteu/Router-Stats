@@ -30,8 +30,10 @@ public class GraphsContainer {
 		this.dataSets = new ArrayList<DataSet>();
 		if (fieldType == FieldType.DATA)
 			this.valuesUnit = defaultUnit;
-		else
+		else if (fieldType == FieldType.TEMP)
 			this.valuesUnit = Unit.C;
+		else if (fieldType == FieldType.NOISE)
+			this.valuesUnit = Unit.dB;
 		this.fieldType = fieldType;
 		
 		for (Field f : fields)
@@ -88,6 +90,8 @@ public class GraphsContainer {
 								getDataSet(f).addValue(Unit.o, val);
 							else if (fieldType == FieldType.TEMP)
 								getDataSet(f).addValue(Unit.C, val);
+							else if (fieldType == FieldType.NOISE)
+								getDataSet(f).addValue(Unit.dB, val);
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
