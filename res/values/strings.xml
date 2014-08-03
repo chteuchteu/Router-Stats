@@ -30,6 +30,7 @@
 	<string name="loading">Chargement...</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
+	<string name="settings_enablezoom">Activer le zoom</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.

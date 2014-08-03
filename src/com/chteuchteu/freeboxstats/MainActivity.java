@@ -24,7 +24,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -87,7 +86,7 @@ public class MainActivity extends FragmentActivity {
 	public static Context context;
 	private static final int NB_TABS = 4;
 	private static MainActivityPagerAdapter pagerAdapter;
-	private static ViewPager viewPager;
+	private static CustomViewPager viewPager;
 	private ActionBarDrawerToggle drawerToggle;
 	private DrawerLayout drawerLayout;
 	
@@ -96,10 +95,10 @@ public class MainActivity extends FragmentActivity {
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
-	private static XYPlot plot1;
-	private static XYPlot plot2;
-	private static XYPlot plot3;
-	private static XYPlot plot4;
+	private static MultitouchPlot plot1;
+	private static MultitouchPlot plot2;
+	private static MultitouchPlot plot3;
+	private static MultitouchPlot plot4;
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
@@ -227,7 +226,7 @@ public class MainActivity extends FragmentActivity {
 		periodMenuItem.setVisible(true);
 		
 		pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
-		viewPager = (ViewPager) activity.findViewById(R.id.pager);
+		viewPager = (CustomViewPager) activity.findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
 		
 		// Let Android load all the tabs at once (= disable lazy load)
@@ -283,7 +282,7 @@ public class MainActivity extends FragmentActivity {
 			
 			Bundle args = getArguments();
 			int index = args.getInt(ARG_OBJECT);
-			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
+			MultitouchPlot plot = (MultitouchPlot) rootView.findViewById(R.id.xyPlot);
 			switch (index) {
 				case 1: plot1 = plot; break;
 				case 2: plot2 = plot; break;
@@ -317,13 +316,12 @@ public class MainActivity extends FragmentActivity {
 		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
 		
-		if (plotIndex == 3) {
+		plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
+		if (plotIndex == 3)
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
-			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-		} else if (plotIndex == 4) {
+		else if (plotIndex == 4)
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
-			plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-		}
+		
 		
 		// Legend
 		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4)
@@ -723,6 +721,8 @@ public class MainActivity extends FragmentActivity {
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
+				final CheckBox settings_enableZoom = (CheckBox) dialog_layout.findViewById(R.id.settings_enablezoom);
+				settings_enableZoom.setChecked(SettingsHelper.getInstance().getEnableZoom());
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -743,6 +743,7 @@ public class MainActivity extends FragmentActivity {
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 						SettingsHelper.getInstance().setGraphPrecision(
 								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
+						SettingsHelper.getInstance().setEnableZoom(settings_enableZoom.isChecked());
 						
 						if (settings_autorefresh.isChecked())
 							startRefreshThread();

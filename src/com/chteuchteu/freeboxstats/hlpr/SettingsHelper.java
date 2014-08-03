@@ -11,6 +11,7 @@ public class SettingsHelper {
 	/* Settings */
 	private boolean autoRefresh;
 	private boolean displayXdslTab;
+	private boolean enableZoom;
 	private GraphPrecision graphPrecision;
 	
 	
@@ -19,6 +20,7 @@ public class SettingsHelper {
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
 		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
 		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", true);
+		this.enableZoom = Util.getPrefBoolean(context, "settings_enableZoom", true);
 	}
 	
 	public static synchronized SettingsHelper getInstance(Context context) {
@@ -45,5 +47,11 @@ public class SettingsHelper {
 	public void setDisplayXdslTab(boolean val) {
 		this.displayXdslTab = val;
 		Util.setPref(context, "settings_displayXdslTab", val);
+	}
+	
+	public boolean getEnableZoom() { return this.enableZoom; }
+	public void setEnableZoom(boolean val) {
+		this.enableZoom = val;
+		Util.setPref(context, "settings_enableZoom", val);
 	}
 }
