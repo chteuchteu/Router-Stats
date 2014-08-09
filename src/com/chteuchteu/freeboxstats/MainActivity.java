@@ -63,6 +63,7 @@ import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.ex.AdsLoadingFail;
+import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
@@ -100,6 +101,10 @@ public class MainActivity extends FragmentActivity {
 	private static XYPlot plot2;
 	private static XYPlot plot3;
 	private static XYPlot plot4;
+	public static View fragment1RootView;
+	public static View fragment2RootView;
+	public static View fragment3RootView;
+	public static View fragment4RootView;
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
@@ -114,6 +119,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
+	private static boolean alreadyLoggedAdsLoadingFail = false;
 	
 	public static boolean updating;
 	
@@ -279,12 +285,29 @@ public class MainActivity extends FragmentActivity {
 			int index = args.getInt(ARG_OBJECT);
 			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
 			switch (index) {
-				case 1: plot1 = plot; break;
-				case 2: plot2 = plot; break;
-				case 3: plot3 = plot; break;
-				case 4: plot4 = plot; break;
+				case 1:
+					plot1 = plot;
+					fragment1RootView = rootView;
+					break;
+				case 2:
+					plot2 = plot;
+					fragment2RootView = rootView;
+					break;
+				case 3:
+					plot3 = plot;
+					fragment3RootView = rootView;
+					break;
+				case 4:
+					plot4 = plot;
+					fragment4RootView = rootView;
+					break;
 			}
 			initPlot(plot, index);
+			
+			// Change container background color if needed
+			if (index == 4)
+				updateApplicationTheme();
+			
 			
 			return rootView;
 		}
@@ -716,8 +739,8 @@ public class MainActivity extends FragmentActivity {
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
-				//final CheckBox settings_enableZoom = (CheckBox) dialog_layout.findViewById(R.id.settings_enablezoom);
-				//settings_enableZoom.setChecked(SettingsHelper.getInstance().getEnableZoom());
+				final CheckBox settings_lightTheme = (CheckBox) dialog_layout.findViewById(R.id.settings_lighttheme);
+				settings_lightTheme.setChecked(SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.LIGHT);
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -738,7 +761,9 @@ public class MainActivity extends FragmentActivity {
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 						SettingsHelper.getInstance().setGraphPrecision(
 								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-						//SettingsHelper.getInstance().setEnableZoom(settings_enableZoom.isChecked());
+						boolean applicationThemeChanged = SettingsHelper.getInstance().getApplicationTheme()
+								!= ApplicationTheme.get(settings_lightTheme.isChecked());
+						SettingsHelper.getInstance().setApplicationTheme(ApplicationTheme.get(settings_lightTheme.isChecked()));
 						
 						if (settings_autorefresh.isChecked())
 							startRefreshThread();
@@ -748,6 +773,8 @@ public class MainActivity extends FragmentActivity {
 						// Remove tab
 						if (displayXdslTabChanged)
 							activity.startActivity(new Intent(MainActivity.this, MainActivity.class));
+						if (applicationThemeChanged)
+							updateApplicationTheme();
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -830,6 +857,17 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
+	public static void updateApplicationTheme() {
+		int backgroundColor = Color.WHITE;
+		if (SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.DARK)
+			backgroundColor = context.getResources().getColor(R.color.backgroundColor);
+		
+		fragment1RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+		fragment2RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+		fragment3RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+		fragment4RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+	}
+	
 	public static void finishedLoading() {
 		if (!sessionOpened) {
 			// Called from BillingService finished : SessionOpener
@@ -894,7 +932,10 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void failedToReceiveAd(int errorCode) {
-				Crashlytics.logException(new AdsLoadingFail(errorCode));
+				if (!alreadyLoggedAdsLoadingFail) {
+					Crashlytics.logException(new AdsLoadingFail(errorCode));
+					alreadyLoggedAdsLoadingFail = true;
+				}
 				adView.setVisibility(View.GONE);
 			}
 		});

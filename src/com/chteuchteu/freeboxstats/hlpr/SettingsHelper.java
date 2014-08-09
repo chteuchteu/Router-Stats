@@ -2,6 +2,7 @@ package com.chteuchteu.freeboxstats.hlpr;
 
 import android.content.Context;
 
+import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 
 public class SettingsHelper {
@@ -11,7 +12,7 @@ public class SettingsHelper {
 	/* Settings */
 	private boolean autoRefresh;
 	private boolean displayXdslTab;
-	private boolean enableZoom;
+	private ApplicationTheme applicationTheme;
 	private GraphPrecision graphPrecision;
 	
 	
@@ -20,7 +21,7 @@ public class SettingsHelper {
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
 		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
 		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", true);
-		this.enableZoom = Util.getPrefBoolean(context, "settings_enableZoom", false);
+		this.applicationTheme = ApplicationTheme.getApplicationTheme(context);
 	}
 	
 	public static synchronized SettingsHelper getInstance(Context context) {
@@ -49,9 +50,9 @@ public class SettingsHelper {
 		Util.setPref(context, "settings_displayXdslTab", val);
 	}
 	
-	public boolean getEnableZoom() { return this.enableZoom; }
-	public void setEnableZoom(boolean val) {
-		this.enableZoom = val;
-		Util.setPref(context, "settings_enableZoom", val);
+	public ApplicationTheme getApplicationTheme() { return this.applicationTheme; }
+	public void setApplicationTheme(ApplicationTheme val) {
+		this.applicationTheme = val;
+		Util.setPref(context, "settings_applicationTheme", val.name());
 	}
 }

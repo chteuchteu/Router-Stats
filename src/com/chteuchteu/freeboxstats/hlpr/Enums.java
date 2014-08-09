@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 
 @SuppressLint("DefaultLocale")
 public class Enums {
@@ -92,5 +93,20 @@ public class Enums {
 		}
 	}
 	
-	public enum UpdateKind { INCREMENTAL, FULL }
+	public enum ApplicationTheme {
+		LIGHT, DARK;
+		public static ApplicationTheme getApplicationTheme(Context context) {
+			String appTheme = Util.getPrefString(context, "settings_applicationTheme", "DARK");
+			if (appTheme.equals("LIGHT"))
+				return ApplicationTheme.LIGHT;
+			else
+				return ApplicationTheme.DARK;
+		}
+		public static ApplicationTheme get(boolean lightTheme) {
+			if (lightTheme)
+				return ApplicationTheme.LIGHT;
+			else
+				return ApplicationTheme.DARK;
+		}
+	}
 }

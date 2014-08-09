@@ -33,7 +33,11 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class Util {
 	public static String getPrefString(Context c, String key) {
-		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getString(key, "");
+		return getPrefString(c, key, "");
+	}
+	
+	public static String getPrefString(Context c, String key, String defaultValue) {
+		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getString(key, defaultValue);
 	}
 	
 	public static boolean getPrefBoolean(Context c, String key, boolean defaultValue) {
