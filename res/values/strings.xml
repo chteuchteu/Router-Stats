@@ -44,6 +44,7 @@
 	
 	<string name="premium_text"><![CDATA[&#8226;  Accédez aux stats en-dehors de votre réseau local<br />\n
 								&#8226;  Pas de publicités<br />\n
+								&#8226;  Affichage de la liste des coupures<br />\n
 								&#8226;  Supportez le développement de l\'application<br />\n
 								&#8226;  Un seul achat pour toutes les fonctionnalités à venir]]></string>
 	<string name="sessionopening_error"><![CDATA[Impossible de se connecter à la Freebox : <br />\n

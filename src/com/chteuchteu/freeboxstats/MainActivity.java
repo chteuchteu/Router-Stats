@@ -891,6 +891,7 @@ public class MainActivity extends FragmentActivity {
 		
 		if (!FooBox.getInstance().isPremium()) {
 			activity.findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
+			activity.findViewById(R.id.drawer_outages).setVisibility(View.GONE);
 			// Load the ads the next time this boolean will be checked
 			loadAds = true;
 		}
