@@ -11,6 +11,7 @@ import android.util.Log;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
@@ -27,7 +28,8 @@ public class FooBox extends Application {
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
+	public static final boolean DEBUG_INAPPPURCHASE = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;
@@ -74,6 +76,8 @@ public class FooBox extends Application {
 		MainActivity.displayLoadingScreen();
 		
 		this.premium = Premium.UNKNOWN;
+		if (Util.hasPref(context, "premium") && Util.getPrefBoolean(context, "premium", false))
+			this.premium = Premium.TRUE;
 		
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		
@@ -87,9 +91,17 @@ public class FooBox extends Application {
 				Crashlytics.logException(ex);
 			}
 			
-			// Open session
-			new SessionOpener(this.freebox, this.context).execute();
-			// (once done, we'll update the graph)
+			if (this.premium == Premium.UNKNOWN && !FooBox.DEBUG) {
+				// Init Billing Service
+				BillingService.getInstance(this.context);
+				// Once done :
+				//  * open session
+				//  * update the graph
+			} else if (this.premium == Premium.TRUE || FooBox.DEBUG) {
+				// Open session
+				new SessionOpener(this.freebox, this.context).execute();
+				// (once done, we'll update the graph)
+			}
 		} else {
 			// Discover Freebox
 			new FreeboxDiscoverer(context).execute();

@@ -7,4 +7,8 @@
 	<color name="textShadowColor">#2C5BBF</color>
 	<color name="textSecondary">#666666</color>
 	<color name="textSecondary2">#888888</color>
+	<color name="fullscreenTextColor">#ffffff</color>
+	<color name="fullscreenTextColor2">#ccffffff</color>
+	<color name="drawerFontColor">#ffffff</color>
+	<color name="drawerFontColor2">#ccffffff</color>
 </resources>

@@ -53,7 +53,6 @@ public class BillingService {
 				// Binding finished : check if premium
 				boolean premium = checkIfHasPurchased();
 				FooBox.getInstance().setIsPremium(premium);
-				MainActivity.appLoadingPrereq2 = true;
 				MainActivity.finishedLoading();
 			}
 		};
@@ -107,6 +106,8 @@ public class BillingService {
 				ArrayList<String> purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
 				FooBox.log("Purchased items : " + purchaseDataList.toString());
 				
+				if (FooBox.DEBUG_INAPPPURCHASE)
+					return true;
 				return purchaseDataList.size() > 0;
 			}
 			else {

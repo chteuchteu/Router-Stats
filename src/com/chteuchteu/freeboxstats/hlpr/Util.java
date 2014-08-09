@@ -40,6 +40,10 @@ public class Util {
 		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getBoolean(key, defaultValue);
 	}
 	
+	public static boolean hasPref(Context c, String key) {
+		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).contains(key);
+	}
+	
 	public static void setPref(Context c, String key, String value) {
 		if (value.equals(""))
 			removePref(c, key);

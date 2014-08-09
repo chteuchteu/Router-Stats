@@ -62,6 +62,7 @@ import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
+import com.chteuchteu.freeboxstats.ex.AdsLoadingFail;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
@@ -95,22 +96,16 @@ public class MainActivity extends FragmentActivity {
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
-	private static MultitouchPlot plot1;
-	private static MultitouchPlot plot2;
-	private static MultitouchPlot plot3;
-	private static MultitouchPlot plot4;
+	private static XYPlot plot1;
+	private static XYPlot plot2;
+	private static XYPlot plot3;
+	private static XYPlot plot4;
 	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem validerMenuItem;
 	
-	/**
-	 * Only display the main activity when
-	 * 	- we know if the user is premium or not
-	 *  - we are connected to the freebox
-	 */
-	public static boolean appLoadingPrereq1 = false;
-	public static boolean appLoadingPrereq2 = false;
+	public static boolean sessionOpened = false;
 	public static boolean appStarted = false;
 	/**
 	 * If the app should load ads the next time this boolean is checked
@@ -282,7 +277,7 @@ public class MainActivity extends FragmentActivity {
 			
 			Bundle args = getArguments();
 			int index = args.getInt(ARG_OBJECT);
-			MultitouchPlot plot = (MultitouchPlot) rootView.findViewById(R.id.xyPlot);
+			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
 			switch (index) {
 				case 1: plot1 = plot; break;
 				case 2: plot2 = plot; break;
@@ -721,8 +716,8 @@ public class MainActivity extends FragmentActivity {
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
-				final CheckBox settings_enableZoom = (CheckBox) dialog_layout.findViewById(R.id.settings_enablezoom);
-				settings_enableZoom.setChecked(SettingsHelper.getInstance().getEnableZoom());
+				//final CheckBox settings_enableZoom = (CheckBox) dialog_layout.findViewById(R.id.settings_enablezoom);
+				//settings_enableZoom.setChecked(SettingsHelper.getInstance().getEnableZoom());
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -743,7 +738,7 @@ public class MainActivity extends FragmentActivity {
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 						SettingsHelper.getInstance().setGraphPrecision(
 								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-						SettingsHelper.getInstance().setEnableZoom(settings_enableZoom.isChecked());
+						//SettingsHelper.getInstance().setEnableZoom(settings_enableZoom.isChecked());
 						
 						if (settings_autorefresh.isChecked())
 							startRefreshThread();
@@ -836,10 +831,11 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public static void finishedLoading() {
-		// Only finish if we know that is premium _and_
-		//	the freebox configuration is ready and connected
-		if (!appLoadingPrereq1 || !appLoadingPrereq2)
+		if (!sessionOpened) {
+			// Called from BillingService finished : SessionOpener
+			new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
 			return;
+		}
 		
 		TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
@@ -898,6 +894,7 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void failedToReceiveAd(int errorCode) {
+				Crashlytics.logException(new AdsLoadingFail(errorCode));
 				adView.setVisibility(View.GONE);
 			}
 		});

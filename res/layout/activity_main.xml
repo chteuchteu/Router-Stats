@@ -37,7 +37,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:textSize="30sp"
-						android:textColor="#ffffff"
+						android:textColor="@color/fullscreenTextColor"
 						android:text="@string/firstlaunch_autoriserfreebox" />
 					
 					<TextView
@@ -45,7 +45,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:textSize="19sp"
-						android:textColor="#ffffff"
+						android:textColor="@color/fullscreenTextColor"
 						android:text="@string/firstlaunch_aut_explanation"
 						android:layout_marginTop="20dp"
 						android:gravity="center"
@@ -73,7 +73,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:textSize="30sp"
-						android:textColor="#ffffff" 
+						android:textColor="@color/fullscreenTextColor" 
 						android:text="@string/firstlaunch_enattente"
 						android:padding="20dp" />
 					
@@ -137,7 +137,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textSize="30sp"
-					android:textColor="#ffffff"
+					android:textColor="@color/fullscreenTextColor"
 					android:text="@string/loading" />
 					
 				<ProgressBar
@@ -153,7 +153,7 @@
 					android:layout_marginTop="20dp"
 					android:padding="20dp"
 					android:textSize="20sp"
-					android:textColor="#ccffffff"
+					android:textColor="@color/fullscreenTextColor2"
 					android:visibility="gone" />
 				
 				<TextView
@@ -163,7 +163,7 @@
 					android:layout_marginTop="20dp"
 					android:padding="20dp"
 					android:textSize="20sp"
-					android:textColor="#ccffffff"
+					android:textColor="@color/fullscreenTextColor2"
 					android:visibility="gone"
 					android:text="@string/freeboxsearchfailmessage" />
 				
@@ -174,7 +174,7 @@
 					android:layout_marginTop="20dp"
 					android:padding="20dp"
 					android:textSize="20sp"
-					android:textColor="#ccffffff"
+					android:textColor="@color/fullscreenTextColor2"
 					android:visibility="gone"
 					android:text="@string/freeboxupdateneeded" />
 				
@@ -230,7 +230,6 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="#2BA1E4"
 					android:orientation="vertical"
 					android:paddingLeft="0dp" >
 					
@@ -260,7 +259,7 @@
 							android:shadowDy="1"
 							android:shadowRadius="2"
 							android:text="@string/settings"
-							android:textColor="#ffffff"
+							android:textColor="@color/drawerFontColor"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
 				</LinearLayout>
@@ -268,7 +267,6 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="#2BA1E4"
 					android:orientation="vertical"
 					android:paddingLeft="0dp" >
 					
@@ -299,7 +297,7 @@
 							android:shadowDy="1"
 							android:shadowRadius="2"
 							android:text="@string/premium"
-							android:textColor="#ffffff"
+							android:textColor="@color/drawerFontColor"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
 				</LinearLayout>
@@ -307,7 +305,6 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="#2BA1E4"
 					android:orientation="vertical"
 					android:paddingLeft="0dp" >
 					
@@ -343,7 +340,7 @@
 								android:shadowDy="1"
 								android:shadowRadius="2"
 								android:text="@string/freebox"
-								android:textColor="#ffffff"
+								android:textColor="@color/drawerFontColor"
 								android:textSize="@dimen/drawer_font_size" />
 							
 							<TextView
@@ -355,7 +352,7 @@
 								android:shadowDx="0"
 								android:shadowDy="1"
 								android:shadowRadius="3"
-								android:textColor="#ccffffff"
+								android:textColor="@color/drawerFontColor2"
 								android:textSize="@dimen/drawer_font_size_small" />
 							
 						</LinearLayout>
@@ -365,7 +362,6 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="#2BA1E4"
 					android:orientation="vertical"
 					android:paddingLeft="0dp" >
 					
@@ -396,7 +392,7 @@
 							android:shadowDy="1"
 							android:shadowRadius="2"
 							android:text="@string/debug"
-							android:textColor="#ffffff"
+							android:textColor="@color/drawerFontColor"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
 				</LinearLayout>
@@ -404,7 +400,6 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="#2BA1E4"
 					android:orientation="vertical"
 					android:paddingLeft="0dp" >
 					
@@ -434,13 +429,11 @@
 							android:shadowDy="1"
 							android:shadowRadius="2"
 							android:text="@string/outages"
-							android:textColor="#ffffff"
+							android:textColor="@color/drawerFontColor"
 							android:textSize="@dimen/drawer_font_size" />
 					</LinearLayout>
 				</LinearLayout>
 			</LinearLayout>
-			
 		</LinearLayout>
-		
 	</android.support.v4.widget.DrawerLayout>
 </FrameLayout>

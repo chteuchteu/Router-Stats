@@ -19,10 +19,11 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected Void doInBackground(Void... params) {
-		success = NetHelper.openSession(freebox);
-		
 		// Init BillingService
 		BillingService.getInstance(this.context);
+		
+		
+		success = NetHelper.openSession(freebox);
 		
 		return null;
 	}
@@ -32,7 +33,7 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (success) {
-			MainActivity.appLoadingPrereq1 = true;
+			MainActivity.sessionOpened = true;
 			MainActivity.finishedLoading();
 		} else
 			MainActivity.sessionOpenFailed();
