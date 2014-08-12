@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+import android.view.View;
 
+import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
@@ -27,7 +29,7 @@ public class FooBox extends Application {
 	private boolean inited;
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
-	private Premium premium;
+	private Premium premium = Premium.TRUE;
 	public static final boolean DEBUG = false;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
@@ -43,6 +45,16 @@ public class FooBox extends Application {
 	private Session session;
 	
 	private Period currentPeriod;
+	
+	// MainActivity context
+	public XYPlot plot1;
+	public XYPlot plot2;
+	public XYPlot plot3;
+	public XYPlot plot4;
+	public View fragment1RootView;
+	public View fragment2RootView;
+	public View fragment3RootView;
+	public View fragment4RootView;
 	
 	@Override
 	public void onCreate() {
@@ -165,5 +177,59 @@ public class FooBox extends Application {
 		}
 		
 		return versionName;
+	}
+	
+	public void setPlot(XYPlot plot, int plotIndex) {
+		switch (plotIndex) {
+			case 1:
+				plot1 = plot;
+				break;
+			case 2:
+				plot2 = plot;
+				break;
+			case 3:
+				plot3 = plot;
+				break;
+			case 4:
+				plot4 = plot;
+				break;
+		}
+	}
+	
+	public XYPlot getPlot(int plotIndex) {
+		switch (plotIndex) {
+			case 1: return plot1;
+			case 2: return plot2;
+			case 3: return plot3;
+			case 4: return plot4;
+			default: return null;
+		}
+	}
+	
+	public void setFragmentRootView(View view, int plotIndex) {
+		switch (plotIndex) {
+			case 1:
+				fragment1RootView = view;
+				break;
+			case 2:
+				fragment2RootView = view;
+				break;
+			case 3:
+				fragment3RootView = view;
+				break;
+			case 4:
+				fragment4RootView = view;
+				break;
+		}
+	}
+	
+	public View getFragmentRootView(int plotIndex) {
+		switch (plotIndex) {
+			case 1: return fragment1RootView;
+			case 2: return fragment2RootView;
+			case 3: return fragment3RootView;
+			case 4: return fragment4RootView;
+			default: return null;
+		}
 	}
 }

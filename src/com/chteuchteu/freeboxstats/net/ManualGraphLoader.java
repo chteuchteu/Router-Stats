@@ -8,10 +8,10 @@ import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
-import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;

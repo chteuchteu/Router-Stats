@@ -97,15 +97,6 @@ public class MainActivity extends FragmentActivity {
 	public static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
-	private static XYPlot plot1;
-	private static XYPlot plot2;
-	private static XYPlot plot3;
-	private static XYPlot plot4;
-	public static View fragment1RootView;
-	public static View fragment2RootView;
-	public static View fragment3RootView;
-	public static View fragment4RootView;
-	
 	private static MenuItem refreshMenuItem;
 	private static MenuItem periodMenuItem;
 	private static MenuItem validerMenuItem;
@@ -137,11 +128,6 @@ public class MainActivity extends FragmentActivity {
 		justRefreshed = false;
 		updating = false;
 		loadAds = false;
-		
-		plot1 = null;
-		plot2 = null;
-		plot3 = null;
-		plot4 = null;
 		
 		initDrawer();
 		
@@ -284,24 +270,10 @@ public class MainActivity extends FragmentActivity {
 			Bundle args = getArguments();
 			int index = args.getInt(ARG_OBJECT);
 			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
-			switch (index) {
-				case 1:
-					plot1 = plot;
-					fragment1RootView = rootView;
-					break;
-				case 2:
-					plot2 = plot;
-					fragment2RootView = rootView;
-					break;
-				case 3:
-					plot3 = plot;
-					fragment3RootView = rootView;
-					break;
-				case 4:
-					plot4 = plot;
-					fragment4RootView = rootView;
-					break;
-			}
+			
+			FooBox.getInstance().setPlot(plot, index);
+			FooBox.getInstance().setFragmentRootView(rootView, index);
+			
 			initPlot(plot, index);
 			
 			// Change container background color if needed
@@ -313,7 +285,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 	
-	private static void initPlot(final XYPlot plot, int plotIndex) {
+	private static void initPlot(XYPlot plot, int plotIndex) {
 		plot.setVisibility(View.GONE);
 		
 		// Styling
@@ -367,30 +339,8 @@ public class MainActivity extends FragmentActivity {
 	
 	@SuppressWarnings("serial")
 	public static void loadGraph(int plotIndex, final GraphsContainer graphsContainer, final Period period, FieldType fieldType, Unit unit) {
-		XYPlot plot = null;
-		switch (plotIndex) {
-			case 1: plot = plot1; break;
-			case 2: plot = plot2; break;
-			case 3: plot = plot3; break;
-			case 4: plot = plot4; break;
-		}
-		// If the plot hasn't been inited correctly
-		if (plot == null) {
-			switch (plotIndex) {
-				case 1: initPlot(plot1, 1); break;
-				case 2: initPlot(plot2, 2); break;
-				case 3: initPlot(plot3, 3); break;
-				case 4: initPlot(plot4, 4); break;
-			}
-			switch (plotIndex) {
-				case 1: plot = plot1; break;
-				case 2: plot = plot2; break;
-				case 3: plot = plot3; break;
-				case 4: plot = plot4; break;
-			}
-			if (plot == null)
-				return;
-		}
+		XYPlot plot = FooBox.getInstance().getPlot(plotIndex);
+		
 		plot.setVisibility(View.VISIBLE);
 		
 		// Reset plot
@@ -711,6 +661,12 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
+	private void restartActivity() {
+		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+	}
+	
 	@SuppressLint("NewApi")
 	private void initDrawer() {
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -772,7 +728,7 @@ public class MainActivity extends FragmentActivity {
 						
 						// Remove tab
 						if (displayXdslTabChanged)
-							activity.startActivity(new Intent(MainActivity.this, MainActivity.class));
+							restartActivity();
 						if (applicationThemeChanged)
 							updateApplicationTheme();
 					}
@@ -857,15 +813,16 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
-	public static void updateApplicationTheme() {
+	private static void updateApplicationTheme() {
 		int backgroundColor = Color.WHITE;
 		if (SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.DARK)
 			backgroundColor = context.getResources().getColor(R.color.backgroundColor);
 		
-		fragment1RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
-		fragment2RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
-		fragment3RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
-		fragment4RootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+		for (int i=1; i<=4; i++) {
+			View rootView = FooBox.getInstance().getFragmentRootView(i);
+			if (rootView != null)
+				rootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
+		}
 	}
 	
 	public static void finishedLoading() {
@@ -883,8 +840,8 @@ public class MainActivity extends FragmentActivity {
 		
 		hideLoadingScreen();
 		
-		MainActivity.displayGraphs();
-		MainActivity.refreshGraph();
+		displayGraphs();
+		refreshGraph();
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			MainActivity.startRefreshThread();
@@ -999,6 +956,16 @@ public class MainActivity extends FragmentActivity {
 		super.onDestroy();
 		if (BillingService.isLoaded())
 			BillingService.getInstance().unbind();
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		if (appStarted && findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+			graphsDisplayed = false;
+			finishedLoading();
+		}
 	}
 	
 	@Override

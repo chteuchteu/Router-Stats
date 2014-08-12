@@ -28,8 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
@@ -176,6 +174,9 @@ public class NetHelper {
 	}
 	
 	public static boolean openSession(Freebox freebox) {
+		if (freebox == null)
+			return false;
+		
 		// Get challenge
 		NetResponse response = getChallenge(freebox);
 		
@@ -213,7 +214,7 @@ public class NetHelper {
 	private static NetResponse getChallenge(Freebox freebox) {
 		NetResponse netResponse = null;
 		String apiCallUri = freebox.getApiCallUrl() + "login/";
-		Log.v("", "apiCallUri = " + apiCallUri);
+		
 		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
 		String responseBody = "";
 		try {
