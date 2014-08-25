@@ -154,6 +154,12 @@ public class Util {
 				case MONTH:
 					cal.add(Calendar.DAY_OF_MONTH, -30);
 					break;
+				case TODAY:
+					cal.set(Calendar.HOUR_OF_DAY, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					break;
 				default:
 					break;
 			}

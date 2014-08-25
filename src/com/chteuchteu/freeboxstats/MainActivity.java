@@ -78,15 +78,18 @@ import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.net.OutagesFetcher;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
+import com.chteuchteu.freeboxstats.net.StackLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
+import com.chteuchteu.freeboxstats.ui.GraphFragment;
+import com.chteuchteu.freeboxstats.ui.StackFragment;
 import com.crashlytics.android.Crashlytics;
 
 public class MainActivity extends FragmentActivity {
 	public static FragmentActivity activity;
 	public static Context context;
-	private static final int NB_TABS = 4;
+	private static final int NB_TABS = 5;
 	private static MainActivityPagerAdapter pagerAdapter;
 	private static CustomViewPager viewPager;
 	private ActionBarDrawerToggle drawerToggle;
@@ -233,19 +236,26 @@ public class MainActivity extends FragmentActivity {
 		
 		@Override
 		public Fragment getItem(int i) {
-			Fragment fragment = new GraphFragment();
-			Bundle args = new Bundle();
-			args.putInt(GraphFragment.ARG_OBJECT, i+1);
-			fragment.setArguments(args);
-			return fragment;
+			boolean displayXdslTab = SettingsHelper.getInstance().getDisplayXdslTab();
+			boolean isStack = (displayXdslTab && i == 4 || !displayXdslTab && i == 3);
+			
+			if (isStack)
+				return new StackFragment();
+			else {
+				Fragment fragment = new GraphFragment();
+				Bundle args = new Bundle();
+				args.putInt(GraphFragment.ARG_OBJECT, i+1);
+				fragment.setArguments(args);
+				return fragment;
+			}
 		}
 		
 		@Override
 		public int getCount() {
 			if (SettingsHelper.getInstance().getDisplayXdslTab())
-				return 4;
+				return NB_TABS;
 			else
-				return 3;
+				return NB_TABS-1;
 		}
 		
 		@Override
@@ -254,38 +264,18 @@ public class MainActivity extends FragmentActivity {
 				case 0: return activity.getString(R.string.tab1_name);
 				case 1: return activity.getString(R.string.tab2_name);
 				case 2: return activity.getString(R.string.tab3_name);
-				case 3: return activity.getString(R.string.tab4_name);
+				case 3:
+					if (SettingsHelper.getInstance().getDisplayXdslTab())
+						return activity.getString(R.string.tab4_name);
+					else
+						return activity.getString(R.string.tab5_name);
+				case 4: return activity.getString(R.string.tab5_name);
 				default: return "";
 			}
 		}
 	}
 	
-	public static class GraphFragment extends Fragment {
-		public static final String ARG_OBJECT = "object";
-		
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_graph, container, false);
-			
-			Bundle args = getArguments();
-			int index = args.getInt(ARG_OBJECT);
-			XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
-			
-			FooBox.getInstance().setPlot(plot, index);
-			FooBox.getInstance().setFragmentRootView(rootView, index);
-			
-			initPlot(plot, index);
-			
-			// Change container background color if needed
-			if (index == 4)
-				updateApplicationTheme();
-			
-			
-			return rootView;
-		}
-	}
-	
-	private static void initPlot(XYPlot plot, int plotIndex) {
+	public static void initPlot(XYPlot plot, int plotIndex) {
 		plot.setVisibility(View.GONE);
 		
 		// Styling
@@ -517,7 +507,9 @@ public class MainActivity extends FragmentActivity {
 		
 		toggleSpinningMenuItem(true);
 		
-		new ManualGraphLoader(FooBox.getInstance().getFreebox(), FooBox.getInstance().getPeriod()).execute();
+		Freebox freebox = FooBox.getInstance().getFreebox();
+		new ManualGraphLoader(freebox, FooBox.getInstance().getPeriod()).execute();
+		new StackLoader(freebox);
 	}
 	
 	public static void displayLaunchPairingScreen() {
@@ -813,7 +805,7 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 	
-	private static void updateApplicationTheme() {
+	public static void updateApplicationTheme() {
 		int backgroundColor = Color.WHITE;
 		if (SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.DARK)
 			backgroundColor = context.getResources().getColor(R.color.backgroundColor);

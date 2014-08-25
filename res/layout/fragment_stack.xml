@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/fragment_container"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="@color/backgroundColor">
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="20dp"
+		android:padding="20dp"
+		android:gravity="center_horizontal">
+		
+		<TextView
+			android:id="@+id/stack_down"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="20sp"
+			android:paddingRight="5dp"
+			android:shadowColor="@color/colorPrimaryDarker"
+			android:shadowDx="0"
+			android:shadowDy="1"
+			android:shadowRadius="2"
+			android:text="@string/freebox"
+			android:textColor="@color/drawerFontColor" />
+		<TextView
+			android:id="@+id/stack_down_unit"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="10sp"
+			android:shadowColor="@color/colorPrimaryDarker"
+			android:shadowDx="0"
+			android:shadowDy="1"
+			android:shadowRadius="2"
+			android:text="@string/freebox"
+			android:textColor="@color/drawerFontColor2" />
+		
+	</LinearLayout>
+	
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="20dp"
+		android:padding="20dp"
+		android:gravity="center_horizontal">
+		
+		<TextView
+			android:id="@+id/stack_up"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="20sp"
+			android:paddingRight="5dp"
+			android:shadowColor="@color/colorPrimaryDarker"
+			android:shadowDx="0"
+			android:shadowDy="1"
+			android:shadowRadius="2"
+			android:text="@string/freebox"
+			android:textColor="@color/drawerFontColor" />
+		<TextView
+			android:id="@+id/stack_up_unit"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="10sp"
+			android:shadowColor="@color/colorPrimaryDarker"
+			android:shadowDx="0"
+			android:shadowDy="1"
+			android:shadowRadius="2"
+			android:text="@string/freebox"
+			android:textColor="@color/drawerFontColor2" />
+		
+	</LinearLayout>
+	
+</LinearLayout>
