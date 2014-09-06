@@ -211,7 +211,7 @@ public class Util {
 					} else
 						return "";
 					
-				case DAY :
+				case DAY: case TODAY:
 					if (serie.equals("") || !serie.contains(":"))
 						return "";
 					// Only display 14:00, 16:00, 18:00, ...
@@ -291,7 +291,7 @@ public class Util {
 							}
 						}
 						break;
-					case DAY:
+					case DAY: case TODAY:
 						if (serie.equals("") || !serie.contains(":"))
 							display = false;
 						else {
@@ -356,6 +356,18 @@ public class Util {
 	
 	public static Number convertUnit(Unit from, Unit to, double value) {
 		int fromIndex = from.getIndex();
+		int toIndex = to.getIndex();
+		
+		if (fromIndex == toIndex)
+			return value;
+		else if (fromIndex < toIndex)
+			return value / Math.pow(1024, toIndex - fromIndex);
+		else // if (fromIndex > toIndex)
+			return value * Math.pow(1024, fromIndex - toIndex);
+	}
+	
+	public static Number convertUnit(Unit to, int value) {
+		int fromIndex = Unit.o.getIndex();
 		int toIndex = to.getIndex();
 		
 		if (fromIndex == toIndex)

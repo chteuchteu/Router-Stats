@@ -7,6 +7,7 @@
 	<string name="tab4_name">xDSL</string>
 	<string name="tab5_name">Cumul</string>
 	<string name="rate">Débit</string>
+	<string name="stack">Cumul</string>
 	<string name="temp">Température (°C)</string>
 	<string name="noise">Marge de bruit (dB)</string>
 	<string name="connection_failed">Connection échouée</string>

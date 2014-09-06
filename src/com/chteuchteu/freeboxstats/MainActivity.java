@@ -304,7 +304,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		// Legend
-		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4)
+		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4 || plotIndex == 5)
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
 		else
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
@@ -386,6 +386,8 @@ public class MainActivity extends FragmentActivity {
 		// Set range label
 		if (plotIndex == 1 || plotIndex == 2)
 			plot.setRangeLabel(activity.getString(R.string.rate) + " (" + unit.name() + "/s)");
+		else if (plotIndex == 5)
+			plot.setRangeLabel(activity.getString(R.string.stack) + " (" + unit.name() + ")");
 		
 		plot.redraw();
 		
@@ -509,7 +511,7 @@ public class MainActivity extends FragmentActivity {
 		
 		Freebox freebox = FooBox.getInstance().getFreebox();
 		new ManualGraphLoader(freebox, FooBox.getInstance().getPeriod()).execute();
-		new StackLoader(freebox);
+		new StackLoader(freebox).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {
@@ -991,14 +993,17 @@ public class MainActivity extends FragmentActivity {
 				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
 				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
 						context, android.R.layout.simple_list_item_1);
-				for (Period period : Period.values())
-					arrayAdapter.add(period.getLabel());
+				arrayAdapter.add(Period.HOUR.getLabel());
+				arrayAdapter.add(Period.DAY.getLabel());
+				arrayAdapter.add(Period.WEEK.getLabel());
+				arrayAdapter.add(Period.MONTH.getLabel());
 				
 				builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						FooBox.getInstance().setPeriod(Period.get(which));
-						periodMenuItem.setTitle(Period.get(which).getLabel());
+						Period period = Period.get(which);
+						FooBox.getInstance().setPeriod(period);
+						periodMenuItem.setTitle(period.getLabel());
 						refreshGraph();
 					}
 				});

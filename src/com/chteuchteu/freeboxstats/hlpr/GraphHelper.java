@@ -6,14 +6,17 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.obj.DataSet;
 
 public class GraphHelper {
 	@SuppressLint("SimpleDateFormat")
@@ -55,7 +58,7 @@ public class GraphHelper {
 		try {
 			Date date = new Date((jsonTimestamp * 1000));
 			SimpleDateFormat dateFormat;
-			if (period == Period.HOUR || period == Period.DAY)
+			if (period == Period.HOUR || period == Period.DAY || period == Period.TODAY)
 				dateFormat = new SimpleDateFormat("kk:mm");
 			else if (period == Period.WEEK)
 				dateFormat = new SimpleDateFormat("dd/MM:kk");
@@ -125,6 +128,28 @@ public class GraphHelper {
 	 */
 	public static Unit getBestUnitByMaxVal(int maxVal) {
 		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
+		Log.v("", "valueKo = " + valueKo.intValue());
+		if (valueKo.intValue() <= 600)
+			return Unit.ko;
+		
+		Number valueMo = Util.convertUnit(Unit.o, Unit.Mo, maxVal);
+		Log.v("", "valueMo = " + valueMo.intValue());
+		if (valueMo.intValue() <= 600)
+			return Unit.Mo;
+		
+		Number valueGo = Util.convertUnit(Unit.o, Unit.Go, maxVal);
+		Log.v("", "valueGo = " + valueGo.intValue());
+		if (valueGo.intValue() <= 600)
+			return Unit.Go;
+		
+		return Unit.To;
+	}
+	
+	/**
+	 * Returns the best unit depending on the highest value
+	 */
+	public static Unit getBestUnitByMaxVal(double maxVal) {
+		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
 		if (valueKo.doubleValue() <= 600)
 			return Unit.ko;
 		
@@ -156,5 +181,40 @@ public class GraphHelper {
 			}
 		}
 		return highestValue;
+	}
+	
+	public static long getHighestStackValue(ArrayList<DataSet> dataSets) {
+		long highestValueAll = 0;
+		
+		for (DataSet ds : dataSets) {
+			if (ds.getValues().isEmpty())
+				continue;
+			
+			long lastValue = ds.getValues().get(ds.getValues().size()-1).longValue();
+			
+			if (lastValue > highestValueAll)
+				highestValueAll = lastValue;
+		}
+		
+		return highestValueAll;
+	}
+	
+	public static int getTimestampDiff(JSONArray data) throws JSONException {
+		// For every period > HOUR, the time between 2 values
+		// becomes smaller at 3/4 from the beginning.
+		// We'll try to respect those.
+		int timestamp0 = ((JSONObject) data.get(0)).getInt("time");
+		int timestamp1 = ((JSONObject) data.get(1)).getInt("time");
+		int timestampDiff = timestamp1 - timestamp0;
+		
+		// Try with the next value (sometimes, the result returned is wrong)
+		int timestamp2 = ((JSONObject) data.get(2)).getInt("time");
+		int timestamp3 = ((JSONObject) data.get(3)).getInt("time");
+		int timestampDiff2 = timestamp3 - timestamp2;
+		
+		if (timestampDiff == timestampDiff2)
+			return timestampDiff;
+		else
+			return timestampDiff2;
 	}
 }

@@ -6,38 +6,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
-import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 
-public class GraphsContainer {
-	protected ArrayList<String> serie;
-	protected ArrayList<DataSet> dataSets;
-	protected Period period;
-	public static final Period defaultPeriod = Period.HOUR;
-	protected Unit valuesUnit;
-	public static final Unit defaultUnit = Unit.Mo;
-	private FieldType fieldType;
-	public static final FieldType defaultFieldType = FieldType.DATA;
+public class StackGraphsContainer extends GraphsContainer {
 	
-	// Since StackGraphsContainer extends GraphsContainer
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) { }
-	
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType, Period period) {
+	public StackGraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) {
+		super(fields, data, period);
+		
 		// Construct GraphsContainer from raw data from the Freebox
 		this.period = period;
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
-		if (fieldType == FieldType.DATA)
-			this.valuesUnit = defaultUnit;
-		else if (fieldType == FieldType.TEMP)
-			this.valuesUnit = Unit.C;
-		else if (fieldType == FieldType.NOISE)
-			this.valuesUnit = Unit.dB;
-		this.fieldType = fieldType;
+		this.valuesUnit = defaultUnit;
 		
 		for (Field f : fields)
 			this.dataSets.add(new DataSet(f, valuesUnit));
@@ -80,6 +66,7 @@ public class GraphsContainer {
 				if (obj.getInt("time") - lastAddedTimestamp >= timestampDiff
 						|| obj.getInt("time") - lastAddedTimestamp == 0
 						|| timestampDiff == 0) {
+					int time = obj.getInt("time") - lastAddedTimestamp;
 					// Add the Numbers to the values lists
 					for (Field f : fields) {
 						try {
@@ -93,12 +80,7 @@ public class GraphsContainer {
 								valuesBuffer.clear(f);
 							}
 							
-							if (fieldType == FieldType.DATA)
-								getDataSet(f).addValue(Unit.o, val);
-							else if (fieldType == FieldType.TEMP)
-								getDataSet(f).addValue(Unit.C, val);
-							else if (fieldType == FieldType.NOISE)
-								getDataSet(f).addValue(Unit.dB, val);
+							getDataSet(f).stackValue(val*time);
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
@@ -119,44 +101,25 @@ public class GraphsContainer {
 			}
 		}
 		
-		// Get the best values unit
-		if (fieldType == FieldType.DATA) {
-			int highestValue = GraphHelper.getHighestValue(data, fields);
-			Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
-			
-			if (bestUnit != defaultUnit) {
-				convertAllValues(defaultUnit, bestUnit);
-				this.valuesUnit = bestUnit;
-			}
-		}
-	}
-	
-	protected void convertAllValues(Unit from, Unit to) {
-		if (this.fieldType == FieldType.TEMP)
-			return;
+		long highestValue = GraphHelper.getHighestStackValue(this.dataSets);
+		Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
 		
-		for (DataSet ds : this.dataSets)
-			ds.setValuesUnit(to, true);
-	}
-	
-	public void setSerie(ArrayList<String> val) { this.serie = val; }
-	public ArrayList<String> getSerie() { return this.serie; }
-	
-	public void addDataSet(DataSet val) { this.dataSets.add(val); }
-	public void addDataSet(Field field, JSONArray jsonArray, Unit valuesUnit) { this.dataSets.add(new DataSet(field, jsonArray, valuesUnit)); }
-	public DataSet getDataSet(Field field) {
-		for (DataSet ds : this.dataSets) {
-			if (ds.getField().equals(field))
-				return ds;
+		if (bestUnit != defaultUnit) {
+			convertAllValues(defaultUnit, bestUnit);
+			this.valuesUnit = bestUnit;
 		}
-		return null;
 	}
-	public ArrayList<DataSet> getDataSets() { return this.dataSets; }
-	public ArrayList<Field> getFields() {
-		ArrayList<Field> fields = new ArrayList<Field>();
-		for (DataSet ds : this.dataSets)
-			fields.add(ds.getField());
-		return fields;
+	
+	/**
+	 * Reverse order so the down graph has an higher z-index than the down graph
+	 */
+	@Override
+	public ArrayList<DataSet> getDataSets() {
+		ArrayList<DataSet> newDataSets = new ArrayList<DataSet>();
+		
+		for (int i = this.dataSets.size()-1; i>=0; i--)
+			newDataSets.add(this.dataSets.get(i));
+		
+		return newDataSets;
 	}
-	public Unit getValuesUnit() { return this.valuesUnit; }
 }

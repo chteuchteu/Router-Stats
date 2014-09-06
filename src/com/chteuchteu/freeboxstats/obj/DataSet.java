@@ -6,9 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.hlpr.Util;
 
 public class DataSet {
 	private Field field;
@@ -54,6 +54,18 @@ public class DataSet {
 			this.values.add((double)value/10);
 		else
 			this.values.add(Util.convertUnit(unit, valuesUnit, value));
+	}
+	
+	public void stackValue(long val) {
+		// val = (val-1)+val
+		if (this.values.isEmpty())
+			this.values.add(val);
+		else {
+			Number previousVal = this.values.get(this.values.size()-1);
+			val = previousVal.longValue() + val;
+			
+			this.values.add(val);
+		}
 	}
 	
 	public void setValuesUnit(Unit unit, boolean convertAll) {

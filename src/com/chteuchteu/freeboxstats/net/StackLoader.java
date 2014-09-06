@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -19,10 +20,12 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private boolean stackLoadingFailed;
 	private StackContainer stackContainer;
+	private Period period;
 	
 	public StackLoader(Freebox freebox) {
 		this.freebox = freebox;
 		this.stackLoadingFailed = false;
+		this.period = Period.TODAY;
 	}
 	
 	@Override
@@ -41,6 +44,8 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 			FooBox.getInstance().stack_downUnit.setText(this.stackContainer.getDownUnit().name());
 			FooBox.getInstance().stack_up.setText(this.stackContainer.getFormattedUpStack());
 			FooBox.getInstance().stack_upUnit.setText(this.stackContainer.getUpUnit().name());
+			MainActivity.loadGraph(5, this.stackContainer.getStackGraphsContainer(), period, FieldType.DATA,
+					this.stackContainer.getStackGraphsContainer().getValuesUnit());
 		}
 	}
 	
@@ -55,11 +60,11 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.RATE_UP);
 		
-		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.DAY, fields);
+		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.TODAY, fields);
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
-				return new StackContainer(Period.TODAY, netResponse.getJsonObject().getJSONArray("data"));
+				return new StackContainer(period, fields, netResponse.getJsonObject().getJSONArray("data"));
 			} catch (JSONException ex) {
 				ex.printStackTrace();
 				Crashlytics.logException(ex);

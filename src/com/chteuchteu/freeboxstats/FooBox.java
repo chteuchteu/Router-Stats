@@ -31,9 +31,10 @@ public class FooBox extends Application {
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium = Premium.TRUE;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
+	public static final boolean LOG = false;
 	
 	private static FooBox instance;
 	private Context context;
@@ -56,10 +57,12 @@ public class FooBox extends Application {
 	public View fragment2RootView;
 	public View fragment3RootView;
 	public View fragment4RootView;
+	public View fragment5RootView; // stack fragment
 	public TextView stack_up;
 	public TextView stack_upUnit;
 	public TextView stack_down;
 	public TextView stack_downUnit;
+	public XYPlot stack_plot;
 	
 	@Override
 	public void onCreate() {
@@ -138,7 +141,7 @@ public class FooBox extends Application {
 	}
 	
 	public static void log(String msg) { log("FreeboxStats", msg); }
-	public static void log(String key, String msg) { if (DEBUG) Log.v(key, msg); }
+	public static void log(String key, String msg) { if (DEBUG && LOG) Log.v(key, msg); }
 	
 	public Freebox getFreebox() { return this.freebox; }
 	public void setFreebox(Freebox val) { this.freebox = val; }
@@ -198,6 +201,9 @@ public class FooBox extends Application {
 			case 4:
 				plot4 = plot;
 				break;
+			case 5:
+				stack_plot = plot;
+				break;
 		}
 	}
 	
@@ -207,6 +213,7 @@ public class FooBox extends Application {
 			case 2: return plot2;
 			case 3: return plot3;
 			case 4: return plot4;
+			case 5: return stack_plot;
 			default: return null;
 		}
 	}
@@ -225,6 +232,9 @@ public class FooBox extends Application {
 			case 4:
 				fragment4RootView = view;
 				break;
+			case 5:
+				fragment5RootView = view;
+				break;
 		}
 	}
 	
@@ -234,6 +244,7 @@ public class FooBox extends Application {
 			case 2: return fragment2RootView;
 			case 3: return fragment3RootView;
 			case 4: return fragment4RootView;
+			case 5: return fragment5RootView;
 			default: return null;
 		}
 	}

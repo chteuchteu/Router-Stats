@@ -1,30 +1,36 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
+import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 
 public class StackContainer {
 	private Period period;
+	private ArrayList<Field> fields;
 	
 	private long upStack;
 	private Unit upUnit;
 	private long downStack;
 	private Unit downUnit;
 	
-	public StackContainer(Period period, JSONArray data) {
+	private StackGraphsContainer stackGraphsContainer;
+	
+	public StackContainer(Period period, ArrayList<Field> fields, JSONArray data) {
 		this.period = period;
+		this.fields = fields;
 		
 		computeData(data);
 	}
 	
 	private void computeData(JSONArray data) {
+		// Compute sums
 		long upStackSum = 0;
 		long downStackSum = 0;
 		
@@ -47,11 +53,13 @@ public class StackContainer {
 				
 				upStackSum += upData;
 				downStackSum += downData;
-				Log.v("", "down = "  + downStackSum);
 			} catch (JSONException ex) {
 				ex.printStackTrace();
 			}
 		}
+		
+		// Compute stack
+		this.stackGraphsContainer = new StackGraphsContainer(fields, data, period);
 		
 		this.upStack = upStackSum;
 		this.downStack = downStackSum;
@@ -70,4 +78,5 @@ public class StackContainer {
 				Util.convertUnit(Unit.o, this.downUnit, this.downStack));
 	}
 	public Unit getDownUnit() { return this.downUnit; }
+	public StackGraphsContainer getStackGraphsContainer() { return this.stackGraphsContainer; }
 }
