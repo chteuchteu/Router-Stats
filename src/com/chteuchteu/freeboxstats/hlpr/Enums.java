@@ -22,7 +22,7 @@ public class Enums {
 	}
 	
 	public enum Period {
-		HOUR, DAY, WEEK, MONTH, TODAY;
+		HOUR, DAY, WEEK, MONTH;
 		public int getIndex() { return Arrays.asList(Period.values()).indexOf(this); }
 		public static Period get(int index) { return Period.values()[index]; }
 		public String getLabel() {

@@ -22,10 +22,10 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	private StackContainer stackContainer;
 	private Period period;
 	
-	public StackLoader(Freebox freebox) {
+	public StackLoader(Freebox freebox, Period period) {
 		this.freebox = freebox;
 		this.stackLoadingFailed = false;
-		this.period = Period.TODAY;
+		this.period = period;
 	}
 	
 	@Override
@@ -60,7 +60,7 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.RATE_UP);
 		
-		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.TODAY, fields);
+		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields, true);
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {

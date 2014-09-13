@@ -114,7 +114,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				break;
 		}
 		
-		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields);
+		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields, false);
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {

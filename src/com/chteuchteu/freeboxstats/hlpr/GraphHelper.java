@@ -58,7 +58,7 @@ public class GraphHelper {
 		try {
 			Date date = new Date((jsonTimestamp * 1000));
 			SimpleDateFormat dateFormat;
-			if (period == Period.HOUR || period == Period.DAY || period == Period.TODAY)
+			if (period == Period.HOUR || period == Period.DAY)
 				dateFormat = new SimpleDateFormat("kk:mm");
 			else if (period == Period.WEEK)
 				dateFormat = new SimpleDateFormat("dd/MM:kk");

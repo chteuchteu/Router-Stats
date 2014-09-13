@@ -305,7 +305,7 @@ public class NetHelper {
 		return netResponse;
 	}
 	
-	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields) {
+	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields, boolean stack) {
 		if (fFields.size() == 0)
 			return null;
 		
@@ -327,8 +327,12 @@ public class NetHelper {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			nameValuePairs.add(new BasicNameValuePair("db", db.getSerializedValue()));
 			nameValuePairs.add(new BasicNameValuePair("fields", fields.toString()));
-			if (period != null)
-				nameValuePairs.add(new BasicNameValuePair("date_start", Util.Times.getFrom(period) + ""));
+			if (period != null) {
+				if (stack)
+					nameValuePairs.add(new BasicNameValuePair("date_start", String.valueOf(Util.Times.getFrom_stack(period))));
+				else
+					nameValuePairs.add(new BasicNameValuePair("date_start", String.valueOf(Util.Times.getFrom(period))));
+			}
 			if (db == Db.TEMP)
 				nameValuePairs.add(new BasicNameValuePair("precision", "10"));
 			String paramsString = URLEncodedUtils.format(nameValuePairs, "UTF-8");

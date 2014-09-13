@@ -33,7 +33,7 @@ public class StackFragment extends Fragment {
 		FooBox.getInstance().setFragmentRootView(rootView, PLOT_INDEX);
 		
 		if (freebox != null)
-			new StackLoader(freebox).execute();
+			new StackLoader(freebox, FooBox.getInstance().getPeriod()).execute();
 		
 		MainActivity.initPlot(stack_plot, PLOT_INDEX);
 		

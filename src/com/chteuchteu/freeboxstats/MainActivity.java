@@ -510,8 +510,9 @@ public class MainActivity extends FragmentActivity {
 		toggleSpinningMenuItem(true);
 		
 		Freebox freebox = FooBox.getInstance().getFreebox();
-		new ManualGraphLoader(freebox, FooBox.getInstance().getPeriod()).execute();
-		new StackLoader(freebox).execute();
+		Period period = FooBox.getInstance().getPeriod();
+		new ManualGraphLoader(freebox, period).execute();
+		new StackLoader(freebox, period).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {

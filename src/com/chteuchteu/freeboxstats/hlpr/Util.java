@@ -154,11 +154,39 @@ public class Util {
 				case MONTH:
 					cal.add(Calendar.DAY_OF_MONTH, -30);
 					break;
-				case TODAY:
+				default:
+					break;
+			}
+			return cal.getTime().getTime() / 1000;
+		}
+		
+		public static long getFrom_stack(Period period) {
+			Calendar cal = Calendar.getInstance();
+			switch (period) {
+				case HOUR:
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					break;
+				case DAY:
 					cal.set(Calendar.HOUR_OF_DAY, 0);
 					cal.set(Calendar.MINUTE, 0);
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MILLISECOND, 0);
+					break;
+				case WEEK:
+					cal.set(Calendar.HOUR_OF_DAY, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+					break;
+				case MONTH:
+					cal.set(Calendar.HOUR_OF_DAY, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					cal.set(Calendar.DAY_OF_MONTH, 1);
 					break;
 				default:
 					break;
@@ -211,7 +239,7 @@ public class Util {
 					} else
 						return "";
 					
-				case DAY: case TODAY:
+				case DAY:
 					if (serie.equals("") || !serie.contains(":"))
 						return "";
 					// Only display 14:00, 16:00, 18:00, ...
@@ -291,7 +319,7 @@ public class Util {
 							}
 						}
 						break;
-					case DAY: case TODAY:
+					case DAY:
 						if (serie.equals("") || !serie.contains(":"))
 							display = false;
 						else {

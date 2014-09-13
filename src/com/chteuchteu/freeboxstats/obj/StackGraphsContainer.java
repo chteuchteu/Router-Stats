@@ -6,8 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
@@ -19,7 +17,7 @@ public class StackGraphsContainer extends GraphsContainer {
 	public StackGraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) {
 		super(fields, data, period);
 		
-		// Construct GraphsContainer from raw data from the Freebox
+		// Construct StackGraphsContainer from raw data from the Freebox
 		this.period = period;
 		this.serie = new ArrayList<String>();
 		this.dataSets = new ArrayList<DataSet>();
