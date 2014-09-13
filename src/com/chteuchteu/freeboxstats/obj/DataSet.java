@@ -57,14 +57,15 @@ public class DataSet {
 	}
 	
 	public void stackValue(long val) {
+		Number value = Util.convertUnit(Unit.o, valuesUnit, val);
+		
 		// val = (val-1)+val
 		if (this.values.isEmpty())
-			this.values.add(val);
+			this.values.add(value);
 		else {
 			Number previousVal = this.values.get(this.values.size()-1);
-			val = previousVal.longValue() + val;
-			
-			this.values.add(val);
+			value = previousVal.longValue() + value.longValue();
+			this.values.add(value);
 		}
 	}
 	
@@ -77,4 +78,5 @@ public class DataSet {
 		}
 		this.valuesUnit = unit;
 	}
+	public Unit getValuesUnit() { return this.valuesUnit; }
 }

@@ -8,7 +8,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -58,10 +57,6 @@ public class FooBox extends Application {
 	public View fragment3RootView;
 	public View fragment4RootView;
 	public View fragment5RootView; // stack fragment
-	public TextView stack_up;
-	public TextView stack_upUnit;
-	public TextView stack_down;
-	public TextView stack_downUnit;
 	public XYPlot stack_plot;
 	
 	@Override

@@ -6,7 +6,6 @@ import org.json.JSONException;
 
 import android.os.AsyncTask;
 
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -39,14 +38,9 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(Void res) {
 		MainActivity.updating = false;
 		
-		if (!stackLoadingFailed) {
-			FooBox.getInstance().stack_down.setText(this.stackContainer.getFormattedDownStack());
-			FooBox.getInstance().stack_downUnit.setText(this.stackContainer.getDownUnit().name());
-			FooBox.getInstance().stack_up.setText(this.stackContainer.getFormattedUpStack());
-			FooBox.getInstance().stack_upUnit.setText(this.stackContainer.getUpUnit().name());
+		if (!stackLoadingFailed)
 			MainActivity.loadGraph(5, this.stackContainer.getStackGraphsContainer(), period, FieldType.DATA,
 					this.stackContainer.getStackGraphsContainer().getValuesUnit());
-		}
 	}
 	
 	/**

@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
@@ -128,17 +127,14 @@ public class GraphHelper {
 	 */
 	public static Unit getBestUnitByMaxVal(int maxVal) {
 		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
-		Log.v("", "valueKo = " + valueKo.intValue());
 		if (valueKo.intValue() <= 600)
 			return Unit.ko;
 		
 		Number valueMo = Util.convertUnit(Unit.o, Unit.Mo, maxVal);
-		Log.v("", "valueMo = " + valueMo.intValue());
 		if (valueMo.intValue() <= 600)
 			return Unit.Mo;
 		
 		Number valueGo = Util.convertUnit(Unit.o, Unit.Go, maxVal);
-		Log.v("", "valueGo = " + valueGo.intValue());
 		if (valueGo.intValue() <= 600)
 			return Unit.Go;
 		
@@ -183,6 +179,12 @@ public class GraphHelper {
 		return highestValue;
 	}
 	
+	/**
+	 * Returns the last value of a stack values list
+	 * (should always be the last one)
+	 * @param dataSets
+	 * @return
+	 */
 	public static long getHighestStackValue(ArrayList<DataSet> dataSets) {
 		long highestValueAll = 0;
 		
@@ -196,7 +198,8 @@ public class GraphHelper {
 				highestValueAll = lastValue;
 		}
 		
-		return highestValueAll;
+		// Convert value to octets
+		return Util.convertUnit(dataSets.get(0).getValuesUnit(), Unit.o, highestValueAll).longValue();
 	}
 	
 	public static int getTimestampDiff(JSONArray data) throws JSONException {
