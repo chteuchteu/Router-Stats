@@ -62,7 +62,6 @@ import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
-import com.chteuchteu.freeboxstats.ex.AdsLoadingFail;
 import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -113,7 +112,6 @@ public class MainActivity extends FragmentActivity {
 	
 	private static AppLovinAd cachedAd;
 	private static AppLovinAdView adView;
-	private static boolean alreadyLoggedAdsLoadingFail = false;
 	
 	public static boolean updating;
 	
@@ -885,10 +883,6 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void failedToReceiveAd(int errorCode) {
-				if (!alreadyLoggedAdsLoadingFail) {
-					Crashlytics.logException(new AdsLoadingFail(errorCode));
-					alreadyLoggedAdsLoadingFail = true;
-				}
 				adView.setVisibility(View.GONE);
 			}
 		});
