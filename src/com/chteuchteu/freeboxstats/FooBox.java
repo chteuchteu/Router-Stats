@@ -30,7 +30,7 @@ public class FooBox extends Application {
 	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium = Premium.TRUE;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	public static final boolean LOG = false;
