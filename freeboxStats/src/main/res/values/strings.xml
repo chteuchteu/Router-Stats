@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Freebox Stats</string>
+	<string name="tab1_name">Débit down</string>
+	<string name="tab2_name">Débit up</string>
+	<string name="tab3_name">Temp.</string>
+	<string name="tab4_name">xDSL</string>
+	<string name="tab5_name">Cumul</string>
+	<string name="rate">Débit</string>
+	<string name="stack">Cumul</string>
+	<string name="temp">Température (°C)</string>
+	<string name="noise">Marge de bruit (dB)</string>
+	<string name="connection_failed">Connection échouée</string>
+	<string name="freebox_connection_fail">Erreur lors de la connexion avec la Freebox...</string>
+	<string name="graphs_loading_fail">Erreur lors du chargement des graphiques...</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Annuler</string>
+	<string name="yes">Oui</string>
+	<string name="no">Non</string>
+	<string name="buy">Acheter</string>
+	<string name="close">Fermer</string>
+	<string name="send_dev">Envoyer au développeur</string>
+	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
+	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer...</string>
+	<string name="freeboxstats_premium">Freebox Stats : premium</string>
+	<string name="dissociate">Voulez-vous dissocier l\'application de cette Freebox ?</string>
+	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
+	<string name="firstlaunch_aut_explanation">Lors de sa première utilisation, l\'application a besoin d\'être autorisée auprès de la Freebox.
+		Un message s\'affichera sur l\'écran du boîtier server.</string>
+	<string name="firstlaunch_enattente">En attente de l\'autorisation...</string>
+	<string name="loading">Chargement...</string>
+	<string name="settings_autorefresh">Rafraîchissement auto</string>
+	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
+	<string name="settings_graphprecision">Précision des graphiques</string>
+	<string name="settings_lighttheme">Thème clair</string>
+	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
+	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.
+		Veuillez la redémarrer afin de la mettre à jour. Sans cela, l\'application ne pourra pas accéder aux statistiques.</string>
+	<string name="freeboxupdateneededtitle">Mise à jour nécessaire</string>
+	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
+	<string name="settings_graphprecisiondisabled">(désactivé dans la version gratuite)</string>
+	<string name="send_errors">Envoyer le rapport d\'erreurs</string>
+	<string name="send_errors_explanation">La liste des erreurs va être envoyée au développeur. Merci d\'ajouter le plus détails possibles à propos de cette/ces erreur(s).</string>
+	<string name="send">Envoyer</string>
+	
+	<string name="premium_text"><![CDATA[&#8226;  Accédez aux stats en-dehors de votre réseau local<br />\n
+								&#8226;  Pas de publicités<br />\n
+								&#8226;  Affichage de la liste des coupures<br />\n
+								&#8226;  Supportez le développement de l\'application<br />\n
+								&#8226;  Un seul achat pour toutes les fonctionnalités à venir]]></string>
+	<string name="sessionopening_error"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
+								&#8226;  Votre Freebox n\'est pas à jour<br />\n
+								&#8226;  Votre Freebox est indisponible<br />\n
+								&#8226;  Votre téléphone a un problème de connexion ]]></string>
+	<string name="sessionopening_error_notpremium"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
+								&#8226;  Vous tentez d\'accéder à votre Freebox en-dehors de votre réseau local (le pack de fonctionnalités Premium est nécessaire)<br />\n
+								&#8226;  Votre Freebox n\'est pas à jour<br />\n
+								&#8226;  Votre Freebox est indisponible<br />\n
+								&#8226;  Votre téléphone a un problème de connexion ]]></string>
+								
+	<string name="settings">Paramètres</string>
+	<string name="premium">Premium</string>
+	<string name="freebox">Freebox</string>
+	<string name="debug">Debug</string>
+	<string name="outages">Coupures</string>
+	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté. Seules les coupures d\'il y a moins d\'un mois sont affichées.</string>
+	<string name="the">Le</string>
+	<string name="since2">de</string>
+	<string name="since">Du</string>
+	<string name="to">au</string>
+	<string name="at">à</string>
+	<string name="goodnews">Bonne nouvelle :)</string>
+	<string name="outages_nooutage">Aucune coupure entre le FROM et le TO</string>
+	<string name="outages_error">Erreur lors du chargement des coupures</string>
+</resources>

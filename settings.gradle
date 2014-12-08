@@ -1,0 +1,3 @@
+include ':pagerSlidingTabStripmaster'
+include ':slidingMenu'
+include ':freeboxStats'

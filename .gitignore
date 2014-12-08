@@ -25,6 +25,8 @@ local.properties
 # Android Studio
 .idea/
 .gradle
+!build.gradle
+build/
 /*/local.properties
 /*/out
 /*/*/build
@@ -40,3 +42,9 @@ res/values/com_crashlytics_export_strings.xml
 assets/crashlytics-build.properties
 
 .settings/
+
+# Additionnal files
+gradlew
+gradlew.bat
+import-summary.txt
+local.properties
