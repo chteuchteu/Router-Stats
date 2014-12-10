@@ -1,14 +1,13 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
-import java.util.ArrayList;
+import com.chteuchteu.freeboxstats.obj.Outage;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.obj.Outage;
-import com.crashlytics.android.Crashlytics;
+import java.util.ArrayList;
 
 public class OutagesHelper {
 	public static ArrayList<Outage> getOutages(JSONArray values) {
@@ -30,18 +29,6 @@ public class OutagesHelper {
 		}
 		
 		return outages;
-	}
-	
-	public static void logOutages(ArrayList<Outage> outages) {
-		for (Outage outage : outages)
-			FooBox.log(outage.toString());
-	}
-	
-	public static ArrayList<String> getOutagesAsString(ArrayList<Outage> outages) {
-		ArrayList<String> strings = new ArrayList<String>();
-		for (Outage outage : outages)
-			strings.add(outage.toString());
-		return strings;
 	}
 	
 	public static ArrayList<Outage> reverseOrder(ArrayList<Outage> outages) {

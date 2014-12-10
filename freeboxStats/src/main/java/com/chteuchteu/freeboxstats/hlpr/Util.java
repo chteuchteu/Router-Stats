@@ -1,5 +1,20 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.os.PowerManager;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.androidplot.xy.XValueMarker;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -13,23 +28,6 @@ import java.util.Scanner;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.PowerManager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import com.androidplot.xy.XValueMarker;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
 public class Util {
 	public static String getPrefString(Context c, String key) {
@@ -55,7 +53,7 @@ public class Util {
 			SharedPreferences prefs = c.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putString(key, value);
-			editor.commit();
+			editor.apply();
 		}
 	}
 	
@@ -63,20 +61,14 @@ public class Util {
 		SharedPreferences prefs = c.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putBoolean(key, value);
-		editor.commit();
+		editor.apply();
 	}
 	
 	public static void removePref(Context c, String key) {
 		SharedPreferences prefs = c.getSharedPreferences("user_pref", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(key);
-		editor.commit();
-	}
-	
-	public static boolean isOnline(Context c) {
-		ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
+		editor.apply();
 	}
 	
 	public static final class Streams {
@@ -129,8 +121,7 @@ public class Util {
 	 */
 	public static String encodeAppToken(String app_token, String challenge) throws 
 	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, SignatureException {
-		String res = Crypto.hmacSha1(challenge, app_token);
-		return res;
+		return Crypto.hmacSha1(challenge, app_token);
 	}
 	
 	public static final class Times {
@@ -288,7 +279,7 @@ public class Util {
 					
 					int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays*24*60*60));
 					
-					if (mod == 0 && previousTimestamp != dayTimestamp)
+					if (mod == 0)
 						return GraphHelper.getDateLabelFromTimestamp(dayTimestamp, null);
 					else
 						return "";
@@ -361,7 +352,7 @@ public class Util {
 							
 							int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays*24*60*60));
 							
-							display = (mod == 0 && previousTimestamp != dayTimestamp);
+							display = (mod == 0);
 							currentText = serie;
 						}
 						break;
@@ -394,18 +385,6 @@ public class Util {
 			return value * Math.pow(1024, fromIndex - toIndex);
 	}
 	
-	public static Number convertUnit(Unit to, int value) {
-		int fromIndex = Unit.o.getIndex();
-		int toIndex = to.getIndex();
-		
-		if (fromIndex == toIndex)
-			return value;
-		else if (fromIndex < toIndex)
-			return value / Math.pow(1024, toIndex - fromIndex);
-		else // if (fromIndex > toIndex)
-			return value * Math.pow(1024, fromIndex - toIndex);
-	}
-	
 	public static final class Fonts {
 		/* ENUM Custom Fonts */
 		public enum CustomFont {
@@ -426,11 +405,6 @@ public class Util {
 			t.setTypeface(mFont);
 		}
 		
-		public static void setFont(Context c, Button t, CustomFont font) {
-			Typeface mFont = Typeface.createFromAsset(c.getAssets(), font.getValue());
-			t.setTypeface(mFont);
-		}
-		
 		private static void setFont(ViewGroup group, Typeface font) {
 			int count = group.getChildCount();
 			View v;
@@ -441,10 +415,6 @@ public class Util {
 				} else if (v instanceof ViewGroup)
 					setFont((ViewGroup) v, font);
 			}
-		}
-		
-		public static Typeface getTypeFace(Context c, CustomFont name) {
-			return Typeface.createFromAsset(c.getAssets(), name.getValue());
 		}
 	}
 	

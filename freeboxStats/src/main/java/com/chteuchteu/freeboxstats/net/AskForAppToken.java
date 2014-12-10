@@ -1,17 +1,17 @@
 package com.chteuchteu.freeboxstats.net;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.crashlytics.android.Crashlytics;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 	private boolean ok;
@@ -51,7 +51,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				trackId = res.getInt("track_id");
 				String appTocken = res.getString("app_token");
 				
-				FooBox.getInstance().setTrackId(trackId);
+				//FooBox.getInstance().setTrackId(trackId);
 				FooBox.getInstance().saveAppToken(appTocken);
 				
 				ok = true;

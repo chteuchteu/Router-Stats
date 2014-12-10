@@ -1,14 +1,5 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
@@ -17,41 +8,15 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class GraphHelper {
-	@SuppressLint("SimpleDateFormat")
-	public static ArrayList<String> getDatesLabelsFromData(JSONArray dataArray) {
-		ArrayList<String> list = new ArrayList<String>();
-		for (int i=0; i<dataArray.length(); i++) {
-			try {
-				JSONObject jsonObj = dataArray.getJSONObject(i);
-				long timestamp = jsonObj.getLong("time")*1000;
-				Date date = new Date(timestamp);
-				SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm");
-				list.add(dateFormat.format(date));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				list.add("");
-			}
-		}
-		return list;
-	}
-	
-	public static ArrayList<Long> getTimestampsFromData(JSONArray dataArray) {
-		ArrayList<Long> timestamps = new ArrayList<Long>();
-		
-		for (int i=0; i<dataArray.length(); i++) {
-			try {
-				JSONObject jsonObj = dataArray.getJSONObject(i);
-				long timestamp = (long) jsonObj.getLong("time")*1000;
-				timestamps.add(timestamp);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		
-		return timestamps;
-	}
-	
 	@SuppressLint("SimpleDateFormat")
 	public static String getDateLabelFromTimestamp(long jsonTimestamp, Period period) {
 		try {
@@ -71,16 +36,6 @@ public class GraphHelper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return "";
-		}
-	}
-	
-	@SuppressLint("SimpleDateFormat")
-	public static Date getDateFromString(String s) {
-		try {
-			return new SimpleDateFormat("dd/MM").parse(s);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 	

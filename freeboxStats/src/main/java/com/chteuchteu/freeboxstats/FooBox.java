@@ -1,7 +1,5 @@
 package com.chteuchteu.freeboxstats;
 
-import org.json.JSONException;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -21,16 +19,15 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 import com.crashlytics.android.Crashlytics;
 
+import org.json.JSONException;
+
 public class FooBox extends Application {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
 	public static final String DEVICE_NAME = "Android";
 	
-	private boolean inited;
-	
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium = Premium.TRUE;
-	public static final boolean DEBUG = true;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	public static final boolean FORCE_NOTPREMIUM = false;
 	public static final boolean LOG = false;
@@ -39,8 +36,6 @@ public class FooBox extends Application {
 	private Context context;
 	
 	private Freebox freebox;
-	private String authToken;
-	private int trackId;
 	private ErrorsLogger errorsLogger;
 	
 	private Session session;
@@ -83,9 +78,6 @@ public class FooBox extends Application {
 	 * Then, ask for auth_token.
 	 */
 	public void init(Context context) {
-		if (this.inited)
-			return;
-		
 		this.context = context;
 		
 		MainActivity.displayLoadingScreen();
@@ -106,13 +98,13 @@ public class FooBox extends Application {
 				Crashlytics.logException(ex);
 			}
 			
-			if (this.premium == Premium.UNKNOWN && !FooBox.DEBUG) {
+			if (this.premium == Premium.UNKNOWN && !BuildConfig.DEBUG) {
 				// Init Billing Service
 				BillingService.getInstance(this.context);
 				// Once done :
 				//  * open session
 				//  * update the graph
-			} else if (this.premium == Premium.TRUE || FooBox.DEBUG) {
+			} else if (this.premium == Premium.TRUE || BuildConfig.DEBUG) {
 				// Open session
 				new SessionOpener(this.freebox, this.context).execute();
 				// (once done, we'll update the graph)
@@ -136,16 +128,10 @@ public class FooBox extends Application {
 	}
 	
 	public static void log(String msg) { log("FreeboxStats", msg); }
-	public static void log(String key, String msg) { if (DEBUG && LOG) Log.v(key, msg); }
+	public static void log(String key, String msg) { if (BuildConfig.DEBUG && LOG) Log.v(key, msg); }
 	
 	public Freebox getFreebox() { return this.freebox; }
 	public void setFreebox(Freebox val) { this.freebox = val; }
-	
-	public String getAuthToken() { return this.authToken; }
-	public void setAuthToken(String val) { this.authToken = val; }
-	
-	public int getTrackId() { return this.trackId; }
-	public void setTrackId(int val) { this.trackId = val; }
 	
 	public Session getSession() { return this.session; }
 	
@@ -159,9 +145,8 @@ public class FooBox extends Application {
 	public boolean isPremium() {
 		if (FORCE_NOTPREMIUM)
 			return false;
-		return this.premium == Premium.TRUE || DEBUG;
+		return this.premium == Premium.TRUE || BuildConfig.DEBUG;
 	}
-	public void setIsPremium(Premium val) { this.premium = val; }
 	public void setIsPremium(boolean val) {
 		if (val)
 			this.premium = Premium.TRUE;

@@ -6,14 +6,15 @@
 	<item
 		android:id="@+id/period"
 		android:title="Heure"
-		android:showAsAction="always" />
+		app:showAsAction="ifRoom" />
 	<item
 		android:id="@+id/action_refresh"
+		android:icon="@drawable/ic_action_refresh"
 		android:title="Actualiser"
-		android:showAsAction="always" />
+		app:showAsAction="ifRoom" />
 	<item
 		android:id="@+id/action_valider"
 		android:title="Terminé"
-		android:showAsAction="always" />
+		app:showAsAction="ifRoom" />
 	
 </menu>

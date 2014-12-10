@@ -1,31 +1,25 @@
 package com.chteuchteu.freeboxstats;
 
-import java.text.DecimalFormat;
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
-
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +56,8 @@ import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
+import com.balysv.materialmenu.MaterialMenuDrawable;
+import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -85,15 +81,19 @@ import com.chteuchteu.freeboxstats.ui.GraphFragment;
 import com.chteuchteu.freeboxstats.ui.StackFragment;
 import com.crashlytics.android.Crashlytics;
 
-public class MainActivity extends FragmentActivity {
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+
+public class MainActivity extends ActionBarActivity {
 	public static FragmentActivity activity;
 	public static Context context;
 	private static final int NB_TABS = 5;
-	private static MainActivityPagerAdapter pagerAdapter;
-	private static CustomViewPager viewPager;
-	private ActionBarDrawerToggle drawerToggle;
+	private MaterialMenuIconToolbar materialMenu;
 	private DrawerLayout drawerLayout;
-	
+	private boolean isDrawerOpened;
+
 	private static Thread refreshThread;
 	private static boolean justRefreshed;
 	public static final int AUTOREFRESH_TIME = 20000;
@@ -120,9 +120,12 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Crashlytics.start(this);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
-		
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
 		context = this;
 		activity = this;
 		graphsDisplayed = false;
@@ -131,8 +134,7 @@ public class MainActivity extends FragmentActivity {
 		loadAds = false;
 		
 		initDrawer();
-		
-		ActionBar actionBar = getActionBar();
+
 		// Some design
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
@@ -142,8 +144,13 @@ public class MainActivity extends FragmentActivity {
 				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			}
 		}
-		actionBar.setBackgroundDrawable(new ColorDrawable(0xff3367D6));
-		actionBar.setTitle("");
+
+		this.materialMenu = new MaterialMenuIconToolbar(this, Color.WHITE, MaterialMenuDrawable.Stroke.THIN) {
+			@Override public int getToolbarViewId() {
+				return R.id.toolbar;
+			}
+		};
+		this.materialMenu.setNeverDrawTouch(true);
 		
 		// Set font
 		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
@@ -212,9 +219,9 @@ public class MainActivity extends FragmentActivity {
 		
 		refreshMenuItem.setVisible(true);
 		periodMenuItem.setVisible(true);
-		
-		pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
-		viewPager = (CustomViewPager) activity.findViewById(R.id.pager);
+
+		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
+		CustomViewPager viewPager = (CustomViewPager) activity.findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
 		
 		// Let Android load all the tabs at once (= disable lazy load)
@@ -666,20 +673,7 @@ public class MainActivity extends FragmentActivity {
 	@SuppressLint("NewApi")
 	private void initDrawer() {
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-				R.drawable.ic_navigation_drawer, R.string.app_name, R.string.app_name) {
-			public void onDrawerClosed(View view) {
-				super.onDrawerClosed(view);
-			}
-			public void onDrawerOpened(View view) {
-				super.onDrawerOpened(view);
-			}
-		};
-		drawerLayout.setDrawerListener(drawerToggle);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-			getActionBar().setHomeButtonEnabled(true);
-		
+
 		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -898,13 +892,13 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		drawerToggle.syncState();
+		materialMenu.syncState(savedInstanceState);
 	}
-	
+
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		drawerToggle.onConfigurationChanged(newConfig);
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		materialMenu.onSaveInstanceState(outState);
 	}
 	
 	@Override
@@ -916,6 +910,30 @@ public class MainActivity extends FragmentActivity {
 		periodMenuItem.setVisible(false);
 		validerMenuItem = menu.findItem(R.id.action_valider);
 		validerMenuItem.setVisible(false);
+
+		drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+			@Override
+			public void onDrawerSlide(View view, float slideOffset) {
+				materialMenu.setTransformationOffset(
+						MaterialMenuDrawable.AnimationState.BURGER_ARROW,
+						isDrawerOpened ? 2 - slideOffset : slideOffset);
+			}
+
+			@Override
+			public void onDrawerOpened(View view) {
+				isDrawerOpened = true;
+				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.ARROW);
+			}
+
+			@Override
+			public void onDrawerClosed(View view) {
+				isDrawerOpened = false;
+				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.BURGER);
+			}
+
+			@Override
+			public void onDrawerStateChanged(int i) { }
+		});
 		
 		return true;
 	}
@@ -980,10 +998,13 @@ public class MainActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (drawerToggle.onOptionsItemSelected(item))
-			return true;
-		
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				if (isDrawerOpened)
+					drawerLayout.closeDrawer(Gravity.START);
+				else
+					drawerLayout.openDrawer(Gravity.START);
+				break;
 			case R.id.action_refresh:
 				refreshGraph(true);
 				break;

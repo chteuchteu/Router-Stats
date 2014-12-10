@@ -1,7 +1,5 @@
 package com.chteuchteu.freeboxstats.net;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -20,6 +18,8 @@ import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.ex.BillingServiceBadResponse;
 import com.crashlytics.android.Crashlytics;
+
+import java.util.ArrayList;
 
 public class BillingService {
 	private static BillingService instance;
