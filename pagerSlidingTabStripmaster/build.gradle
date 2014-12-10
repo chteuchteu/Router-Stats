@@ -5,12 +5,10 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.astuetz.pagerslidingtabstrip"
     }
 
     buildTypes {
         release {
-            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }

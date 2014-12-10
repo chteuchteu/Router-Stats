@@ -153,7 +153,7 @@ public class MainActivity extends ActionBarActivity {
 		this.materialMenu.setNeverDrawTouch(true);
 		
 		// Set font
-		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.viewroot), CustomFont.RobotoCondensed_Light);
+		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.drawer), CustomFont.RobotoCondensed_Light);
 		
 		FooBox.getInstance().init(this);
 	}
@@ -995,7 +995,7 @@ public class MainActivity extends ActionBarActivity {
 				break;
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
