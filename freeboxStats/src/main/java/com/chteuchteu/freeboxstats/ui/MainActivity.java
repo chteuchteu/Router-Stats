@@ -15,11 +15,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,10 +29,8 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,15 +53,13 @@ import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
-import com.balysv.materialmenu.MaterialMenuDrawable;
-import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.chteuchteu.freeboxstats.CustomViewPager;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
+import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
 import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
-import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
@@ -92,9 +86,7 @@ public class MainActivity extends ActionBarActivity {
 	public static FragmentActivity activity;
 	public static Context context;
 	private static final int NB_TABS = 5;
-	private MaterialMenuIconToolbar materialMenu;
-	private DrawerLayout drawerLayout;
-	private boolean isDrawerOpened;
+	private DrawerHelper drawerHelper;
 
 	private static Thread refreshThread;
 	private static boolean justRefreshed;
@@ -139,7 +131,8 @@ public class MainActivity extends ActionBarActivity {
 		updating = false;
 		loadAds = false;
 		
-		initDrawer();
+		this.drawerHelper = new DrawerHelper(this, this);
+		this.drawerHelper.initDrawer();
 
 		// Some design
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -150,16 +143,6 @@ public class MainActivity extends ActionBarActivity {
 				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			}
 		}
-
-		this.materialMenu = new MaterialMenuIconToolbar(this, Color.WHITE, MaterialMenuDrawable.Stroke.THIN) {
-			@Override public int getToolbarViewId() {
-				return R.id.toolbar;
-			}
-		};
-		this.materialMenu.setNeverDrawTouch(true);
-		
-		// Set font
-		Util.Fonts.setFont(this, (ViewGroup) findViewById(R.id.drawer), CustomFont.RobotoCondensed_Light);
 		
 		FooBox.getInstance().init(this);
 	}
@@ -173,7 +156,7 @@ public class MainActivity extends ActionBarActivity {
 		activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
 	
-	private static void startRefreshThread() {
+	public static void startRefreshThread() {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		
@@ -427,7 +410,7 @@ public class MainActivity extends ActionBarActivity {
 						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
 						
 						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
-						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, FooBox.getInstance().getErrorsLogger().getErrors());
+						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, FooBox.getInstance().getErrorsLogger().getErrors());
 						lv.setAdapter(arrayAdapter);
 						
 						AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -480,7 +463,7 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	private void displayOutagesDialog() {
+	public void displayOutagesDialog() {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
 
@@ -598,7 +581,7 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void run() {
 				activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
-				
+
 				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
 				activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
 				final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
@@ -670,143 +653,10 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	private void restartActivity() {
+	public void restartActivity() {
 		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
-	}
-	
-	@SuppressLint("NewApi")
-	private void initDrawer() {
-		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-		findViewById(R.id.drawer_settings).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				LayoutInflater inflater = LayoutInflater.from(context);
-				View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) findViewById(R.id.root_layout));
-				
-				final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
-				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
-				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
-				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
-				final CheckBox settings_lightTheme = (CheckBox) dialog_layout.findViewById(R.id.settings_lighttheme);
-				settings_lightTheme.setChecked(SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.LIGHT);
-				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
-				ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, GraphPrecision.getStringArray());
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				settings_graphPrecision.setAdapter(adapter);
-				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-				if (!FooBox.getInstance().isPremium()) {
-					dialog_layout.findViewById(R.id.settings_graphprecisiondisabled).setVisibility(View.VISIBLE);
-					settings_graphPrecision.setEnabled(false);
-				}
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
-						boolean displayXdslTabChanged = SettingsHelper.getInstance().getDisplayXdslTab()
-								!= settings_displayXdslTab.isChecked();
-						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
-						SettingsHelper.getInstance().setGraphPrecision(
-								GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-						boolean applicationThemeChanged = SettingsHelper.getInstance().getApplicationTheme()
-								!= ApplicationTheme.get(settings_lightTheme.isChecked());
-						SettingsHelper.getInstance().setApplicationTheme(ApplicationTheme.get(settings_lightTheme.isChecked()));
-						
-						if (settings_autorefresh.isChecked())
-							startRefreshThread();
-						else
-							stopRefreshThread();
-						
-						// Remove tab
-						if (displayXdslTabChanged)
-							restartActivity();
-						if (applicationThemeChanged)
-							updateApplicationTheme();
-					}
-				});
-				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
-						settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-						dialog.dismiss();
-					}
-				});
-				builder.setView(dialog_layout);
-				builder.show();
-			}
-		});
-		
-		context = this;
-		activity = this;
-		findViewById(R.id.drawer_premium).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				LayoutInflater inflater = LayoutInflater.from(context);
-				View dialog_layout = inflater.inflate(R.layout.premium_dialog, (ViewGroup) findViewById(R.id.root_layout));
-				
-				final TextView tv = (TextView) dialog_layout.findViewById(R.id.premium_tv);
-				tv.setText(Html.fromHtml(context.getString(R.string.premium_text)));
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setPositiveButton(R.string.buy, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						BillingService.getInstance().launchPurchase();
-					}
-				});
-				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.setTitle(R.string.freeboxstats_premium);
-				builder.setView(dialog_layout);
-				// Avoid error when the app is closing or something
-				if (!activity.isFinishing())
-					builder.show();
-			}
-		});
-		
-		findViewById(R.id.drawer_freebox).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				drawerLayout.closeDrawers();
-				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-				.setMessage(R.string.dissociate)
-				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Freebox.delete(context);
-						Util.restartApp(context);
-					}
-				})
-				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				}).setIcon(android.R.drawable.ic_dialog_alert);
-				// Avoid error when the app is closing or something
-				if (!MainActivity.this.isFinishing())
-					builder.show();
-			}
-		});
-		
-		findViewById(R.id.drawer_outages).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				displayOutagesDialog();
-			}
-		});
 	}
 	
 	public static void updateApplicationTheme() {
@@ -898,13 +748,13 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		materialMenu.syncState(savedInstanceState);
+		drawerHelper.getToolbarIcon().syncState(savedInstanceState);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		materialMenu.onSaveInstanceState(outState);
+		drawerHelper.getToolbarIcon().onSaveInstanceState(outState);
 	}
 	
 	@Override
@@ -917,29 +767,7 @@ public class MainActivity extends ActionBarActivity {
 		validerMenuItem = menu.findItem(R.id.action_valider);
 		validerMenuItem.setVisible(false);
 
-		drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-			@Override
-			public void onDrawerSlide(View view, float slideOffset) {
-				materialMenu.setTransformationOffset(
-						MaterialMenuDrawable.AnimationState.BURGER_ARROW,
-						isDrawerOpened ? 2 - slideOffset : slideOffset);
-			}
-
-			@Override
-			public void onDrawerOpened(View view) {
-				isDrawerOpened = true;
-				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.ARROW);
-			}
-
-			@Override
-			public void onDrawerClosed(View view) {
-				isDrawerOpened = false;
-				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.BURGER);
-			}
-
-			@Override
-			public void onDrawerStateChanged(int i) { }
-		});
+		drawerHelper.setupAnimatedIcon();
 		
 		return true;
 	}
@@ -1006,17 +834,14 @@ public class MainActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if (isDrawerOpened)
-					drawerLayout.closeDrawer(Gravity.START);
-				else
-					drawerLayout.openDrawer(Gravity.START);
+				drawerHelper.toggleDrawer();
 				break;
 			case R.id.action_refresh:
 				refreshGraph(true);
 				break;
 			case R.id.period:
 				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
-				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
 						context, android.R.layout.simple_list_item_1);
 				arrayAdapter.add(Period.HOUR.getLabel());
 				arrayAdapter.add(Period.DAY.getLabel());

@@ -19,4 +19,32 @@
 		<item name="pstsTabPaddingLeftRight">0dp</item>
 	</style>
 
+	<style name="Drawer_Row">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:background">@drawable/drawer_dark_button</item>
+		<item name="android:orientation">horizontal</item>
+		<item name="android:padding">@dimen/item_padding</item>
+		<item name="android:paddingLeft">16dp</item>
+		<item name="android:paddingRight">16dp</item>
+		<item name="android:gravity">center_vertical</item>
+	</style>
+
+	<style name="Drawer_Row_Icon">
+		<item name="android:layout_width">24dp</item>
+		<item name="android:layout_height">24dp</item>
+	</style>
+
+	<style name="Drawer_Row_Text">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_marginLeft">28dp</item>
+		<item name="android:textSize">@dimen/drawer_font_size</item>
+		<item name="android:textColor">@color/drawerFontColor</item>
+		<item name="android:shadowColor">@color/colorPrimaryDarker</item>
+		<item name="android:shadowDx">0</item>
+		<item name="android:shadowDy">1</item>
+		<item name="android:shadowRadius">2</item>
+	</style>
+
 </resources>
