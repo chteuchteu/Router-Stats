@@ -56,8 +56,9 @@ public class BillingService {
 				MainActivity.finishedLoading();
 			}
 		};
-		isBound = activityContext.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn,
-				Context.BIND_AUTO_CREATE);
+		Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+		intent.setPackage("com.android.vending");
+		isBound = activityContext.bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
 	}
 	
 	public void launchPurchase() {
@@ -65,7 +66,7 @@ public class BillingService {
 			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
 			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
 			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
-					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+					REQUEST_CODE, new Intent(), 0, 0, 0);
 		}
 		catch (Exception ex) { launchPurchase_retry(); }
 	}
@@ -75,19 +76,9 @@ public class BillingService {
 			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
 			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
 			MainActivity.activity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-					REQUEST_CODE, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+					REQUEST_CODE, new Intent(), 0, 0, 0);
 		}
-		catch (RemoteException ex) {
-			ex.printStackTrace();
-			Crashlytics.logException(ex);
-			displayErrorToast();
-		}
-		catch (SendIntentException ex) {
-			ex.printStackTrace();
-			Crashlytics.logException(ex);
-			displayErrorToast();
-		}
-		catch (NullPointerException ex) {
+		catch (RemoteException | SendIntentException | NullPointerException ex) {
 			ex.printStackTrace();
 			Crashlytics.logException(ex);
 			displayErrorToast();

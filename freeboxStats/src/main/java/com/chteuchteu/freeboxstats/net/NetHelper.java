@@ -14,7 +14,6 @@ import com.crashlytics.android.Crashlytics;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -63,8 +62,6 @@ public class NetHelper {
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (ClientProtocolException ex) {
-			ex.printStackTrace();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -87,8 +84,8 @@ public class NetHelper {
 	}
 	
 	public static NetResponse authorize(Freebox freebox, String appInfo) {
-		HttpClient httpClient = null;
-		HttpPost httpPost = null;
+		HttpClient httpClient;
+		HttpPost httpPost;
 		InputStream inStream = null;
 		NetResponse netResponse = null;
 		
@@ -116,9 +113,7 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (JSONException ex) {
+		} catch (IOException | JSONException ex) {
 			ex.printStackTrace();
 		} finally {
 			if (inStream != null) {
@@ -144,8 +139,6 @@ public class NetHelper {
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -180,7 +173,7 @@ public class NetHelper {
 		// Get challenge
 		NetResponse response = getChallenge(freebox);
 		
-		String challenge = "";
+		String challenge;
 		if (response != null && response.hasSucceeded()) {
 			try {
 				challenge = response.getJsonObject().getString("challenge");
@@ -225,8 +218,6 @@ public class NetHelper {
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -249,8 +240,8 @@ public class NetHelper {
 	}
 	
 	private static NetResponse beginSession(Freebox freebox, String challenge) {
-		HttpClient httpClient = null;
-		HttpPost httpPost = null;
+		HttpClient httpClient;
+		HttpPost httpPost;
 		InputStream inStream = null;
 		NetResponse netResponse = null;
 		
@@ -282,20 +273,9 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
-		} catch (IOException exception) {
+		} catch (IOException | JSONException | InvalidKeyException | NoSuchAlgorithmException | SignatureException | IllegalArgumentException exception) {
 			exception.printStackTrace();
-		} catch (JSONException exception) {
-			exception.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (SignatureException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			if (inStream != null) {
 				try {
 					inStream.close();
@@ -312,8 +292,8 @@ public class NetHelper {
 		if (fFields.size() == 0 || freebox == null)
 			return null;
 		
-		HttpClient httpClient = null;
-		HttpGet httpGet = null;
+		HttpClient httpClient;
+		HttpGet httpGet;
 		InputStream inStream = null;
 		NetResponse netResponse = null;
 		
@@ -327,7 +307,7 @@ public class NetHelper {
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());
 			
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			List<NameValuePair> nameValuePairs = new ArrayList<>();
 			nameValuePairs.add(new BasicNameValuePair("db", db.getSerializedValue()));
 			nameValuePairs.add(new BasicNameValuePair("fields", fields.toString()));
 			if (period != null) {
@@ -359,9 +339,7 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
-		} catch (IOException exception) {
-			exception.printStackTrace();
-		} catch (JSONException exception) {
+		} catch (IOException | JSONException exception) {
 			exception.printStackTrace();
 		} finally {
 			if (inStream != null) {
@@ -388,8 +366,6 @@ public class NetHelper {
 			
 			ResponseHandler<String> responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
