@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.MainActivity;
 import com.chteuchteu.freeboxstats.R;
 
 public class GraphFragment extends Fragment {

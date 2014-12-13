@@ -6,7 +6,7 @@ import org.json.JSONException;
 
 import android.os.AsyncTask;
 
-import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;

@@ -2,7 +2,7 @@ package com.chteuchteu.freeboxstats.obj;
 
 import java.util.ArrayList;
 
-import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 public class ErrorsLogger {
 	private ArrayList<String> errors;

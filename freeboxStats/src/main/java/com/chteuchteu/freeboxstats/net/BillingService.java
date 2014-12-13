@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.ex.BillingServiceBadResponse;
 import com.crashlytics.android.Crashlytics;

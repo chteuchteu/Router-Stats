@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.MainActivity;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 
 public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {

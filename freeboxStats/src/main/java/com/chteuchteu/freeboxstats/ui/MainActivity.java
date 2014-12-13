@@ -1,4 +1,4 @@
-package com.chteuchteu.freeboxstats;
+package com.chteuchteu.freeboxstats.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -33,6 +33,7 @@ import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +59,9 @@ import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
 import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
+import com.chteuchteu.freeboxstats.CustomViewPager;
+import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -77,8 +81,6 @@ import com.chteuchteu.freeboxstats.net.StackLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
-import com.chteuchteu.freeboxstats.ui.GraphFragment;
-import com.chteuchteu.freeboxstats.ui.StackFragment;
 import com.crashlytics.android.Crashlytics;
 
 import java.text.DecimalFormat;
@@ -114,17 +116,21 @@ public class MainActivity extends ActionBarActivity {
 	private static AppLovinAdView adView;
 	
 	public static boolean updating;
+
+	private static ProgressBar progressBar;
 	
 	@SuppressLint("InlinedApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Crashlytics.start(this);
-		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
+
+		progressBar = Util.prepareGmailStyleProgressBar(this, getSupportActionBar(), findViewById(R.id.tabs));
+		progressBar.setIndeterminate(true);
 
 		context = this;
 		activity = this;
@@ -500,7 +506,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public static void toggleSpinningMenuItem(boolean visible) {
-		activity.setProgressBarIndeterminateVisibility(visible);
+		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
 	}
 	
 	public static void refreshGraph() { refreshGraph(false); }
