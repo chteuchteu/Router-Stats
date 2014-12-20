@@ -762,10 +762,17 @@ public class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.setVisible(false);
-		periodMenuItem = menu.findItem(R.id.period);
+		periodMenuItem = menu.findItem(R.id.menu_period);
 		periodMenuItem.setVisible(false);
 		validerMenuItem = menu.findItem(R.id.action_valider);
 		validerMenuItem.setVisible(false);
+
+		// Set menu labels
+		menu.findItem(R.id.menu_period).setTitle(Period.HOUR.getLabel());
+		menu.findItem(R.id.period_hour).setTitle(Period.HOUR.getLabel());
+		menu.findItem(R.id.period_day).setTitle(Period.DAY.getLabel());
+		menu.findItem(R.id.period_week).setTitle(Period.WEEK.getLabel());
+		menu.findItem(R.id.period_month).setTitle(Period.MONTH.getLabel());
 
 		drawerHelper.setupAnimatedIcon();
 		
@@ -839,25 +846,25 @@ public class MainActivity extends ActionBarActivity {
 			case R.id.action_refresh:
 				refreshGraph(true);
 				break;
-			case R.id.period:
-				AlertDialog.Builder builderSingle = new AlertDialog.Builder(context);
-				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-						context, android.R.layout.simple_list_item_1);
-				arrayAdapter.add(Period.HOUR.getLabel());
-				arrayAdapter.add(Period.DAY.getLabel());
-				arrayAdapter.add(Period.WEEK.getLabel());
-				arrayAdapter.add(Period.MONTH.getLabel());
-				
-				builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Period period = Period.get(which);
-						FooBox.getInstance().setPeriod(period);
-						periodMenuItem.setTitle(period.getLabel());
-						refreshGraph();
-					}
-				});
-				builderSingle.show();
+			case R.id.period_hour:
+				FooBox.getInstance().setPeriod(Period.HOUR);
+				periodMenuItem.setTitle(Period.HOUR.getLabel());
+				refreshGraph();
+				break;
+			case R.id.period_day:
+				FooBox.getInstance().setPeriod(Period.DAY);
+				periodMenuItem.setTitle(Period.DAY.getLabel());
+				refreshGraph();
+				break;
+			case R.id.period_week:
+				FooBox.getInstance().setPeriod(Period.WEEK);
+				periodMenuItem.setTitle(Period.WEEK.getLabel());
+				refreshGraph();
+				break;
+			case R.id.period_month:
+				FooBox.getInstance().setPeriod(Period.MONTH);
+				periodMenuItem.setTitle(Period.MONTH.getLabel());
+				refreshGraph();
 				break;
 			case R.id.action_valider:
 				validerMenuItem.setVisible(false);

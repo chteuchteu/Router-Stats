@@ -2,11 +2,26 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context="com.chteuchteu.freeboxstats.ui.MainActivity" >
-	
+
 	<item
-		android:id="@+id/period"
-		android:title="Heure"
-		app:showAsAction="ifRoom" />
+		android:id="@+id/menu_period"
+		android:title=""
+		app:showAsAction="ifRoom">
+		<menu>
+			<item
+				android:id="@+id/period_hour"
+				android:title=""/>
+			<item
+				android:id="@+id/period_day"
+				android:title=""/>
+			<item
+				android:id="@+id/period_week"
+				android:title=""/>
+			<item
+				android:id="@+id/period_month"
+				android:title=""/>
+		</menu>
+	</item>
 	<item
 		android:id="@+id/action_refresh"
 		android:icon="@drawable/ic_action_refresh"
