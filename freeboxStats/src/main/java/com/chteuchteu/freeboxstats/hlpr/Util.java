@@ -287,7 +287,10 @@ public class Util {
 					
 					if (previousTimestamp == dayTimestamp)
 						return "";
-					
+
+					if (series.get(series.size()-1).equals(""))
+						return "";
+
 					long latestTimestamp = Util.Times.getDayBeginFromTimestamp(
 							Long.parseLong(series.get(series.size()-1)));
 					
@@ -350,24 +353,32 @@ public class Util {
 						}
 						break;
 					case MONTH:
-						// Only display one day out of X
-						int eachXdays = 5;
-						long dayTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(serie));
-						int previousIndex = pos-1;
-						if (previousIndex < 0)
-							previousIndex = 0;
-						long previousTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(series.get(previousIndex)));
-						
-						if (previousTimestamp == dayTimestamp) {
+						if (serie.equals(""))
 							display = false;
-						} else {
-							long latestTimestamp = Util.Times.getDayBeginFromTimestamp(
-									Long.parseLong(series.get(series.size()-1)));
-							
-							int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays*24*60*60));
-							
-							display = (mod == 0);
-							currentText = serie;
+						else {
+							// Only display one day out of X
+							int eachXdays = 5;
+							long dayTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(serie));
+							int previousIndex = pos - 1;
+							if (previousIndex < 0)
+								previousIndex = 0;
+							long previousTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(series.get(previousIndex)));
+
+							if (previousTimestamp == dayTimestamp) {
+								display = false;
+							} else {
+								if (series.get(series.size() - 1).equals(""))
+									display = false;
+								else {
+									long latestTimestamp = Util.Times.getDayBeginFromTimestamp(
+											Long.parseLong(series.get(series.size() - 1)));
+
+									int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays * 24 * 60 * 60));
+
+									display = (mod == 0);
+								}
+								currentText = serie;
+							}
 						}
 						break;
 					default:

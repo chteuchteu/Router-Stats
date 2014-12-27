@@ -17,13 +17,13 @@ public class DataSet {
 	
 	public DataSet(Field field, Unit valuesUnit) {
 		this.field = field;
-		this.values = new ArrayList<Number>();
+		this.values = new ArrayList<>();
 		this.valuesUnit = valuesUnit;
 	}
 	
 	public DataSet(Field field, JSONArray jsonArray, Unit valuesUnit) {
 		this.valuesUnit = valuesUnit;
-		this.values = new ArrayList<Number>();
+		this.values = new ArrayList<>();
 		try {
 			for (int i=0; i<jsonArray.length(); i++) {
 				JSONObject jsonObj = jsonArray.getJSONObject(i);
@@ -71,7 +71,7 @@ public class DataSet {
 	
 	public void setValuesUnit(Unit unit, boolean convertAll) {
 		if (convertAll) {
-			ArrayList<Number> newValues = new ArrayList<Number>();
+			ArrayList<Number> newValues = new ArrayList<>();
 			for (Number number : this.values)
 				newValues.add(Util.convertUnit(valuesUnit, unit, number.doubleValue()));
 			this.values = newValues;

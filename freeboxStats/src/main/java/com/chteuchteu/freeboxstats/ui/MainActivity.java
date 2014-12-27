@@ -186,7 +186,6 @@ public class MainActivity extends ActionBarActivity {
 							}
 						} else return;
 					} catch (InterruptedException ex) {
-						ex.printStackTrace();
 						Thread.currentThread().interrupt();
 						return;
 					}
@@ -218,6 +217,8 @@ public class MainActivity extends ActionBarActivity {
 		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) activity.findViewById(R.id.tabs);
 		tabs.setViewPager(viewPager);
 		tabs.setTextColor(Color.WHITE);
+		tabs.setDividerColor(Color.TRANSPARENT);
+		Util.Fonts.setFont(context, (ViewGroup) tabs.getRootView(), CustomFont.Roboto_Regular);
 		
 		graphsDisplayed = true;
 	}
