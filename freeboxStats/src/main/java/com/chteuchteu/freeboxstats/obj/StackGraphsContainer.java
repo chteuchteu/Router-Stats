@@ -1,16 +1,16 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class StackGraphsContainer extends GraphsContainer {
 	
@@ -19,8 +19,8 @@ public class StackGraphsContainer extends GraphsContainer {
 		
 		// Construct StackGraphsContainer from raw data from the Freebox
 		this.period = period;
-		this.serie = new ArrayList<String>();
-		this.dataSets = new ArrayList<DataSet>();
+		this.serie = new ArrayList<>();
+		this.dataSets = new ArrayList<>();
 		this.valuesUnit = defaultUnit;
 		
 		for (Field f : fields)
@@ -113,7 +113,7 @@ public class StackGraphsContainer extends GraphsContainer {
 	 */
 	@Override
 	public ArrayList<DataSet> getDataSets() {
-		ArrayList<DataSet> newDataSets = new ArrayList<DataSet>();
+		ArrayList<DataSet> newDataSets = new ArrayList<>();
 		
 		for (int i = this.dataSets.size()-1; i>=0; i--)
 			newDataSets.add(this.dataSets.get(i));

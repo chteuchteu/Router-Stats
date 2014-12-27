@@ -1,19 +1,19 @@
 package com.chteuchteu.freeboxstats.net;
 
-import java.util.ArrayList;
-
-import org.json.JSONException;
-
 import android.os.AsyncTask;
 
-import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.StackContainer;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
 
 public class StackLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
@@ -45,11 +45,9 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	
 	/**
 	 * Load the graph and display the result on MainActivity
-	 * PlotIndex from 1 to 3
-	 * @param plotIndex
 	 */
 	private StackContainer loadData() {
-		ArrayList<Field> fields = new ArrayList<Field>();
+		ArrayList<Field> fields = new ArrayList<>();
 		
 		fields.add(Field.RATE_DOWN);
 		fields.add(Field.RATE_UP);

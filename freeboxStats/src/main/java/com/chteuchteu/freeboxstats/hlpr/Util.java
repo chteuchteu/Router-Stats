@@ -160,17 +160,24 @@ public class Util {
 		
 		public static long getFrom_stack(Period period) {
 			Calendar cal = Calendar.getInstance();
+			Calendar now = Calendar.getInstance();
 			switch (period) {
 				case HOUR:
 					cal.set(Calendar.MINUTE, 0);
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MILLISECOND, 0);
+
+					if (now.get(Calendar.MINUTE) < 10)
+						cal.add(Calendar.MINUTE, -10);
 					break;
 				case DAY:
 					cal.set(Calendar.HOUR_OF_DAY, 0);
 					cal.set(Calendar.MINUTE, 0);
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MILLISECOND, 0);
+
+					if (now.get(Calendar.MINUTE) < 10)
+						cal.add(Calendar.MINUTE, -10);
 					break;
 				case WEEK:
 					cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -295,7 +302,7 @@ public class Util {
 		}
 		
 		public static ArrayList<XValueMarker> getMarkers(Period period, ArrayList<String> series) {
-			ArrayList<XValueMarker> markers = new ArrayList<XValueMarker>();
+			ArrayList<XValueMarker> markers = new ArrayList<>();
 			
 			String lastText = "";
 			int pos = 0;
