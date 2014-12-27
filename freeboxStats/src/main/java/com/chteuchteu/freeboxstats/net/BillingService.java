@@ -30,7 +30,7 @@ public class BillingService {
 	
 	private boolean isBound = false;
 	
-	public static final String ITEM_ID = "premium";
+	private static final String ITEM_ID = "premium";
 	public static final int REQUEST_CODE = 1664;
 	
 	private BillingService(Context activityContext) {

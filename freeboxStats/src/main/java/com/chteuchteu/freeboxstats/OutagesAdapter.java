@@ -1,7 +1,5 @@
 package com.chteuchteu.freeboxstats;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +11,10 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.obj.Outage;
 
+import java.util.List;
+
 public class OutagesAdapter extends ArrayAdapter<Outage> {
 	private Context context;
-	
-	public OutagesAdapter(Context context, int textViewResourceId) {
-		super(context, textViewResourceId);
-		this.context = context;
-	}
 	
 	public OutagesAdapter(Context context, int resource, List<Outage> items) {
 		super(context, resource, items);

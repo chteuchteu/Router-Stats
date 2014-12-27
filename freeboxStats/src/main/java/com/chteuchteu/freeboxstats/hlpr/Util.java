@@ -415,7 +415,6 @@ public class Util {
 		public enum CustomFont {
 			RobotoCondensed_Light("RobotoCondensed-Light.ttf"),
 			RobotoCondensed_Regular("RobotoCondensed-Regular.ttf"),
-			Roboto_Thin("Roboto-Thin.ttf"),
 			Roboto_Regular("Roboto-Regular.ttf");
 			final String file;
 			private CustomFont(String fileName) { this.file = fileName; }

@@ -83,13 +83,13 @@ import java.text.ParsePosition;
 
 public class MainActivity extends ActionBarActivity {
 	public static FragmentActivity activity;
-	public static Context context;
+	private static Context context;
 	private static final int NB_TABS = 5;
 	private DrawerHelper drawerHelper;
 
 	private static Thread refreshThread;
 	private static boolean justRefreshed;
-	public static final int AUTOREFRESH_TIME = 20000;
+	private static final int AUTOREFRESH_TIME = 20000;
 	private static boolean graphsDisplayed;
 	
 	private static MenuItem refreshMenuItem;
@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
 	private static MenuItem validerMenuItem;
 	
 	public static boolean sessionOpened = false;
-	public static boolean appStarted = false;
+	private static boolean appStarted = false;
 	/**
 	 * If the app should load ads the next time this boolean is checked
 	 */
@@ -200,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
 			refreshThread.interrupt();
 	}
 	
-	public static void displayGraphs() {
+	private static void displayGraphs() {
 		if (graphsDisplayed)
 			return;
 		
@@ -493,7 +493,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public static void refreshGraph() { refreshGraph(false); }
-	public static void refreshGraph(boolean manualRefresh) {
+	private static void refreshGraph(boolean manualRefresh) {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		if (updating)
@@ -708,7 +708,7 @@ public class MainActivity extends ActionBarActivity {
 	/**
 	 * Load the ads once we now that the user isn't premium
 	 */
-	public static void loadAds() {
+	private static void loadAds() {
 		if (FooBox.getInstance().isPremium() || !loadAds)
 			return;
 		
@@ -729,7 +729,7 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	public static void dismissAds() {
+	private static void dismissAds() {
 		adView.setVisibility(View.GONE);
 	}
 	

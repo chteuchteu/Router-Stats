@@ -1,10 +1,5 @@
 package com.chteuchteu.freeboxstats.net;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -23,6 +18,11 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.Outage;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 
 public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	private Context context;
@@ -77,7 +77,7 @@ public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	 * PlotIndex from 1 to 3
 	 */
 	private ArrayList<Outage> loadData() {
-		ArrayList<Field> fields = new ArrayList<Field>();
+		ArrayList<Field> fields = new ArrayList<>();
 		fields.add(Field.BW_DOWN);
 		
 		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.MONTH, fields, false);

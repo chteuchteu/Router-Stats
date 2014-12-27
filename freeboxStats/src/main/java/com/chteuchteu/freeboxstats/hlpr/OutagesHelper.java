@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class OutagesHelper {
 	public static ArrayList<Outage> getOutages(JSONArray values) {
-		ArrayList<Outage> outages = new ArrayList<Outage>();
+		ArrayList<Outage> outages = new ArrayList<>();
 		
 		try {
 			for (int i=1; i<values.length(); i++) {
@@ -32,7 +32,7 @@ public class OutagesHelper {
 	}
 	
 	public static ArrayList<Outage> reverseOrder(ArrayList<Outage> outages) {
-		ArrayList<Outage> newList = new ArrayList<Outage>();
+		ArrayList<Outage> newList = new ArrayList<>();
 		
 		for (int i=outages.size()-1; i>= 0; i--)
 			newList.add(outages.get(i));

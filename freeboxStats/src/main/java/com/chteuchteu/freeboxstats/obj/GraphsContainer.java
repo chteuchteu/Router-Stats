@@ -17,11 +17,9 @@ public class GraphsContainer {
 	protected ArrayList<String> serie;
 	protected ArrayList<DataSet> dataSets;
 	protected Period period;
-	public static final Period defaultPeriod = Period.HOUR;
 	protected Unit valuesUnit;
 	public static final Unit defaultUnit = Unit.Mo;
 	private FieldType fieldType;
-	public static final FieldType defaultFieldType = FieldType.DATA;
 	
 	// Since StackGraphsContainer extends GraphsContainer
 	public GraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) { }
@@ -29,8 +27,8 @@ public class GraphsContainer {
 	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType, Period period) {
 		// Construct GraphsContainer from raw data from the Freebox
 		this.period = period;
-		this.serie = new ArrayList<String>();
-		this.dataSets = new ArrayList<DataSet>();
+		this.serie = new ArrayList<>();
+		this.dataSets = new ArrayList<>();
 		if (fieldType == FieldType.DATA)
 			this.valuesUnit = defaultUnit;
 		else if (fieldType == FieldType.TEMP)
@@ -155,12 +153,7 @@ public class GraphsContainer {
 		for (DataSet ds : this.dataSets)
 			ds.setValuesUnit(to, true);
 	}
-	
-	public void setSerie(ArrayList<String> val) { this.serie = val; }
-	public ArrayList<String> getSerie() { return this.serie; }
-	
-	public void addDataSet(DataSet val) { this.dataSets.add(val); }
-	public void addDataSet(Field field, JSONArray jsonArray, Unit valuesUnit) { this.dataSets.add(new DataSet(field, jsonArray, valuesUnit)); }
+
 	public DataSet getDataSet(Field field) {
 		for (DataSet ds : this.dataSets) {
 			if (ds.getField().equals(field))
@@ -168,12 +161,9 @@ public class GraphsContainer {
 		}
 		return null;
 	}
+
+	public ArrayList<String> getSerie() { return this.serie; }
+
 	public ArrayList<DataSet> getDataSets() { return this.dataSets; }
-	public ArrayList<Field> getFields() {
-		ArrayList<Field> fields = new ArrayList<Field>();
-		for (DataSet ds : this.dataSets)
-			fields.add(ds.getField());
-		return fields;
-	}
 	public Unit getValuesUnit() { return this.valuesUnit; }
 }

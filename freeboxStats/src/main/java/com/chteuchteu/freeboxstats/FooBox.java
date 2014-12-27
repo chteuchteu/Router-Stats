@@ -30,8 +30,8 @@ public class FooBox extends Application {
 	public enum Premium { TRUE, FALSE, UNKNOWN }
 	private Premium premium = Premium.TRUE;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
-	public static final boolean FORCE_NOTPREMIUM = false;
-	public static final boolean LOG = false;
+	private static final boolean FORCE_NOTPREMIUM = false;
+	private static final boolean LOG = false;
 	
 	private static FooBox instance;
 	private Context context;
@@ -44,16 +44,16 @@ public class FooBox extends Application {
 	private Period currentPeriod;
 	
 	// MainActivity context
-	public XYPlot plot1;
-	public XYPlot plot2;
-	public XYPlot plot3;
-	public XYPlot plot4;
-	public View fragment1RootView;
-	public View fragment2RootView;
-	public View fragment3RootView;
-	public View fragment4RootView;
-	public View fragment5RootView; // stack fragment
-	public XYPlot stack_plot;
+	private XYPlot plot1;
+	private XYPlot plot2;
+	private XYPlot plot3;
+	private XYPlot plot4;
+	private View fragment1RootView;
+	private View fragment2RootView;
+	private View fragment3RootView;
+	private View fragment4RootView;
+	private View fragment5RootView; // stack fragment
+	private XYPlot stack_plot;
 	
 	@Override
 	public void onCreate() {
@@ -216,17 +216,6 @@ public class FooBox extends Application {
 			case 5:
 				fragment5RootView = view;
 				break;
-		}
-	}
-	
-	public View getFragmentRootView(int plotIndex) {
-		switch (plotIndex) {
-			case 1: return fragment1RootView;
-			case 2: return fragment2RootView;
-			case 3: return fragment3RootView;
-			case 4: return fragment4RootView;
-			case 5: return fragment5RootView;
-			default: return null;
 		}
 	}
 }

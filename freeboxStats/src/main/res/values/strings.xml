@@ -11,8 +11,8 @@
 	<string name="temp">Température (°C)</string>
 	<string name="noise">Marge de bruit (dB)</string>
 	<string name="connection_failed">Connection échouée</string>
-	<string name="freebox_connection_fail">Erreur lors de la connexion avec la Freebox...</string>
-	<string name="graphs_loading_fail">Erreur lors du chargement des graphiques...</string>
+	<string name="freebox_connection_fail">Erreur lors de la connexion avec la Freebox…</string>
+	<string name="graphs_loading_fail">Erreur lors du chargement des graphiques…</string>
 	<string name="ok">OK</string>
 	<string name="cancel">Annuler</string>
 	<string name="yes">Oui</string>
@@ -21,19 +21,18 @@
 	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
 	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
-	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer...</string>
+	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer…</string>
 	<string name="freeboxstats_premium">Freebox Stats : premium</string>
 	<string name="dissociate">Voulez-vous dissocier l\'application de cette Freebox ?</string>
 	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
 	<string name="firstlaunch_aut_explanation">Lors de sa première utilisation, l\'application a besoin d\'être autorisée auprès de la Freebox.
 		Un message s\'affichera sur l\'écran du boîtier server.</string>
-	<string name="firstlaunch_enattente">En attente de l\'autorisation...</string>
-	<string name="loading">Chargement...</string>
+	<string name="firstlaunch_enattente">En attente de l\'autorisation…</string>
+	<string name="loading">Chargement…</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
-	<string name="settings_lighttheme">Thème clair</string>
-	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local... Veuillez vérifier votre connexion.</string>
+	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local… Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.
 		Veuillez la redémarrer afin de la mettre à jour. Sans cela, l\'application ne pourra pas accéder aux statistiques.</string>
 	<string name="freeboxupdateneededtitle">Mise à jour nécessaire</string>
@@ -72,4 +71,7 @@
 	<string name="goodnews">Bonne nouvelle :)</string>
 	<string name="outages_nooutage">Aucune coupure entre le FROM et le TO</string>
 	<string name="outages_error">Erreur lors du chargement des coupures</string>
+	<string name="refresh">Actualiser</string>
+	<string name="finished">Terminé</string>
+	<string name="retry">Réessayer</string>
 </resources>

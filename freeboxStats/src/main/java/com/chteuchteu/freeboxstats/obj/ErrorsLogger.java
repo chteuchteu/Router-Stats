@@ -1,14 +1,14 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import java.util.ArrayList;
-
 import com.chteuchteu.freeboxstats.ui.MainActivity;
+
+import java.util.ArrayList;
 
 public class ErrorsLogger {
 	private ArrayList<String> errors;
 	
 	public ErrorsLogger() {
-		this.errors = new ArrayList<String>();
+		this.errors = new ArrayList<>();
 	}
 	
 	public void logError(String error) {
@@ -22,7 +22,6 @@ public class ErrorsLogger {
 			this.errors.add("Error 418");
 		MainActivity.displayDebugMenuItem();
 	}
-	public boolean hasErrors() { return this.errors.size() > 0; }
 	
 	public ArrayList<String> getErrors() { return this.errors; }
 	public String getErrorsString() {

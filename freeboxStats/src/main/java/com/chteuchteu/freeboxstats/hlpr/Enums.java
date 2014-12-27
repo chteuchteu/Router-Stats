@@ -1,11 +1,10 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.annotation.SuppressLint;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
 
 @SuppressLint("DefaultLocale")
 public class Enums {
@@ -24,7 +23,6 @@ public class Enums {
 	public enum Period {
 		HOUR, DAY, WEEK, MONTH;
 		public int getIndex() { return Arrays.asList(Period.values()).indexOf(this); }
-		public static Period get(int index) { return Period.values()[index]; }
 		public String getLabel() {
 			switch (getIndex()) {
 				case 0: return "Heure";
@@ -51,13 +49,6 @@ public class Enums {
 		Field() { this.displayName = getSerializedValue(); }
 		Field(String displayName) { this.displayName = displayName; }
 		public String getSerializedValue() { return this.name().toLowerCase(); }
-		public Field get(String serializedValue) {
-			for (Field field : Field.values()) {
-				if (field.getSerializedValue().equals(serializedValue))
-					return field;
-			}
-			return null;
-		}
 		public boolean equals(Field f1) { return this.getSerializedValue().equals(f1.getSerializedValue()); }
 		public String getDisplayName() { return this.displayName; }
 	}
@@ -90,23 +81,6 @@ public class Enums {
 			for (GraphPrecision g : GraphPrecision.values())
 				list.add(g.getLabel());
 			return list;
-		}
-	}
-	
-	public enum ApplicationTheme {
-		LIGHT, DARK;
-		public static ApplicationTheme getApplicationTheme(Context context) {
-			String appTheme = Util.getPrefString(context, "settings_applicationTheme", "DARK");
-			if (appTheme.equals("LIGHT"))
-				return ApplicationTheme.LIGHT;
-			else
-				return ApplicationTheme.DARK;
-		}
-		public static ApplicationTheme get(boolean lightTheme) {
-			if (lightTheme)
-				return ApplicationTheme.LIGHT;
-			else
-				return ApplicationTheme.DARK;
 		}
 	}
 }
