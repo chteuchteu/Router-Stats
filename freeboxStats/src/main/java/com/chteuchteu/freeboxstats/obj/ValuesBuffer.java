@@ -1,18 +1,18 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import java.util.ArrayList;
-
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+
+import java.util.ArrayList;
 
 /**
  * When skipping values (because the timestampdiff is not respected),
- * we generate the values average for each Field.
+ * we generate the values average (or sum) for each Field.
  */
 public class ValuesBuffer {
 	private ArrayList<ValuesBufferSet> bufferSets;
 	
 	public ValuesBuffer(ArrayList<Field> fields) {
-		this.bufferSets = new ArrayList<ValuesBufferSet>();
+		this.bufferSets = new ArrayList<>();
 		for (Field f : fields)
 			this.bufferSets.add(new ValuesBufferSet(f));
 	}
@@ -31,7 +31,25 @@ public class ValuesBuffer {
 				return false;
 		return true;
 	}
-	
+
+	/**
+	 * Generate buffer sum (stack graph)
+	 * @param field Field
+	 * @return (int) sum
+	 */
+	public long getSum(Field field) {
+		ValuesBufferSet vbs = getVBSByField(field);
+		long sum = 0;
+		for (int n : vbs.getValues())
+			sum += n;
+		return sum;
+	}
+
+	/**
+	 * Generate buffer average (standard graph)
+	 * @param field Field
+	 * @return (int) sum
+	 */
 	public int getAverage(Field field) {
 		ValuesBufferSet vbs = getVBSByField(field);
 		float sum = 0;
@@ -54,7 +72,7 @@ public class ValuesBuffer {
 		private ArrayList<Integer> values;
 		public ValuesBufferSet(Field field) {
 			this.field = field;
-			this.values = new ArrayList<Integer>();
+			this.values = new ArrayList<>();
 		}
 		public void addValue(int val) { this.values.add(val); }
 		public ArrayList<Integer> getValues() { return this.values; }

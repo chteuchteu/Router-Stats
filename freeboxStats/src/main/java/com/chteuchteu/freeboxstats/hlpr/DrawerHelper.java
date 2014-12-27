@@ -58,8 +58,6 @@ public class DrawerHelper {
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
-				final CheckBox settings_lightTheme = (CheckBox) dialog_layout.findViewById(R.id.settings_lighttheme);
-				settings_lightTheme.setChecked(SettingsHelper.getInstance().getApplicationTheme() == Enums.ApplicationTheme.LIGHT);
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -80,9 +78,6 @@ public class DrawerHelper {
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 						SettingsHelper.getInstance().setGraphPrecision(
 								Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-						boolean applicationThemeChanged = SettingsHelper.getInstance().getApplicationTheme()
-								!= Enums.ApplicationTheme.get(settings_lightTheme.isChecked());
-						SettingsHelper.getInstance().setApplicationTheme(Enums.ApplicationTheme.get(settings_lightTheme.isChecked()));
 
 						if (settings_autorefresh.isChecked())
 							activity.startRefreshThread();
@@ -92,8 +87,6 @@ public class DrawerHelper {
 						// Remove tab
 						if (displayXdslTabChanged)
 							activity.restartActivity();
-						if (applicationThemeChanged)
-							activity.updateApplicationTheme();
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

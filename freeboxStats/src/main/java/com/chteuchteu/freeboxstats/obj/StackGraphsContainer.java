@@ -54,27 +54,30 @@ public class StackGraphsContainer extends GraphsContainer {
 		
 		int lastAddedTimestamp = -1;
 		ValuesBuffer valuesBuffer = new ValuesBuffer(fields);
+
 		for (int i=0; i<data.length(); i++) {
 			try {
 				JSONObject obj = (JSONObject) data.get(i);
 				
 				if (lastAddedTimestamp == -1)
 					lastAddedTimestamp = obj.getInt("time");
-				
+
 				if (obj.getInt("time") - lastAddedTimestamp >= timestampDiff
 						|| obj.getInt("time") - lastAddedTimestamp == 0
 						|| timestampDiff == 0) {
+					// Add a new point from buffer
+
 					int time = obj.getInt("time") - lastAddedTimestamp;
 					// Add the Numbers to the values lists
 					for (Field f : fields) {
 						try {
-							int val = 0;
+							long val = 0;
 							if (obj.has(f.getSerializedValue()))
 								val = obj.getInt(f.getSerializedValue());
 							
 							if (!valuesBuffer.isEmpty()) { // Include all the buffered values
-								valuesBuffer.addValue(f, val);
-								val = valuesBuffer.getAverage(f);
+								valuesBuffer.addValue(f, (int) val);
+								val = valuesBuffer.getSum(f);
 								valuesBuffer.clear(f);
 							}
 							
@@ -85,6 +88,7 @@ public class StackGraphsContainer extends GraphsContainer {
 					
 					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time"), this.period));
 				} else {
+					// No need to add a new point : add value in buffer
 					for (Field f : fields) {
 						try {
 							int val = 0;

@@ -1,14 +1,14 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import java.util.ArrayList;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.hlpr.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
-import com.chteuchteu.freeboxstats.hlpr.Util;
+import java.util.ArrayList;
 
 public class DataSet {
 	private Field field;
@@ -64,7 +64,7 @@ public class DataSet {
 			this.values.add(value);
 		else {
 			Number previousVal = this.values.get(this.values.size()-1);
-			value = previousVal.longValue() + value.longValue();
+			value = previousVal.floatValue() + value.floatValue();
 			this.values.add(value);
 		}
 	}

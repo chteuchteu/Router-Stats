@@ -1,17 +1,17 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class GraphsContainer {
 	protected ArrayList<String> serie;
@@ -70,6 +70,7 @@ public class GraphsContainer {
 		
 		int lastAddedTimestamp = -1;
 		ValuesBuffer valuesBuffer = new ValuesBuffer(fields);
+
 		for (int i=0; i<data.length(); i++) {
 			try {
 				JSONObject obj = (JSONObject) data.get(i);
@@ -117,6 +118,22 @@ public class GraphsContainer {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+		}
+
+		// Empty the valuesBuffer if needed
+		if (!valuesBuffer.isEmpty()) {
+			for (Field f : fields) {
+				int val = valuesBuffer.getAverage(f);
+				valuesBuffer.clear(f);
+
+				if (fieldType == FieldType.DATA)
+					getDataSet(f).addValue(Unit.o, val);
+				else if (fieldType == FieldType.TEMP)
+					getDataSet(f).addValue(Unit.C, val);
+				else if (fieldType == FieldType.NOISE)
+					getDataSet(f).addValue(Unit.dB, val);
+			}
+			this.serie.add("");
 		}
 		
 		// Get the best values unit

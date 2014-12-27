@@ -57,7 +57,6 @@ import com.chteuchteu.freeboxstats.CustomViewPager;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
-import com.chteuchteu.freeboxstats.hlpr.Enums.ApplicationTheme;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -657,18 +656,6 @@ public class MainActivity extends ActionBarActivity {
 		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
-	}
-	
-	public static void updateApplicationTheme() {
-		int backgroundColor = Color.WHITE;
-		if (SettingsHelper.getInstance().getApplicationTheme() == ApplicationTheme.DARK)
-			backgroundColor = context.getResources().getColor(R.color.backgroundColor);
-		
-		for (int i=1; i<=4; i++) {
-			View rootView = FooBox.getInstance().getFragmentRootView(i);
-			if (rootView != null)
-				rootView.findViewById(R.id.fragment_container).setBackgroundColor(backgroundColor);
-		}
 	}
 	
 	public static void finishedLoading() {

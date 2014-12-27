@@ -26,10 +26,6 @@ public class GraphFragment extends Fragment {
 		
 		MainActivity.initPlot(plot, index);
 		
-		// Change container background color if needed
-		if (index == 4)
-			MainActivity.updateApplicationTheme();
-		
 		
 		return rootView;
 	}
