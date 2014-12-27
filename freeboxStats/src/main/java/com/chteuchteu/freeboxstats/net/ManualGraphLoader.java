@@ -3,7 +3,6 @@ package com.chteuchteu.freeboxstats.net;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -11,8 +10,10 @@ import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	 * @param plotIndex
 	 */
 	private GraphsContainer loadGraph(int plotIndex) {
-		ArrayList<Field> fields = new ArrayList<Field>();
+		ArrayList<Field> fields = new ArrayList<>();
 		FieldType fieldType = null;
 		
 		switch (plotIndex) {
@@ -118,7 +119,10 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
-				return new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
+				if (netResponse.getJsonObject().get("data") instanceof JSONArray)
+					return new GraphsContainer(fields, netResponse.getJsonObject().getJSONArray("data"), fieldType, period);
+				else
+					return null;
 			} catch (JSONException ex) {
 				ex.printStackTrace();
 				Crashlytics.logException(ex);
@@ -132,26 +136,29 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
 					// If the session has expired / hasn't beed opened, open it
-					
-					if (response.equals("auth_required")) {
-						cancel = false;
-						new SessionOpener(freebox, FooBox.getInstance().getContext()).execute();
-					} else if (response.equals("insufficient_rights")) {
-						cancel = true;
-						needAuth = true;
-					} else if (response.equals("invalid_request")
-							|| response.equals("invalid_api_version")) {
-						cancel = true;
-						needUpdate = true;
+
+					switch (response) {
+						case "auth_required":
+							cancel = false;
+							new SessionOpener(freebox, FooBox.getInstance().getContext()).execute();
+							break;
+						case "insufficient_rights":
+							cancel = true;
+							needAuth = true;
+							break;
+						case "invalid_request":
+						case "invalid_api_version":
+							cancel = true;
+							needUpdate = true;
+							break;
 					}
 				} catch (JSONException ex) {
 					Crashlytics.logException(ex);
 					ex.printStackTrace();
 					return null;
 				}
-			} else {
+			} else
 				FooBox.getInstance().getErrorsLogger().logError("GraphLoader - error 401");
-			}
 			
 			graphLoadingFailed = cancel;
 			

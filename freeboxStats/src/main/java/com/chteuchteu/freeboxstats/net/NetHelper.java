@@ -341,6 +341,7 @@ public class NetHelper {
 			}
 		} catch (IOException | JSONException exception) {
 			exception.printStackTrace();
+			Crashlytics.logException(exception);
 		} finally {
 			if (inStream != null) {
 				try {

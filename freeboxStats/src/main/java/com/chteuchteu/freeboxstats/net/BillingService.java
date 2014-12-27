@@ -74,7 +74,10 @@ public class BillingService {
 	public void launchPurchase_retry() {
 		try {
 			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
+			//PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
 			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+			if (pendingIntent == null)
+				buyIntentBundle.get("BUY_INTENT");
 			MainActivity.activity.startIntentSenderForResult(pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), 0, 0, 0);
 		}
