@@ -58,7 +58,6 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
-import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
@@ -71,6 +70,7 @@ import com.chteuchteu.freeboxstats.net.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.net.OutagesFetcher;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.net.StackLoader;
+import com.chteuchteu.freeboxstats.net.SwitchLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
@@ -84,7 +84,7 @@ import java.text.ParsePosition;
 public class MainActivity extends ActionBarActivity {
 	public static FragmentActivity activity;
 	private static Context context;
-	private static final int NB_TABS = 5;
+	private static final int NB_TABS = 6;
 	private DrawerHelper drawerHelper;
 
 	private static Thread refreshThread;
@@ -147,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public static void displayLoadingScreen() {
-		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.RobotoCondensed_Light);
+		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
 		activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 	
@@ -232,9 +232,12 @@ public class MainActivity extends ActionBarActivity {
 		public Fragment getItem(int i) {
 			boolean displayXdslTab = SettingsHelper.getInstance().getDisplayXdslTab();
 			boolean isStack = (displayXdslTab && i == 4 || !displayXdslTab && i == 3);
+			boolean isSwitch = (displayXdslTab && i == 5 || !displayXdslTab && i == 4);
 			
 			if (isStack)
 				return new StackFragment();
+			else if (isSwitch)
+				return new SwitchFragment();
 			else {
 				Fragment fragment = new GraphFragment();
 				Bundle args = new Bundle();
@@ -263,13 +266,20 @@ public class MainActivity extends ActionBarActivity {
 						return activity.getString(R.string.tab4_name);
 					else
 						return activity.getString(R.string.tab5_name);
-				case 4: return activity.getString(R.string.tab5_name);
+				case 4:
+					if (SettingsHelper.getInstance().getDisplayXdslTab())
+						return activity.getString(R.string.tab5_name);
+					else
+						return activity.getString(R.string.tab6_name);
+				case 5:
+					return activity.getString(R.string.tab6_name);
 				default: return "";
 			}
 		}
 	}
 	
 	public static void initPlot(XYPlot plot, int plotIndex) {
+		FooBox.log("initPlot(" + plotIndex + ")");
 		plot.setVisibility(View.GONE);
 		
 		// Styling
@@ -298,7 +308,8 @@ public class MainActivity extends ActionBarActivity {
 		
 		
 		// Legend
-		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4 || plotIndex == 5)
+		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4 || plotIndex == 5
+				|| plotIndex == 6 || plotIndex == 7 || plotIndex == 8 || plotIndex == 9)
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
 		else
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
@@ -322,7 +333,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	@SuppressWarnings("serial")
-	public static void loadGraph(int plotIndex, final GraphsContainer graphsContainer, final Period period, FieldType fieldType, Unit unit) {
+	public static void loadGraph(int plotIndex, final GraphsContainer graphsContainer, final Period period, Unit unit) {
 		XYPlot plot = FooBox.getInstance().getPlot(plotIndex);
 		
 		plot.setVisibility(View.VISIBLE);
@@ -378,7 +389,7 @@ public class MainActivity extends ActionBarActivity {
 		});
 		
 		// Set range label
-		if (plotIndex == 1 || plotIndex == 2)
+		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 6 || plotIndex == 7 || plotIndex == 8 || plotIndex == 9)
 			plot.setRangeLabel(activity.getString(R.string.rate) + " (" + unit.name() + "/s)");
 		else if (plotIndex == 5)
 			plot.setRangeLabel(activity.getString(R.string.stack) + " (" + unit.name() + ")");
@@ -510,6 +521,7 @@ public class MainActivity extends ActionBarActivity {
 		Period period = FooBox.getInstance().getPeriod();
 		new ManualGraphLoader(freebox, period).execute();
 		new StackLoader(freebox, period).execute();
+		new SwitchLoader(freebox, period).execute();
 	}
 	
 	public static void displayLaunchPairingScreen() {

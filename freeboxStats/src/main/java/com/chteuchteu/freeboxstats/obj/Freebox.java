@@ -116,24 +116,12 @@ public class Freebox {
 		
 		return f;
 	}
-	
-	public String getUid() { return this.uid; }
+
 	public void setUid(String val) { this.uid = val; }
-	
-	public String getDeviceName() { return this.deviceName; }
 	public void setDeviceName(String val) { this.deviceName = val; }
-	
-	public String getApiVersion() { return this.apiVersion; }
 	public void setApiVersion(String val) { this.apiVersion = val; }
-	
 	public void setApiBaseUrl(String val) { this.apiBaseUrl = val; }
-	
-	public String getDeviceType() { return this.deviceType; }
-	public void setDeviceType(String val) { this.deviceType = val; }
-	
 	public String getAppToken() { return this.appToken; }
 	public void setAppToken(String val) { this.appToken = val; }
-	
-	public String getIp() { return this.ip; }
 	public void setIp(String val) { this.ip = val; }
 }

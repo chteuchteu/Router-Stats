@@ -43,7 +43,8 @@ public class Enums {
 		BW_UP("Débit maximum"), BW_DOWN("Débit maximum"), RATE_UP("Débit up"), RATE_DOWN("Débit down"), VPN_RATE_UP, VPN_RATE_DOWN,
 		CPUM("CpuM"), CPUB("CpuB"), SW("SW"), HDD("HDD"), FAN_SPEED("Ventilateur"),
 		DSL_RATE_UP, DSL_RATE_DOWN, SNR_UP("Upload"), SNR_DOWN("Download"),
-		RW_1, TX_1, RX_2, TX_2, RX_3, TX_3, RX_4, TX_4;
+		RX_1("Down SW1"), TX_1("Up SW1"), RX_2("Down SW2"), TX_2("Up SW2"),
+		RX_3("Down SW3"), TX_3("Up SW3"), RX_4("Down SW3"), TX_4("Up SW4");
 		
 		private String displayName;
 		Field() { this.displayName = getSerializedValue(); }

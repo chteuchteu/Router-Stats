@@ -61,13 +61,13 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		
 		if (!graphLoadingFailed) {
 			if (graph1 != null)
-				MainActivity.loadGraph(1, graph1, period, FieldType.DATA, graph1.getValuesUnit());
+				MainActivity.loadGraph(1, graph1, period, graph1.getValuesUnit());
 			if (graph2 != null)
-				MainActivity.loadGraph(2, graph2, period, FieldType.DATA, graph2.getValuesUnit());
+				MainActivity.loadGraph(2, graph2, period, graph2.getValuesUnit());
 			if (graph3 != null)
-				MainActivity.loadGraph(3, graph3, period, FieldType.TEMP, graph3.getValuesUnit());
+				MainActivity.loadGraph(3, graph3, period, graph3.getValuesUnit());
 			if (graph4 != null)
-				MainActivity.loadGraph(4, graph4, period, FieldType.NOISE, graph4.getValuesUnit());
+				MainActivity.loadGraph(4, graph4, period, graph4.getValuesUnit());
 		}
 		
 		if (graphLoadingFailed) {
@@ -84,7 +84,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	/**
 	 * Load the graph and display the result on MainActivity
 	 * PlotIndex from 1 to 3
-	 * @param plotIndex
+	 * @param plotIndex int
 	 */
 	private GraphsContainer loadGraph(int plotIndex) {
 		ArrayList<Field> fields = new ArrayList<>();

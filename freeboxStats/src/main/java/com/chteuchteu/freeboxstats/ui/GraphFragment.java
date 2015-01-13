@@ -22,7 +22,6 @@ public class GraphFragment extends Fragment {
 		XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
 		
 		FooBox.getInstance().setPlot(plot, index);
-		FooBox.getInstance().setFragmentRootView(rootView, index);
 		
 		MainActivity.initPlot(plot, index);
 		

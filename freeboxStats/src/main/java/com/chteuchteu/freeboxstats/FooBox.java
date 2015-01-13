@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
-import android.view.View;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
@@ -31,7 +30,7 @@ public class FooBox extends Application {
 	private Premium premium = Premium.TRUE;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	private static final boolean FORCE_NOTPREMIUM = false;
-	private static final boolean LOG = false;
+	private static final boolean LOG = true;
 	
 	private static FooBox instance;
 	private Context context;
@@ -48,13 +47,13 @@ public class FooBox extends Application {
 	private XYPlot plot2;
 	private XYPlot plot3;
 	private XYPlot plot4;
-	private View fragment1RootView;
-	private View fragment2RootView;
-	private View fragment3RootView;
-	private View fragment4RootView;
-	private View fragment5RootView; // stack fragment
 	private XYPlot stack_plot;
-	
+
+    private XYPlot switch_plot_1;
+    private XYPlot switch_plot_2;
+    private XYPlot switch_plot_3;
+    private XYPlot switch_plot_4;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -129,7 +128,7 @@ public class FooBox extends Application {
 	}
 	
 	public static void log(String msg) { log("FreeboxStats", msg); }
-	public static void log(String key, String msg) { if (BuildConfig.DEBUG && LOG) Log.v(key, msg); }
+	public static void log(String key, String msg) { if (BuildConfig.DEBUG && LOG) Log.i(key, msg); }
 	
 	public Freebox getFreebox() { return this.freebox; }
 	public void setFreebox(Freebox val) { this.freebox = val; }
@@ -170,21 +169,15 @@ public class FooBox extends Application {
 	
 	public void setPlot(XYPlot plot, int plotIndex) {
 		switch (plotIndex) {
-			case 1:
-				plot1 = plot;
-				break;
-			case 2:
-				plot2 = plot;
-				break;
-			case 3:
-				plot3 = plot;
-				break;
-			case 4:
-				plot4 = plot;
-				break;
-			case 5:
-				stack_plot = plot;
-				break;
+			case 1: plot1 = plot; break;
+			case 2: plot2 = plot; break;
+			case 3: plot3 = plot; break;
+			case 4: plot4 = plot; break;
+			case 5: stack_plot = plot; break;
+            case 6: switch_plot_1 = plot; break;
+            case 7: switch_plot_2 = plot; break;
+            case 8: switch_plot_3 = plot; break;
+            case 9: switch_plot_4 = plot; break;
 		}
 	}
 	
@@ -195,27 +188,11 @@ public class FooBox extends Application {
 			case 3: return plot3;
 			case 4: return plot4;
 			case 5: return stack_plot;
+            case 6: return switch_plot_1;
+            case 7: return switch_plot_2;
+            case 8: return switch_plot_3;
+            case 9: return switch_plot_4;
 			default: return null;
-		}
-	}
-	
-	public void setFragmentRootView(View view, int plotIndex) {
-		switch (plotIndex) {
-			case 1:
-				fragment1RootView = view;
-				break;
-			case 2:
-				fragment2RootView = view;
-				break;
-			case 3:
-				fragment3RootView = view;
-				break;
-			case 4:
-				fragment4RootView = view;
-				break;
-			case 5:
-				fragment5RootView = view;
-				break;
 		}
 	}
 }

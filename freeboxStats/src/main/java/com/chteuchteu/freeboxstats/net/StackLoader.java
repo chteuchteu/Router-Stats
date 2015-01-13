@@ -3,7 +3,6 @@ package com.chteuchteu.freeboxstats.net;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
-import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -39,7 +38,7 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 		MainActivity.updating = false;
 		
 		if (!stackLoadingFailed)
-			MainActivity.loadGraph(5, this.stackContainer.getStackGraphsContainer(), period, FieldType.DATA,
+			MainActivity.loadGraph(5, this.stackContainer.getStackGraphsContainer(), period,
 					this.stackContainer.getStackGraphsContainer().getValuesUnit());
 	}
 	

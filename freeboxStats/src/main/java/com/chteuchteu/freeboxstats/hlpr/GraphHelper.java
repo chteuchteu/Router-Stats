@@ -64,7 +64,7 @@ public class GraphHelper {
 			case SNR_UP:
 			case SNR_DOWN:
 				return Db.DSL;
-			case RW_1:
+			case RX_1:
 			case TX_1:
 			case RX_2:
 			case TX_2:

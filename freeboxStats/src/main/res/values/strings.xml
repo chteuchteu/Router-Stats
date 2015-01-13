@@ -6,6 +6,7 @@
 	<string name="tab3_name">Temp.</string>
 	<string name="tab4_name">xDSL</string>
 	<string name="tab5_name">Cumul</string>
+	<string name="tab6_name">Switch</string>
 	<string name="rate">Débit</string>
 	<string name="stack">Cumul</string>
 	<string name="temp">Température (°C)</string>

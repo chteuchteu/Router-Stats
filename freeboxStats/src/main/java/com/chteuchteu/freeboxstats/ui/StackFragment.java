@@ -20,7 +20,6 @@ public class StackFragment extends Fragment {
 		XYPlot stack_plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
 		
 		FooBox.getInstance().setPlot(stack_plot, PLOT_INDEX);
-		FooBox.getInstance().setFragmentRootView(rootView, PLOT_INDEX);
 		
 		MainActivity.initPlot(stack_plot, PLOT_INDEX);
 		
