@@ -360,7 +360,11 @@ public class MainActivity extends ActionBarActivity {
 				case SW:		xmlRef = R.xml.serieformat_sw;		break;
 				case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
 				case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
-				case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break; 
+				case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break;
+				case RX_1: case RX_2: case RX_3: case RX_4:
+					xmlRef = R.xml.serieformat_ratedown; break;
+				case TX_1: case TX_2: case TX_3: case TX_4:
+					xmlRef = R.xml.serieformat_rateup; break;
 				default: break;
 			}
 			if (xmlRef != -1)
