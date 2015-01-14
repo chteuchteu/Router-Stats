@@ -317,6 +317,9 @@ public class MainActivity extends ActionBarActivity {
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
 		else if (plotType == FooBox.PlotType.XDSL)
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
+		else if (plotType == FooBox.PlotType.SW1 || plotType == FooBox.PlotType.SW2
+				|| plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
+		plot.setRangeStep(XYStepMode.INCREMENT_BY_PIXELS, 100);
 		
 		
 		// Legend
@@ -407,8 +410,12 @@ public class MainActivity extends ActionBarActivity {
 		// Set range label
 		if (plotType == FooBox.PlotType.STACK)
 			plot.setRangeLabel(getString(R.string.stack) + " (" + unit.name() + ")");
-		else if (plotType == FooBox.PlotType.RATEDOWN || plotType == FooBox.PlotType.RATEUP || plotType == FooBox.PlotType.SW1
-				|| plotType == FooBox.PlotType.SW2 || plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
+		else if (plotType == FooBox.PlotType.RATEDOWN)
+			plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
+		else if (plotType == FooBox.PlotType.RATEUP)
+			plot.setRangeLabel(getString(R.string.rate_up) + " (" + unit.name() + "/s)");
+		else if (plotType == FooBox.PlotType.SW1 || plotType == FooBox.PlotType.SW2
+				|| plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
 			plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
 		
 		plot.redraw();

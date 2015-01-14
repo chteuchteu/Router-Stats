@@ -6,7 +6,13 @@
 	<string name="tab4_name">xDSL</string>
 	<string name="tab5_name">Cumul</string>
 	<string name="tab6_name">Switch</string>
+	<string name="switch1">Switch 1</string>
+	<string name="switch2">Switch 2</string>
+	<string name="switch3">Switch 3</string>
+	<string name="switch4">Switch 4</string>
 	<string name="rate">Débit</string>
+	<string name="rate_down">Débit down</string>
+	<string name="rate_up">Débit up</string>
 	<string name="stack">Cumul</string>
 	<string name="temp">Température (°C)</string>
 	<string name="noise">Marge de bruit (dB)</string>

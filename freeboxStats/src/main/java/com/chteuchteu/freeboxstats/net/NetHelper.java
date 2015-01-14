@@ -105,7 +105,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					FooBox.log("serverResponse", serverResponse);
+					//FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj);
@@ -265,7 +265,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					FooBox.log("serverResponse", serverResponse);
+					//FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj2 = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj2);
@@ -331,7 +331,7 @@ public class NetHelper {
 				inStream = entity.getContent();
 				try {
 					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					FooBox.log("serverResponse", serverResponse);
+					//FooBox.log("serverResponse", serverResponse);
 					// Check server's response
 					JSONObject obj2 = new JSONObject(serverResponse);
 					netResponse = new NetResponse(obj2);
