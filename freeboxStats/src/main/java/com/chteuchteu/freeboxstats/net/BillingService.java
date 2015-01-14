@@ -33,11 +33,11 @@ public class BillingService {
 	private static final String ITEM_ID = "premium";
 	public static final int REQUEST_CODE = 1664;
 	
-	private BillingService(Context activityContext) {
+	private BillingService(MainActivity activityContext) {
 		loadInstance(activityContext);
 	}
 	
-	private void loadInstance(final Context activityContext) {
+	private void loadInstance(final MainActivity activityContext) {
 		if (activityContext != null && this.activityContext == null)
 			this.activityContext = activityContext;
 		
@@ -53,7 +53,7 @@ public class BillingService {
 				// Binding finished : check if premium
 				boolean premium = checkIfHasPurchased();
 				FooBox.getInstance().setIsPremium(premium);
-				MainActivity.finishedLoading();
+				activityContext.finishedLoading();
 			}
 		};
 		Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
@@ -127,7 +127,7 @@ public class BillingService {
 	public static boolean isLoaded() { return instance != null; }
 	public static BillingService getInstance() { return instance; }
 	
-	public static synchronized BillingService getInstance(Context activityContext) {
+	public static synchronized BillingService getInstance(MainActivity activityContext) {
 		if (instance == null)
 			instance = new BillingService(activityContext);
 		return instance;

@@ -17,10 +17,12 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 	private boolean ok;
 	private Freebox freebox;
 	private Context context;
+	private MainActivity activity;
 	
-	public AskForAppToken(Freebox freebox, Context context) {
+	public AskForAppToken(Freebox freebox, MainActivity activity) {
 		this.freebox = freebox;
-		this.context = context;
+		this.activity = activity;
+		this.context = activity;
 	}
 	
 	@Override
@@ -66,7 +68,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				// Check the status returned by the Freebox
 				AuthorizeStatus astatus = NetHelper.getAuthorizeStatus(freebox, trackId);
 				if (astatus == AuthorizeStatus.TIMEOUT || astatus == AuthorizeStatus.GRANTED || astatus == AuthorizeStatus.DENIED) {
-					MainActivity.pairingFinished(astatus);
+					activity.pairingFinished(astatus);
 					check = false;
 				} else {
 					try {
@@ -96,7 +98,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				}
 			}
 			else
-				MainActivity.sessionOpenFailed();
+				activity.sessionOpenFailed();
 		} else {
 			FooBox.getInstance().getErrorsLogger().logError(response);
 		}
@@ -109,9 +111,9 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		super.onPostExecute(res);
 		
 		if (ok) {
-			MainActivity.finishedLoading();
+			activity.finishedLoading();
 			// Load graphs
-			MainActivity.refreshGraph();
+			activity.refreshGraph();
 		}
 	}
 }

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
@@ -82,33 +81,34 @@ import java.text.Format;
 import java.text.ParsePosition;
 
 public class MainActivity extends ActionBarActivity {
-	public static FragmentActivity activity;
-	private static Context context;
-	private static final int NB_TABS = 6;
+	public static MainActivity activity;
+	private Context context;
+	private static final int NB_TABS = 5;
+	private static final FooBox.PlotType lastPlot = FooBox.PlotType.SW4;
 	private DrawerHelper drawerHelper;
 
-	private static Thread refreshThread;
-	private static boolean justRefreshed;
-	private static final int AUTOREFRESH_TIME = 20000;
-	private static boolean graphsDisplayed;
+	private Thread refreshThread;
+	private boolean justRefreshed;
+	private final int AUTOREFRESH_TIME = 20000;
+	private boolean graphsDisplayed;
 	
-	private static MenuItem refreshMenuItem;
-	private static MenuItem periodMenuItem;
-	private static MenuItem validerMenuItem;
+	private MenuItem refreshMenuItem;
+	private MenuItem periodMenuItem;
+	private MenuItem validerMenuItem;
 	
-	public static boolean sessionOpened = false;
-	private static boolean appStarted = false;
+	public boolean sessionOpened = false;
+	private boolean appStarted = false;
 	/**
 	 * If the app should load ads the next time this boolean is checked
 	 */
-	private static boolean loadAds;
+	private boolean loadAds;
 	
-	private static AppLovinAd cachedAd;
-	private static AppLovinAdView adView;
+	private AppLovinAd cachedAd;
+	private AppLovinAdView adView;
 	
-	public static boolean updating;
+	public boolean updating;
 
-	private static ProgressBar progressBar;
+	private ProgressBar progressBar;
 	
 	@SuppressLint("InlinedApi")
 	@Override
@@ -146,16 +146,16 @@ public class MainActivity extends ActionBarActivity {
 		FooBox.getInstance().init(this);
 	}
 	
-	public static void displayLoadingScreen() {
+	public void displayLoadingScreen() {
 		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
-		activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 	
-	public static void hideLoadingScreen() {
-		activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
+	public void hideLoadingScreen() {
+		findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
 	
-	public static void startRefreshThread() {
+	public void startRefreshThread() {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		
@@ -177,7 +177,7 @@ public class MainActivity extends ActionBarActivity {
 									justRefreshed = false;
 									continue;
 								}
-								activity.runOnUiThread(new Runnable() {
+								runOnUiThread(new Runnable() {
 									@Override
 									public void run() {
 										refreshGraph();
@@ -195,26 +195,26 @@ public class MainActivity extends ActionBarActivity {
 		refreshThread.start();
 	}
 	
-	public static void stopRefreshThread() {
+	public void stopRefreshThread() {
 		if (refreshThread != null && refreshThread.isAlive())
 			refreshThread.interrupt();
 	}
 	
-	private static void displayGraphs() {
+	private void displayGraphs() {
 		if (graphsDisplayed)
 			return;
 		
 		refreshMenuItem.setVisible(true);
 		periodMenuItem.setVisible(true);
 
-		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(activity.getSupportFragmentManager());
-		CustomViewPager viewPager = (CustomViewPager) activity.findViewById(R.id.pager);
+		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+		CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
 		
 		// Let Android load all the tabs at once (= disable lazy load)
 		viewPager.setOffscreenPageLimit(NB_TABS - 1);
 		
-		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) activity.findViewById(R.id.tabs);
+		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
 		tabs.setViewPager(viewPager);
 		tabs.setTextColor(Color.WHITE);
 		tabs.setDividerColor(Color.TRANSPARENT);
@@ -223,28 +223,42 @@ public class MainActivity extends ActionBarActivity {
 		graphsDisplayed = true;
 	}
 	
-	public static class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
+	public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
 		public MainActivityPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 		
 		@Override
 		public Fragment getItem(int i) {
+			// displayXdslTab = true:
+			//  0       1     2       3       4
+			// RATE | TEMP | XDSL | STACK | SWITCH
+			// displayXdslTab = false:
+			//  0       1     2        3
+			// RATE | TEMP | STACK | SWITCH
+
 			boolean displayXdslTab = SettingsHelper.getInstance().getDisplayXdslTab();
-			boolean isStack = (displayXdslTab && i == 4 || !displayXdslTab && i == 3);
-			boolean isSwitch = (displayXdslTab && i == 5 || !displayXdslTab && i == 4);
-			
-			if (isStack)
-				return new StackFragment();
-			else if (isSwitch)
-				return new SwitchFragment();
-			else {
+			boolean isRate = i == 0;
+			boolean isTemp = i == 1;
+			boolean isXdsl = displayXdslTab && i == 2;
+			boolean isStack = (displayXdslTab && i == 3 || !displayXdslTab && i == 2);
+			boolean isSwitch = (displayXdslTab && i == 4 || !displayXdslTab && i == 3);
+
+			if (isRate)
+				return new TwoGraphsFragment();
+			else if (isTemp || isXdsl) {
 				Fragment fragment = new GraphFragment();
 				Bundle args = new Bundle();
-				args.putInt(GraphFragment.ARG_OBJECT, i+1);
+				args.putString(GraphFragment.ARG_GRAPHTYPE, isTemp ? "temp" : "xdsl");
 				fragment.setArguments(args);
 				return fragment;
 			}
+			else if (isStack)
+				return new StackFragment();
+			else if (isSwitch)
+				return new SwitchFragment();
+
+			return null;
 		}
 		
 		@Override
@@ -258,28 +272,26 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		public CharSequence getPageTitle(int position) {
 			switch (position) {
-				case 0: return activity.getString(R.string.tab1_name);
-				case 1: return activity.getString(R.string.tab2_name);
-				case 2: return activity.getString(R.string.tab3_name);
+				case 0: return getString(R.string.tab1_name);
+				case 1: return getString(R.string.tab3_name);
+				case 2:
+					if (SettingsHelper.getInstance().getDisplayXdslTab())
+						return getString(R.string.tab4_name);
+					else
+						return getString(R.string.tab5_name);
 				case 3:
 					if (SettingsHelper.getInstance().getDisplayXdslTab())
-						return activity.getString(R.string.tab4_name);
+						return getString(R.string.tab5_name);
 					else
-						return activity.getString(R.string.tab5_name);
+						return getString(R.string.tab6_name);
 				case 4:
-					if (SettingsHelper.getInstance().getDisplayXdslTab())
-						return activity.getString(R.string.tab5_name);
-					else
-						return activity.getString(R.string.tab6_name);
-				case 5:
-					return activity.getString(R.string.tab6_name);
+					return getString(R.string.tab6_name);
 				default: return "";
 			}
 		}
 	}
 	
-	public static void initPlot(XYPlot plot, int plotIndex) {
-		FooBox.log("initPlot(" + plotIndex + ")");
+	public void initPlot(XYPlot plot, FooBox.PlotType plotType) {
 		plot.setVisibility(View.GONE);
 		
 		// Styling
@@ -301,18 +313,18 @@ public class MainActivity extends ActionBarActivity {
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
 		
 		plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-		if (plotIndex == 3)
+		if (plotType == FooBox.PlotType.TEMP)
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
-		else if (plotIndex == 4)
+		else if (plotType == FooBox.PlotType.XDSL)
 			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
 		
 		
 		// Legend
-		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 4 || plotIndex == 5
-				|| plotIndex == 6 || plotIndex == 7 || plotIndex == 8 || plotIndex == 9)
-			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
-		else
+		if (plotType == FooBox.PlotType.TEMP)
 			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
+		else
+			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
+
 		plot.getLegendWidget().setSize(new SizeMetrics(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
 		Paint bgPaint = new Paint();
 		bgPaint.setARGB(100, 0, 0, 0);
@@ -323,18 +335,18 @@ public class MainActivity extends ActionBarActivity {
 				40, YLayoutStyle.ABSOLUTE_FROM_TOP, AnchorPosition.LEFT_TOP);
 		
 		// Set range label
-		if (plotIndex == 3)
-			plot.setRangeLabel(activity.getString(R.string.temp));
-		else if (plotIndex == 4)
-			plot.setRangeLabel(activity.getString(R.string.noise));
+		if (plotType == FooBox.PlotType.TEMP)
+			plot.setRangeLabel(getString(R.string.temp));
+		else if (plotType == FooBox.PlotType.XDSL)
+			plot.setRangeLabel(getString(R.string.noise));
 		
-		if (plotIndex == 3 || plotIndex == 4)
+		if (plotType == FooBox.PlotType.TEMP || plotType == FooBox.PlotType.XDSL)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
 	
 	@SuppressWarnings("serial")
-	public static void loadGraph(int plotIndex, final GraphsContainer graphsContainer, final Period period, Unit unit) {
-		XYPlot plot = FooBox.getInstance().getPlot(plotIndex);
+	public void loadGraph(FooBox.PlotType plotType, final GraphsContainer graphsContainer, final Period period, Unit unit) {
+		XYPlot plot = FooBox.getInstance().getPlot(plotType);
 		
 		plot.setVisibility(View.VISIBLE);
 		
@@ -393,18 +405,15 @@ public class MainActivity extends ActionBarActivity {
 		});
 		
 		// Set range label
-		if (plotIndex == 1 || plotIndex == 2 || plotIndex == 6 || plotIndex == 7 || plotIndex == 8 || plotIndex == 9)
-			plot.setRangeLabel(activity.getString(R.string.rate) + " (" + unit.name() + "/s)");
-		else if (plotIndex == 5)
-			plot.setRangeLabel(activity.getString(R.string.stack) + " (" + unit.name() + ")");
+		if (plotType == FooBox.PlotType.STACK)
+			plot.setRangeLabel(getString(R.string.stack) + " (" + unit.name() + ")");
+		else if (plotType == FooBox.PlotType.RATEDOWN || plotType == FooBox.PlotType.RATEUP || plotType == FooBox.PlotType.SW1
+				|| plotType == FooBox.PlotType.SW2 || plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
+			plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
 		
 		plot.redraw();
-		
-		int plotIndexTreshold = 3;
-		if (SettingsHelper.getInstance().getDisplayXdslTab())
-			plotIndexTreshold = 4;
-		
-		if (plotIndex == plotIndexTreshold) {
+
+		if (plotType == lastPlot) {
 			toggleSpinningMenuItem(false);
 			
 			// Load ads if needed
@@ -413,19 +422,20 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 	
-	public static void displayDebugMenuItem() {
-		activity.runOnUiThread(new Runnable() {
+	public void displayDebugMenuItem() {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				activity.findViewById(R.id.drawer_debug).setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.drawer_debug).setOnClickListener(new OnClickListener() {
+				findViewById(R.id.drawer_debug).setVisibility(View.VISIBLE);
+				findViewById(R.id.drawer_debug).setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View arg0) {
 						LayoutInflater inflater = LayoutInflater.from(context);
-						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) findViewById(R.id.root_layout));
 						
 						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
-						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, FooBox.getInstance().getErrorsLogger().getErrors());
+						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
+								FooBox.getInstance().getErrorsLogger().getErrors());
 						lv.setAdapter(arrayAdapter);
 						
 						AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -449,7 +459,7 @@ public class MainActivity extends ActionBarActivity {
 										Uri uri = Uri.parse(uriText);
 										
 										send.setData(uri);
-										activity.startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
+										startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
 									}
 								})
 								.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -470,7 +480,7 @@ public class MainActivity extends ActionBarActivity {
 						builder.setTitle(R.string.debug);
 						builder.setView(dialog_layout);
 						// Avoid error when the app is closing or something
-						if (!activity.isFinishing())
+						if (!isFinishing())
 							builder.show();
 					}
 				});
@@ -483,7 +493,7 @@ public class MainActivity extends ActionBarActivity {
 			return;
 
 		LayoutInflater inflater = LayoutInflater.from(context);
-		View dialog_layout = inflater.inflate(R.layout.outages_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+		View dialog_layout = inflater.inflate(R.layout.outages_dialog, (ViewGroup) findViewById(R.id.root_layout));
 		
 		Util.Fonts.setFont(context, (TextView) dialog_layout.findViewById(R.id.outages_text), CustomFont.RobotoCondensed_Light);
 		
@@ -496,19 +506,19 @@ public class MainActivity extends ActionBarActivity {
 		});
 		builder.setView(dialog_layout);
 		// Avoid error when the app is closing or something
-		if (!activity.isFinishing()) {
+		if (!isFinishing()) {
 			AlertDialog dialog = builder.show();
 			
 			new OutagesFetcher(this, FooBox.getInstance().getFreebox(), dialog, dialog_layout).execute();
 		}
 	}
 	
-	public static void toggleSpinningMenuItem(boolean visible) {
+	public void toggleSpinningMenuItem(boolean visible) {
 		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
 	}
 	
-	public static void refreshGraph() { refreshGraph(false); }
-	private static void refreshGraph(boolean manualRefresh) {
+	public void refreshGraph() { refreshGraph(false); }
+	private void refreshGraph(boolean manualRefresh) {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
 		if (updating)
@@ -523,66 +533,66 @@ public class MainActivity extends ActionBarActivity {
 		
 		Freebox freebox = FooBox.getInstance().getFreebox();
 		Period period = FooBox.getInstance().getPeriod();
-		new ManualGraphLoader(freebox, period).execute();
-		new StackLoader(freebox, period).execute();
-		new SwitchLoader(freebox, period).execute();
+		new ManualGraphLoader(freebox, period, this).execute();
+		new StackLoader(freebox, period, this).execute();
+		new SwitchLoader(freebox, period, this).execute();
 	}
 	
-	public static void displayLaunchPairingScreen() {
-		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
-		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
+	public void displayLaunchPairingScreen() {
+		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
+		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
 		
-		activity.findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
-		activity.findViewById(R.id.screen1).setVisibility(View.VISIBLE);
+		findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
+		findViewById(R.id.screen1).setVisibility(View.VISIBLE);
 		
 		
-		activity.findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
-				activity.findViewById(R.id.screen1).setVisibility(View.GONE);
-				activity.findViewById(R.id.screen2).setVisibility(View.VISIBLE);
-				new AskForAppToken(FooBox.getInstance().getFreebox(), context).execute();
+				Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
+				findViewById(R.id.screen1).setVisibility(View.GONE);
+				findViewById(R.id.screen2).setVisibility(View.VISIBLE);
+				new AskForAppToken(FooBox.getInstance().getFreebox(), activity).execute();
 			}
 		});
 	}
 	
-	public static void pairingFinished(final AuthorizeStatus aStatus) {
-		activity.runOnUiThread(new Runnable() {
+	public void pairingFinished(final AuthorizeStatus aStatus) {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				if (aStatus == AuthorizeStatus.GRANTED) {
-					activity.findViewById(R.id.screen2).setVisibility(View.GONE);
+					findViewById(R.id.screen2).setVisibility(View.GONE);
 					displayGraphs();
 				}
 			}
 		});
 	}
 	
-	public static void sessionOpenFailed() {
-		activity.runOnUiThread(new Runnable() {
+	public void sessionOpenFailed() {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				Toast.makeText(context, R.string.freebox_connection_fail, Toast.LENGTH_SHORT).show();
-				if (activity.findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
+				if (findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
 					// App loading
-					activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-					activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-					final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+					findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+					findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+					final TextView chargement = (TextView) findViewById(R.id.tv_loadingtxt);
 					chargement.setText(R.string.connection_failed);
-					final TextView loadingFail = (TextView) activity.findViewById(R.id.sessionfailmessage);
+					final TextView loadingFail = (TextView) findViewById(R.id.sessionfailmessage);
 					if (FooBox.getInstance().isPremium())
-						loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error).toString()));
+						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error).toString()));
 					else
-						loadingFail.setText(Html.fromHtml(activity.getText(R.string.sessionopening_error_notpremium).toString()));
+						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error_notpremium).toString()));
 					
 					loadingFail.setVisibility(View.VISIBLE);
-					activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+					findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-							activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-							new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
+							findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+							findViewById(R.id.retrybutton).setVisibility(View.GONE);
+							new SessionOpener(FooBox.getInstance().getFreebox(), activity).execute();
 							chargement.setText(R.string.loading);
 							loadingFail.setVisibility(View.GONE);
 						}
@@ -592,24 +602,24 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	public static void displayFreeboxSearchFailedScreen() {
-		activity.runOnUiThread(new Runnable() {
+	public void displayFreeboxSearchFailedScreen() {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+				findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 
-				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-				activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-				final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+				findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+				findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+				final TextView chargement = (TextView) findViewById(R.id.tv_loadingtxt);
 				chargement.setText(R.string.connection_failed);
-				final TextView loadingFail = (TextView) activity.findViewById(R.id.freeboxsearchfailmessage);
+				final TextView loadingFail = (TextView) findViewById(R.id.freeboxsearchfailmessage);
 				loadingFail.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+				findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-						activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-						new FreeboxDiscoverer(context).execute();
+						findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+						findViewById(R.id.retrybutton).setVisibility(View.GONE);
+						new FreeboxDiscoverer(activity).execute();
 						chargement.setText(R.string.loading);
 						loadingFail.setVisibility(View.GONE);
 					}
@@ -618,50 +628,50 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	public static void displayFreeboxUpdateNeededScreen() {
-		activity.findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
+	public void displayFreeboxUpdateNeededScreen() {
+		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 		
-		activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-		activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-		final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+		findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+		findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+		final TextView chargement = (TextView) findViewById(R.id.tv_loadingtxt);
 		chargement.setText(R.string.connection_failed);
-		final TextView loadingFail = (TextView) activity.findViewById(R.id.updatefreeboxmessage);
+		final TextView loadingFail = (TextView) findViewById(R.id.updatefreeboxmessage);
 		loadingFail.setVisibility(View.VISIBLE);
-		activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
+				findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+				findViewById(R.id.retrybutton).setVisibility(View.GONE);
 				chargement.setText(R.string.loading);
 				loadingFail.setVisibility(View.GONE);
-				activity.findViewById(R.id.ll_loading).setVisibility(View.GONE);
+				findViewById(R.id.ll_loading).setVisibility(View.GONE);
 				refreshGraph();
 			}
 		});
 	}
 	
-	public static void displayFreeboxUpdateNeededScreenBeforePairing() {
-		activity.findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
-		activity.findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
-		final TextView chargement = (TextView) activity.findViewById(R.id.tv_loadingtxt);
+	public void displayFreeboxUpdateNeededScreenBeforePairing() {
+		findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
+		findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
+		final TextView chargement = (TextView) findViewById(R.id.tv_loadingtxt);
 		chargement.setText(R.string.connection_failed);
-		final TextView loadingFail = (TextView) activity.findViewById(R.id.updatefreeboxmessage);
+		final TextView loadingFail = (TextView) findViewById(R.id.updatefreeboxmessage);
 		loadingFail.setVisibility(View.VISIBLE);
 		
-		activity.findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				activity.findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.retrybutton).setVisibility(View.GONE);
-				new FreeboxDiscoverer(context).execute();
+				findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
+				findViewById(R.id.retrybutton).setVisibility(View.GONE);
+				new FreeboxDiscoverer(activity).execute();
 				chargement.setText(R.string.loading);
 				loadingFail.setVisibility(View.GONE);
 			}
 		});
 	}
 	
-	public static void graphLoadingFailed() {
-		activity.runOnUiThread(new Runnable() {
+	public void graphLoadingFailed() {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				Toast.makeText(context, R.string.graphs_loading_fail, Toast.LENGTH_SHORT).show();
@@ -675,16 +685,16 @@ public class MainActivity extends ActionBarActivity {
 		startActivity(i);
 	}
 	
-	public static void finishedLoading() {
+	public void finishedLoading() {
 		if (!sessionOpened) {
 			// Called from BillingService finished : SessionOpener
-			new SessionOpener(FooBox.getInstance().getFreebox(), context).execute();
+			new SessionOpener(FooBox.getInstance().getFreebox(), this).execute();
 			return;
 		}
 		
-		TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
+		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
-		activity.findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
+		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
 		
 		appStarted = true;
 		
@@ -694,22 +704,22 @@ public class MainActivity extends ActionBarActivity {
 		refreshGraph();
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
-			MainActivity.startRefreshThread();
+			startRefreshThread();
 		
 		if (!FooBox.getInstance().isPremium()) {
-			activity.findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
-			activity.findViewById(R.id.drawer_outages).setVisibility(View.GONE);
+			findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
+			findViewById(R.id.drawer_outages).setVisibility(View.GONE);
 			// Load the ads the next time this boolean will be checked
 			loadAds = true;
 		}
 	}
 	
-	public static void displayNeedAuthScreen() {
+	public void displayNeedAuthScreen() {
 		validerMenuItem.setVisible(true);
 		refreshMenuItem.setVisible(false);
 		periodMenuItem.setVisible(false);
 		
-		WebView wv = (WebView) activity.findViewById(R.id.firstlaunch_wv);
+		WebView wv = (WebView) findViewById(R.id.firstlaunch_wv);
 		wv.setVerticalScrollBarEnabled(true);
 		wv.getSettings().setDefaultTextEncodingName("utf-8");
 		wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -717,19 +727,19 @@ public class MainActivity extends ActionBarActivity {
 		wv.loadUrl("file:///android_asset/tuto/index.html");
 		wv.setBackgroundColor(0x00000000);
 		
-		activity.findViewById(R.id.screen3).setVisibility(View.VISIBLE);
-		activity.findViewById(R.id.firstlaunch).setVisibility(View.GONE);
+		findViewById(R.id.screen3).setVisibility(View.VISIBLE);
+		findViewById(R.id.firstlaunch).setVisibility(View.GONE);
 	}
 	
 	/**
 	 * Load the ads once we now that the user isn't premium
 	 */
-	private static void loadAds() {
+	private void loadAds() {
 		if (FooBox.getInstance().isPremium() || !loadAds)
 			return;
 		
 		AppLovinSdk.initializeSdk(context);
-		adView = (AppLovinAdView) activity.findViewById(R.id.ad);
+		adView = (AppLovinAdView) findViewById(R.id.ad);
 		AppLovinSdk.getInstance(context).getAdService().loadNextAd(AppLovinAdSize.BANNER, new AppLovinAdLoadListener() {
 			@Override
 			public void adReceived(AppLovinAd ad) {
@@ -745,7 +755,7 @@ public class MainActivity extends ActionBarActivity {
 		});
 	}
 	
-	private static void dismissAds() {
+	private void dismissAds() {
 		adView.setVisibility(View.GONE);
 	}
 	
@@ -832,7 +842,7 @@ public class MainActivity extends ActionBarActivity {
 					
 					FooBox.getInstance().setIsPremium(true);
 					dismissAds();
-					TextView freeboxUri = (TextView) activity.findViewById(R.id.drawer_freebox_uri);
+					TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 					freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
 				} else
 					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
@@ -874,7 +884,7 @@ public class MainActivity extends ActionBarActivity {
 				validerMenuItem.setVisible(false);
 				refreshMenuItem.setVisible(true);
 				periodMenuItem.setVisible(true);
-				activity.findViewById(R.id.screen3).setVisibility(View.GONE);
+				findViewById(R.id.screen3).setVisibility(View.GONE);
 				refreshGraph();
 				break;
 			default: super.onOptionsItemSelected(item); break;

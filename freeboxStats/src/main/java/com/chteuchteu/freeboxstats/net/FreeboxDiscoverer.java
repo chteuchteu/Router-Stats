@@ -1,19 +1,17 @@
 package com.chteuchteu.freeboxstats.net;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.obj.Freebox;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
-	private Context context;
-	
-	
-	public FreeboxDiscoverer(Context context) {
-		this.context = context;
+	private MainActivity activity;
+
+	public FreeboxDiscoverer(MainActivity activity) {
+		this.activity = activity;
 	}
 	
 	@Override
@@ -21,7 +19,7 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 		freebox = NetHelper.checkFreebox();
 		
 		// Init Billing Service
-		BillingService.getInstance(context);
+		BillingService.getInstance(activity);
 		
 		return null;
 	}
@@ -35,16 +33,16 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 				FooBox.log("Found freebox", freebox.toString());
 				FooBox.getInstance().setFreebox(freebox);
 				
-				MainActivity.hideLoadingScreen();
-				MainActivity.displayLaunchPairingScreen();
+				activity.hideLoadingScreen();
+				activity.displayLaunchPairingScreen();
 			} else {
 				// The API version is < 3.0 (actually, the needed version is 3.0.2
 				// 	but we only get 3.0)
-				MainActivity.displayFreeboxUpdateNeededScreenBeforePairing();
+				activity.displayFreeboxUpdateNeededScreenBeforePairing();
 			}
 		} else {
 			FooBox.log("Not found", "Error while trying to find Freebox");
-			MainActivity.displayFreeboxSearchFailedScreen();
+			activity.displayFreeboxSearchFailedScreen();
 		}
 	}
 }

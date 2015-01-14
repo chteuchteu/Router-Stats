@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private Period period;
+	private MainActivity activity;
 	
 	private GraphsContainer graph1;
 	private GraphsContainer graph2;
@@ -31,12 +32,14 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private boolean needAuth;
 	private boolean needUpdate;
 	
-	public ManualGraphLoader(Freebox freebox, Period period) {
+	public ManualGraphLoader(Freebox freebox, Period period, MainActivity activity) {
 		this.freebox = freebox;
 		this.period = period;
+		this.activity = activity;
 		this.graph1 = null;
 		this.graph2 = null;
 		this.graph3 = null;
+		this.graph4 = null;
 		this.graphLoadingFailed = false;
 		this.needAuth = false;
 		this.needUpdate = false;
@@ -57,28 +60,28 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
-		MainActivity.updating = false;
+		activity.updating = false;
 		
 		if (!graphLoadingFailed) {
 			if (graph1 != null)
-				MainActivity.loadGraph(1, graph1, period, graph1.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.RATEDOWN, graph1, period, graph1.getValuesUnit());
 			if (graph2 != null)
-				MainActivity.loadGraph(2, graph2, period, graph2.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.RATEUP, graph2, period, graph2.getValuesUnit());
 			if (graph3 != null)
-				MainActivity.loadGraph(3, graph3, period, graph3.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.TEMP, graph3, period, graph3.getValuesUnit());
 			if (graph4 != null)
-				MainActivity.loadGraph(4, graph4, period, graph4.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.XDSL, graph4, period, graph4.getValuesUnit());
 		}
 		
 		if (graphLoadingFailed) {
-			MainActivity.toggleSpinningMenuItem(false);
-			MainActivity.graphLoadingFailed();
+			activity.toggleSpinningMenuItem(false);
+			activity.graphLoadingFailed();
 		}
 		
 		if (needAuth)
-			MainActivity.displayNeedAuthScreen();
+			activity.displayNeedAuthScreen();
 		if (needUpdate)
-			MainActivity.displayFreeboxUpdateNeededScreen();
+			activity.displayFreeboxUpdateNeededScreen();
 	}
 	
 	/**
@@ -140,7 +143,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 					switch (response) {
 						case "auth_required":
 							cancel = false;
-							new SessionOpener(freebox, FooBox.getInstance().getContext()).execute();
+							new SessionOpener(freebox, activity).execute();
 							break;
 						case "insufficient_rights":
 							cancel = true;

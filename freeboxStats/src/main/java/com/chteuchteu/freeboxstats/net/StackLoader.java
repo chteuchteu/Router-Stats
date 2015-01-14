@@ -2,6 +2,7 @@ package com.chteuchteu.freeboxstats.net;
 
 import android.os.AsyncTask;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -19,9 +20,11 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	private boolean stackLoadingFailed;
 	private StackContainer stackContainer;
 	private Period period;
+	private MainActivity activity;
 	
-	public StackLoader(Freebox freebox, Period period) {
+	public StackLoader(Freebox freebox, Period period, MainActivity activity) {
 		this.freebox = freebox;
+		this.activity = activity;
 		this.stackLoadingFailed = false;
 		this.period = period;
 	}
@@ -35,10 +38,10 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
-		MainActivity.updating = false;
+		activity.updating = false;
 		
 		if (!stackLoadingFailed)
-			MainActivity.loadGraph(5, this.stackContainer.getStackGraphsContainer(), period,
+			activity.loadGraph(FooBox.PlotType.STACK, this.stackContainer.getStackGraphsContainer(), period,
 					this.stackContainer.getStackGraphsContainer().getValuesUnit());
 	}
 	

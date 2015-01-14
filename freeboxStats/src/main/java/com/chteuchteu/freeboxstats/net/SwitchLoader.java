@@ -2,6 +2,7 @@ package com.chteuchteu.freeboxstats.net;
 
 import android.os.AsyncTask;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
@@ -18,16 +19,18 @@ public class SwitchLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private boolean switchLoadingFailed;
 	private Enums.Period period;
+	private MainActivity activity;
 
 	private GraphsContainer switch1;
 	private GraphsContainer switch2;
 	private GraphsContainer switch3;
 	private GraphsContainer switch4;
 
-	public SwitchLoader(Freebox freebox, Enums.Period period) {
+	public SwitchLoader(Freebox freebox, Enums.Period period, MainActivity activity) {
 		this.freebox = freebox;
 		this.switchLoadingFailed = false;
 		this.period = period;
+		this.activity = activity;
 		this.switch1 = null;
 		this.switch2 = null;
 		this.switch3 = null;
@@ -49,17 +52,17 @@ public class SwitchLoader extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected void onPostExecute(Void res) {
-		MainActivity.updating = false;
+		activity.updating = false;
 
 		if (!switchLoadingFailed) {
 			if (this.switch1 != null)
-				MainActivity.loadGraph(6, switch1, period, switch1.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.SW1, switch1, period, switch1.getValuesUnit());
 			if (this.switch2 != null)
-				MainActivity.loadGraph(7, switch2, period, switch2.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.SW2, switch2, period, switch2.getValuesUnit());
 			if (this.switch3 != null)
-				MainActivity.loadGraph(8, switch3, period, switch3.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.SW3, switch3, period, switch3.getValuesUnit());
 			if (this.switch4 != null)
-				MainActivity.loadGraph(9, switch4, period, switch4.getValuesUnit());
+				activity.loadGraph(FooBox.PlotType.SW4, switch4, period, switch4.getValuesUnit());
 		}
 	}
 

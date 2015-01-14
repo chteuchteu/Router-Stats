@@ -30,9 +30,9 @@ public class FooBox extends Application {
 	private Premium premium = Premium.TRUE;
 	public static final boolean DEBUG_INAPPPURCHASE = false;
 	private static final boolean FORCE_NOTPREMIUM = false;
-	private static final boolean LOG = true;
 	
 	private static FooBox instance;
+	private MainActivity activity;
 	private Context context;
 	
 	private Freebox freebox;
@@ -43,16 +43,16 @@ public class FooBox extends Application {
 	private Period currentPeriod;
 	
 	// MainActivity context
-	private XYPlot plot1;
-	private XYPlot plot2;
-	private XYPlot plot3;
-	private XYPlot plot4;
-	private XYPlot stack_plot;
-
-    private XYPlot switch_plot_1;
-    private XYPlot switch_plot_2;
-    private XYPlot switch_plot_3;
-    private XYPlot switch_plot_4;
+	public enum PlotType { RATEDOWN, RATEUP, TEMP, XDSL, STACK, SW1, SW2, SW3, SW4 }
+	private XYPlot plot_rateDown;
+	private XYPlot plot_rateUp;
+	private XYPlot plot_temp;
+	private XYPlot plot_xdsl;
+	private XYPlot plot_stack;
+    private XYPlot plot_switch_1;
+    private XYPlot plot_switch_2;
+    private XYPlot plot_switch_3;
+    private XYPlot plot_switch_4;
 
 	@Override
 	public void onCreate() {
@@ -77,10 +77,12 @@ public class FooBox extends Application {
 	 * 		-> ask for app_token
 	 * Then, ask for auth_token.
 	 */
-	public void init(Context context) {
-		this.context = context;
+	public void init(MainActivity activity) {
+		this.context = activity;
+		this.activity = activity;
+		this.errorsLogger.setActivity(activity);
 		
-		MainActivity.displayLoadingScreen();
+		activity.displayLoadingScreen();
 		
 		this.premium = Premium.UNKNOWN;
 		if (Util.hasPref(context, "premium") && Util.getPrefBoolean(context, "premium", false))
@@ -100,18 +102,18 @@ public class FooBox extends Application {
 			
 			if (this.premium == Premium.UNKNOWN && !BuildConfig.DEBUG) {
 				// Init Billing Service
-				BillingService.getInstance(this.context);
+				BillingService.getInstance(this.activity);
 				// Once done :
 				//  * open session
 				//  * update the graph
 			} else if (this.premium == Premium.TRUE || BuildConfig.DEBUG) {
 				// Open session
-				new SessionOpener(this.freebox, this.context).execute();
+				new SessionOpener(this.freebox, this.activity).execute();
 				// (once done, we'll update the graph)
 			}
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer(context).execute();
+			new FreeboxDiscoverer(activity).execute();
 		}
 	}
 	
@@ -128,7 +130,7 @@ public class FooBox extends Application {
 	}
 	
 	public static void log(String msg) { log("FreeboxStats", msg); }
-	public static void log(String key, String msg) { if (BuildConfig.DEBUG && LOG) Log.i(key, msg); }
+	public static void log(String key, String msg) { if (BuildConfig.DEBUG) Log.i(key, msg); }
 	
 	public Freebox getFreebox() { return this.freebox; }
 	public void setFreebox(Freebox val) { this.freebox = val; }
@@ -167,32 +169,34 @@ public class FooBox extends Application {
 		return versionName;
 	}
 	
-	public void setPlot(XYPlot plot, int plotIndex) {
-		switch (plotIndex) {
-			case 1: plot1 = plot; break;
-			case 2: plot2 = plot; break;
-			case 3: plot3 = plot; break;
-			case 4: plot4 = plot; break;
-			case 5: stack_plot = plot; break;
-            case 6: switch_plot_1 = plot; break;
-            case 7: switch_plot_2 = plot; break;
-            case 8: switch_plot_3 = plot; break;
-            case 9: switch_plot_4 = plot; break;
+	public void setPlot(XYPlot plot, PlotType plotType) {
+		switch (plotType) {
+			case RATEDOWN: plot_rateDown = plot; break;
+			case RATEUP: plot_rateUp = plot; break;
+			case TEMP: plot_temp = plot; break;
+			case XDSL: plot_xdsl = plot; break;
+			case STACK: plot_stack = plot; break;
+			case SW1: plot_switch_1 = plot; break;
+			case SW2: plot_switch_2 = plot; break;
+			case SW3: plot_switch_3 = plot; break;
+			case SW4: plot_switch_4 = plot; break;
 		}
 	}
 	
-	public XYPlot getPlot(int plotIndex) {
-		switch (plotIndex) {
-			case 1: return plot1;
-			case 2: return plot2;
-			case 3: return plot3;
-			case 4: return plot4;
-			case 5: return stack_plot;
-            case 6: return switch_plot_1;
-            case 7: return switch_plot_2;
-            case 8: return switch_plot_3;
-            case 9: return switch_plot_4;
+	public XYPlot getPlot(PlotType plotType) {
+		switch (plotType) {
+			case RATEDOWN: return plot_rateDown;
+			case RATEUP: return plot_rateUp;
+			case TEMP: return plot_temp;
+			case XDSL: return plot_xdsl;
+			case STACK: return plot_stack;
+			case SW1: return plot_switch_1;
+			case SW2: return plot_switch_2;
+			case SW3: return plot_switch_3;
+			case SW4: return plot_switch_4;
 			default: return null;
 		}
 	}
+
+	public MainActivity getActivity() { return this.activity; }
 }

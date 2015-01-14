@@ -6,21 +6,26 @@ import java.util.ArrayList;
 
 public class ErrorsLogger {
 	private ArrayList<String> errors;
+	private MainActivity activity;
 	
 	public ErrorsLogger() {
+		this.activity = activity;
 		this.errors = new ArrayList<>();
 	}
 	
 	public void logError(String error) {
 		this.errors.add(error);
-		MainActivity.displayDebugMenuItem();
+		if (this.activity != null)
+			this.activity.displayDebugMenuItem();
 	}
 	public void logError(NetResponse netResponse) {
 		if (netResponse != null)
 			this.errors.add(netResponse.getError());
 		else
 			this.errors.add("Error 418");
-		MainActivity.displayDebugMenuItem();
+
+		if (this.activity != null)
+			this.activity.displayDebugMenuItem();
 	}
 	
 	public ArrayList<String> getErrors() { return this.errors; }
@@ -30,4 +35,6 @@ public class ErrorsLogger {
 			out += str + "\r\n";
 		return out;
 	}
+
+	public void setActivity(MainActivity activity) { this.activity = activity; }
 }

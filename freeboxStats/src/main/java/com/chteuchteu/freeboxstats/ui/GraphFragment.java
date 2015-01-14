@@ -11,19 +11,26 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 
 public class GraphFragment extends Fragment {
-	public static final String ARG_OBJECT = "object";
+	public static final String ARG_GRAPHTYPE = "graphType";
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_graph, container, false);
 		
 		Bundle args = getArguments();
-		int index = args.getInt(ARG_OBJECT);
+		String type = args.getString(ARG_GRAPHTYPE);
 		XYPlot plot = (XYPlot) rootView.findViewById(R.id.xyPlot);
-		
-		FooBox.getInstance().setPlot(plot, index);
-		
-		MainActivity.initPlot(plot, index);
+
+		FooBox.PlotType plotType;
+
+		switch (type) {
+			case "temp": plotType = FooBox.PlotType.TEMP; break;
+			case "xdsl": plotType = FooBox.PlotType.XDSL; break;
+			default: plotType = null; break;
+		}
+
+		FooBox.getInstance().setPlot(plot, plotType);
+		FooBox.getInstance().getActivity().initPlot(plot, plotType);
 		
 		
 		return rootView;

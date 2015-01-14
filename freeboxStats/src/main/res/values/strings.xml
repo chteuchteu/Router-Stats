@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Freebox Stats</string>
-	<string name="tab1_name">Débit down</string>
-	<string name="tab2_name">Débit up</string>
+	<string name="tab1_name">Débit</string>
 	<string name="tab3_name">Temp.</string>
 	<string name="tab4_name">xDSL</string>
 	<string name="tab5_name">Cumul</string>

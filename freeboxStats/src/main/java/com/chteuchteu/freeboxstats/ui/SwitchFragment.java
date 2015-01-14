@@ -11,11 +11,6 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 
 public class SwitchFragment extends Fragment {
-    private static final int PLOT_INDEX1 = 6;
-    private static final int PLOT_INDEX2 = 7;
-    private static final int PLOT_INDEX3 = 8;
-    private static final int PLOT_INDEX4 = 9;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_switch, container, false);
@@ -25,15 +20,17 @@ public class SwitchFragment extends Fragment {
         XYPlot switch_plot3 = (XYPlot) rootView.findViewById(R.id.xyPlot_switch3);
         XYPlot switch_plot4 = (XYPlot) rootView.findViewById(R.id.xyPlot_switch4);
 
-        FooBox.getInstance().setPlot(switch_plot1, PLOT_INDEX1);
-        FooBox.getInstance().setPlot(switch_plot2, PLOT_INDEX2);
-        FooBox.getInstance().setPlot(switch_plot3, PLOT_INDEX3);
-        FooBox.getInstance().setPlot(switch_plot4, PLOT_INDEX4);
+	    FooBox fooBox = FooBox.getInstance();
 
-        MainActivity.initPlot(switch_plot1, PLOT_INDEX1);
-        MainActivity.initPlot(switch_plot2, PLOT_INDEX2);
-        MainActivity.initPlot(switch_plot3, PLOT_INDEX3);
-        MainActivity.initPlot(switch_plot4, PLOT_INDEX4);
+        fooBox.setPlot(switch_plot1, FooBox.PlotType.SW1);
+        fooBox.setPlot(switch_plot2, FooBox.PlotType.SW2);
+        fooBox.setPlot(switch_plot3, FooBox.PlotType.SW3);
+        fooBox.setPlot(switch_plot4, FooBox.PlotType.SW4);
+
+        fooBox.getActivity().initPlot(switch_plot1, FooBox.PlotType.SW1);
+        fooBox.getActivity().initPlot(switch_plot2, FooBox.PlotType.SW2);
+        fooBox.getActivity().initPlot(switch_plot3, FooBox.PlotType.SW3);
+        fooBox.getActivity().initPlot(switch_plot4, FooBox.PlotType.SW4);
 
         return rootView;
     }
