@@ -810,8 +810,7 @@ public class MainActivity extends ActionBarActivity {
 			
 			refreshGraph();
 			
-			if (refreshThread != null)
-				startRefreshThread();
+			startRefreshThread();
 		}
 	}
 	
@@ -819,8 +818,7 @@ public class MainActivity extends ActionBarActivity {
 	public void onPause() {
 		super.onPause();
 		
-		if (refreshThread != null)
-			stopRefreshThread();
+		stopRefreshThread();
 	}
 	
 	@Override

@@ -56,7 +56,8 @@
 	<string name="sessionopening_error"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
 								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
-								&#8226;  Votre téléphone a un problème de connexion ]]></string>
+								&#8226;  Votre téléphone a un problème de connexion<br />\n
+								&#8226;  Le point d\'accès auquel vous êtes connecté bloque la connexion ]]></string>
 	<string name="sessionopening_error_notpremium"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
 								&#8226;  Vous tentez d\'accéder à votre Freebox en-dehors de votre réseau local (le pack de fonctionnalités Premium est nécessaire)<br />\n
 								&#8226;  Votre Freebox n\'est pas à jour<br />\n

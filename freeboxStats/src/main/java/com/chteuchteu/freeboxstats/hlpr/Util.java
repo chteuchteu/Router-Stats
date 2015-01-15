@@ -1,11 +1,12 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.PowerManager;
 import android.support.v7.app.ActionBar;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.androidplot.xy.XValueMarker;
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
@@ -114,9 +116,11 @@ public class Util {
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	public static boolean isScreenOn(Context context) {
 		PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-		return powerManager.isScreenOn();
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH && powerManager.isInteractive()
+				|| Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH&&powerManager.isScreenOn();
 	}
 	
 	/**
@@ -493,6 +497,8 @@ public class Util {
 	public static ProgressBar prepareGmailStyleProgressBar(final Activity activity, final ActionBar actionBar, final View paddingComponent2) {
 		// create new ProgressBar and style it
 		final ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
+		progressBar.setProgressDrawable(activity.getResources().getDrawable(
+				R.drawable.progress_horizontal_holo_no_background_light));
 		progressBar.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 24));
 		progressBar.setProgress(0);
 		progressBar.setVisibility(View.GONE);
@@ -512,29 +518,19 @@ public class Util {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void onGlobalLayout() {
+				progressBar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+				FooBox.log(":) :) :)");
 				View contentView = decorView.findViewById(android.R.id.content);
-				int actionBarHeight = actionBar != null ? actionBar.getHeight() : Util.getActionBarHeight(activity);
+				int actionBarHeight = actionBar.getHeight();
 				int paddingComponent2Height = paddingComponent2 != null ? paddingComponent2.getHeight() : 0;
 				int y = Util.getStatusBarHeight(activity) + actionBarHeight;
 
 				progressBar.setY(y + contentView.getY() - 10 + paddingComponent2Height);
-				progressBar.setProgressDrawable(activity.getResources().getDrawable(
-						R.drawable.progress_horizontal_holo_no_background_light));
-
-				ViewTreeObserver observer = progressBar.getViewTreeObserver();
-				observer.removeGlobalOnLayoutListener(this);
 			}
 		});
 
 		return progressBar;
-	}
-
-	public static int getActionBarHeight(Context c) {
-		final TypedArray styledAttributes = c.getTheme().obtainStyledAttributes(
-				new int[] { android.R.attr.actionBarSize });
-		int height = (int) styledAttributes.getDimension(0, 0);
-		styledAttributes.recycle();
-		return height;
 	}
 
 	public static int getStatusBarHeight(Context c) {
