@@ -81,13 +81,13 @@ public class FooBox extends Application {
 		this.context = activity;
 		this.activity = activity;
 		this.errorsLogger.setActivity(activity);
-		
-		activity.displayLoadingScreen();
-		
 		this.premium = Premium.UNKNOWN;
-		if (Util.hasPref(context, "premium") && Util.getPrefBoolean(context, "premium", false))
+
+		if (BuildConfig.DEBUG && !FORCE_NOTPREMIUM)
 			this.premium = Premium.TRUE;
-		
+
+		activity.displayLoadingScreen();
+
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		
 		if (!savedFreebox.equals("")) {
@@ -99,14 +99,14 @@ public class FooBox extends Application {
 				ex.printStackTrace();
 				Crashlytics.logException(ex);
 			}
-			
-			if (this.premium == Premium.UNKNOWN && !BuildConfig.DEBUG) {
+			FooBox.log("this.premum = Premium." + this.premium.name());
+			if (this.premium == Premium.UNKNOWN) {
 				// Init Billing Service
 				BillingService.getInstance(this.activity);
 				// Once done :
 				//  * open session
 				//  * update the graph
-			} else if (this.premium == Premium.TRUE || BuildConfig.DEBUG) {
+			} else if (this.premium == Premium.TRUE) { // When debug
 				// Open session
 				new SessionOpener(this.freebox, this.activity).execute();
 				// (once done, we'll update the graph)
@@ -144,17 +144,8 @@ public class FooBox extends Application {
 	
 	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
 	
-	public boolean isPremium() {
-		if (FORCE_NOTPREMIUM)
-			return false;
-		return this.premium == Premium.TRUE || BuildConfig.DEBUG;
-	}
-	public void setIsPremium(boolean val) {
-		if (val)
-			this.premium = Premium.TRUE;
-		else
-			this.premium = Premium.FALSE;
-	}
+	public boolean isPremium() { return this.premium == Premium.TRUE; }
+	public void setIsPremium(boolean val) { this.premium = val ? Premium.TRUE : Premium.FALSE; }
 	
 	public String getAppVersion() {
 		String versionName = "";

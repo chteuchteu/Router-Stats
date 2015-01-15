@@ -13,10 +13,11 @@ import android.os.RemoteException;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.chteuchteu.freeboxstats.BuildConfig;
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.ex.BillingServiceBadResponse;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class BillingService {
 	private Context activityContext;
 	
 	private boolean isBound = false;
+
+	private boolean checkedIfPremium = false;
 	
 	private static final String ITEM_ID = "premium";
 	public static final int REQUEST_CODE = 1664;
@@ -51,9 +54,12 @@ public class BillingService {
 				mService = IInAppBillingService.Stub.asInterface(service);
 				
 				// Binding finished : check if premium
-				boolean premium = checkIfHasPurchased();
-				FooBox.getInstance().setIsPremium(premium);
-				activityContext.finishedLoading();
+				if (!checkedIfPremium && !BuildConfig.DEBUG) {
+					boolean premium = checkIfHasPurchased();
+					FooBox.getInstance().setIsPremium(premium);
+					activityContext.finishedLoading();
+					checkedIfPremium = true;
+				}
 			}
 		};
 		Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
@@ -68,7 +74,7 @@ public class BillingService {
 			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), 0, 0, 0);
 		}
-		catch (Exception ex) { launchPurchase_retry(); }
+		catch (Exception ex) { ex.printStackTrace(); launchPurchase_retry(); }
 	}
 	
 	public void launchPurchase_retry() {

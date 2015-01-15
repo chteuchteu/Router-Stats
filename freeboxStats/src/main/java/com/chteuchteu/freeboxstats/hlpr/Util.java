@@ -19,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.androidplot.xy.XValueMarker;
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
@@ -520,7 +519,6 @@ public class Util {
 			public void onGlobalLayout() {
 				progressBar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 
-				FooBox.log(":) :) :)");
 				View contentView = decorView.findViewById(android.R.id.content);
 				int actionBarHeight = actionBar.getHeight();
 				int paddingComponent2Height = paddingComponent2 != null ? paddingComponent2.getHeight() : 0;

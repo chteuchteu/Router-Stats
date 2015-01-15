@@ -20,8 +20,7 @@ public class SessionOpener extends AsyncTask<Void, Void, Void> {
 	protected Void doInBackground(Void... params) {
 		// Init BillingService
 		BillingService.getInstance(this.activity);
-		
-		
+
 		success = NetHelper.openSession(this.freebox);
 		
 		return null;
