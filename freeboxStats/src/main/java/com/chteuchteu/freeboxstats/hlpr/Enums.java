@@ -64,7 +64,7 @@ public class Enums {
 	public enum GraphPrecision {
 		Max("Maximale"), Medium("Moyenne"), Min("Minimum");
 		private String label;
-		private static final GraphPrecision defaultValue = GraphPrecision.Max;
+		private static final GraphPrecision defaultValue = GraphPrecision.Medium;
 		GraphPrecision(String label) { this.label = label; }
 		public String getLabel() { return this.label; }
 		public String getSerializedValue() { return this.name().toLowerCase(); }
