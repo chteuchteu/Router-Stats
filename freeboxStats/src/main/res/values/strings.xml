@@ -25,8 +25,6 @@
 	<string name="no">Non</string>
 	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
-	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
-	<string name="buying_failed">Erreur lors de l\'achat, veuillez réessayer…</string>
 	<string name="freeboxstats_premium">Freebox Stats : premium</string>
 	<string name="dissociate">Voulez-vous dissocier l\'application de cette Freebox ?</string>
 	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
@@ -56,6 +54,7 @@
 	<string name="freebox">Freebox</string>
 	<string name="debug">Debug</string>
 	<string name="outages">Coupures</string>
+	<string name="donate">Don</string>
 	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté. Seules les coupures d\'il y a moins d\'un mois sont affichées.</string>
 	<string name="the">Le</string>
 	<string name="since2">de</string>
@@ -72,4 +71,7 @@
 	<string name="outage_less_than_one_minute">Moins d\'une minute</string>
 	<string name="outage_one_minute">Une minute</string>
 	<string name="outage_minutes">XX minutes</string>
+	<string name="donate_text">Développer une telle application demande beaucoup de temps et de dévotion. Si Freebox Stats vous est utile, pourriez-vous
+		considérer un don ? Merci !</string>
+	<string name="donate_amount">Veuillez sélectionner le montant du don. (33% de cette somme est prélevée par Google)</string>
 </resources>

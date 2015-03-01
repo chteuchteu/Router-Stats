@@ -90,4 +90,17 @@
 			style="@style/Drawer_Row_Text"
 			android:text="@string/outages" />
 	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/drawer_donate"
+		style="@style/Drawer_Row" >
+
+		<ImageView
+			style="@style/Drawer_Row_Icon"
+			android:src="@drawable/ic_action_favorite" />
+
+		<TextView
+			style="@style/Drawer_Row_Text"
+			android:text="@string/donate" />
+	</LinearLayout>
 </LinearLayout>

@@ -1,9 +1,12 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,8 +19,12 @@ import android.widget.Spinner;
 import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.chteuchteu.freeboxstats.R;
+import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DrawerHelper {
 	private MainActivity activity;
@@ -132,6 +139,14 @@ public class DrawerHelper {
 				activity.displayOutagesDialog();
 			}
 		});
+
+		activity.findViewById(R.id.drawer_donate).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				drawerLayout.closeDrawers();
+				donate();
+			}
+		});
 	}
 
 	public MaterialMenuIconToolbar getToolbarIcon() { return this.materialMenu; }
@@ -167,5 +182,73 @@ public class DrawerHelper {
 			drawerLayout.closeDrawer(Gravity.START);
 		else
 			drawerLayout.openDrawer(Gravity.START);
+	}
+
+	private void donate() {
+		new AlertDialog.Builder(activity)
+				.setTitle(R.string.donate)
+				.setMessage(R.string.donate_text)
+				.setPositiveButton(R.string.donate, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+						View view = inflater.inflate(R.layout.dialog_donate, null);
+
+						final Spinner spinnerAmount = (Spinner) view.findViewById(R.id.donate_amountSpinner);
+						List<String> list = new ArrayList<>();
+						list.add("2 \u20Ac");
+						list.add("5 \u20Ac");
+						ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item, list);
+						dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+						spinnerAmount.setAdapter(dataAdapter);
+
+						new AlertDialog.Builder(activity)
+								.setTitle(R.string.donate)
+								.setView(view)
+								.setPositiveButton(R.string.donate, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										// Launch BillingService, and then purchase the thing
+										String product = "";
+										switch (spinnerAmount.getSelectedItemPosition()) {
+											case 0: product = BillingService.DONATE_2; break;
+											case 1: product = BillingService.DONATE_5; break;
+										}
+										new DonateAsync(activity, product).execute();
+									}
+								})
+								.setNegativeButton(R.string.cancel, null)
+								.show();
+					}
+				})
+				.setNegativeButton(R.string.cancel, null)
+				.show();
+	}
+
+	private class DonateAsync extends AsyncTask<Void, Integer, Void> {
+		private ProgressDialog dialog;
+		private Activity activity;
+		private String product;
+
+		private DonateAsync(Activity activity, String product) {
+			this.product = product;
+			this.activity = activity;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+			dialog = ProgressDialog.show(activity, "", activity.getString(R.string.loading), true);
+			dialog.setCancelable(true);
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			BillingService.getInstanceAndPurchase(activity, product, dialog);
+			// Dialog will be dismissed in the BillingService.
+
+			return null;
+		}
 	}
 }

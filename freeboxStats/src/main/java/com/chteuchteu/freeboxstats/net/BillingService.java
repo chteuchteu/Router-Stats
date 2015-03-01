@@ -2,47 +2,41 @@ package com.chteuchteu.freeboxstats.net;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
-import com.chteuchteu.freeboxstats.BuildConfig;
-import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.R;
-import com.chteuchteu.freeboxstats.ex.BillingServiceBadResponse;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
-import com.crashlytics.android.Crashlytics;
-
-import java.util.ArrayList;
 
 public class BillingService {
 	private static BillingService instance;
 	
 	private IInAppBillingService mService;
 	private ServiceConnection mServiceConn;
-	private Context activityContext;
+	private Activity activity;
 	
 	private boolean isBound = false;
 
-	private boolean checkedIfPremium = false;
-	
-	private static final String ITEM_ID = "premium";
-	public static final int REQUEST_CODE = 1664;
-	
-	private BillingService(MainActivity activityContext) {
-		loadInstance(activityContext);
+	public static final int REQUEST_CODE = 1665;
+
+	public static final String DONATE_2 = "donate_2";
+	public static final String DONATE_5 = "donate_5";
+
+	private ProgressDialog progressDialog;
+	private String productToBuy;
+
+	private BillingService(Activity activity, String product, ProgressDialog progressDialog) {
+		this.productToBuy = product;
+		this.progressDialog = progressDialog;
+		loadInstance(activity);
 	}
 	
-	private void loadInstance(final MainActivity activityContext) {
-		if (activityContext != null && this.activityContext == null)
-			this.activityContext = activityContext;
+	private void loadInstance(final Activity activity) {
+		this.activity = activity;
 		
 		mServiceConn = new ServiceConnection() {
 			@Override
@@ -53,89 +47,53 @@ public class BillingService {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mService = IInAppBillingService.Stub.asInterface(service);
 				
-				// Binding finished : check if premium
-				if (!checkedIfPremium && !BuildConfig.DEBUG) {
-					boolean premium = checkIfHasPurchased();
-					//FooBox.getInstance().setIsPremium(premium);
-					activityContext.finishedLoading();
-					checkedIfPremium = true;
-				}
+				launchPurchase(productToBuy);
+
+				unbind();
 			}
 		};
 		Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
 		intent.setPackage("com.android.vending");
-		isBound = activityContext.bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
+		isBound = activity.bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
 	}
 	
-	public void launchPurchase() {
+	public void launchPurchase(String product) {
+		progressDialog.dismiss();
+
 		try {
-			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
+			Bundle buyIntentBundle = mService.getBuyIntent(3, activity.getPackageName(), product, "inapp", "");
 			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-			((Activity) activityContext).startIntentSenderForResult(pendingIntent.getIntentSender(),
+			activity.startIntentSenderForResult(
+					pendingIntent.getIntentSender(),
 					REQUEST_CODE, new Intent(), 0, 0, 0);
 		}
-		catch (Exception ex) { ex.printStackTrace(); launchPurchase_retry(); }
+		catch (Exception ex) { ex.printStackTrace(); }
 	}
-	
-	public void launchPurchase_retry() {
-		try {
-			Bundle buyIntentBundle = mService.getBuyIntent(3, activityContext.getPackageName(), ITEM_ID, "inapp", "");
-			//PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-			PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-			if (pendingIntent == null)
-				buyIntentBundle.get("BUY_INTENT");
-			MainActivity.activity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-					REQUEST_CODE, new Intent(), 0, 0, 0);
-		}
-		catch (RemoteException | SendIntentException | NullPointerException ex) {
-			ex.printStackTrace();
-			Crashlytics.logException(ex);
-			displayErrorToast();
-		}
-	}
-	
-	public void displayErrorToast() {
-		Toast.makeText(activityContext, R.string.buying_failed, Toast.LENGTH_SHORT).show();
-	}
-	
-	public boolean checkIfHasPurchased() {
-		try {
-			Bundle ownedItems = mService.getPurchases(3, activityContext.getPackageName(), "inapp", null);
-			int response = ownedItems.getInt("RESPONSE_CODE");
-			if (response == 0) {
-				ArrayList<String> purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-				FooBox.log("Purchased items : " + purchaseDataList.toString());
-				
-				if (FooBox.DEBUG_INAPPPURCHASE)
-					return true;
-				return purchaseDataList.size() > 0;
-			}
-			else {
-				Crashlytics.logException(new BillingServiceBadResponse("RESPONSE_CODE = " + response));
-				return false;
-			}
-		} catch (RemoteException ex) {
-			ex.printStackTrace();
-			Crashlytics.logException(ex);
-			return false;
-		}
-	}
-	
+
 	public void unbind() {
 		if (mService != null && isBound) {
 			try {
 				isBound = false;
-				activityContext.unbindService(mServiceConn);
+				activity.unbindService(mServiceConn);
 			} catch (Exception ex) { ex.printStackTrace(); }
 		}
 	}
 	
 	public static boolean isLoaded() { return instance != null; }
 	public static BillingService getInstance() { return instance; }
+	private void setProductToBuy(String val) { this.productToBuy = val; }
+	private void setProgressDialog(ProgressDialog val) { this.progressDialog = val; }
 	
-	public static synchronized BillingService getInstance(MainActivity activityContext) {
+	public static synchronized BillingService getInstanceAndPurchase(Activity activity, String product,
+	                                                                 ProgressDialog progressDialog) {
 		if (instance == null)
-			instance = new BillingService(activityContext);
+			instance = new BillingService(activity, product, progressDialog);
+		else {
+			// Instance already defined: just have to loadInstance again
+			instance.setProductToBuy(product);
+			instance.setProgressDialog(progressDialog);
+			instance.loadInstance(activity);
+		}
 		return instance;
 	}
 }

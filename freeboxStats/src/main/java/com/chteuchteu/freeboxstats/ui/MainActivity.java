@@ -89,8 +89,7 @@ public class MainActivity extends ActionBarActivity {
 	private MenuItem refreshMenuItem;
 	private MenuItem periodMenuItem;
 	private MenuItem validerMenuItem;
-	
-	public boolean sessionOpened = false;
+
 	private boolean appStarted = false;
 	
 	public boolean updating;
@@ -686,12 +685,6 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public void finishedLoading() {
-		if (!sessionOpened) {
-			// Called from BillingService finished : SessionOpener
-			new SessionOpener(FooBox.getInstance().getFreebox(), this).execute();
-			return;
-		}
-		
 		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
 		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
@@ -776,23 +769,6 @@ public class MainActivity extends ActionBarActivity {
 		if (appStarted && findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
 			graphsDisplayed = false;
 			finishedLoading();
-		}
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
-		switch (requestCode) {
-			case BillingService.REQUEST_CODE:
-				// TODO
-				if (resultCode == RESULT_OK) {
-					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
-
-					TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
-					freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
-				} else
-					Toast.makeText(context, R.string.buying_failed, Toast.LENGTH_SHORT).show();
-				
-				break;
 		}
 	}
 

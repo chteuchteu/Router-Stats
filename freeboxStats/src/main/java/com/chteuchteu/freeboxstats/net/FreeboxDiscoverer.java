@@ -18,9 +18,6 @@ public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 	protected Void doInBackground(Void... params) {
 		freebox = NetHelper.checkFreebox();
 		
-		// Init Billing Service
-		BillingService.getInstance(activity);
-		
 		return null;
 	}
 	

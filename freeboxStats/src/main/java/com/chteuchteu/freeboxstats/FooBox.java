@@ -24,8 +24,6 @@ public class FooBox extends Application {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
 	public static final String DEVICE_NAME = "Android";
-
-	public static final boolean DEBUG_INAPPPURCHASE = false;
 	
 	private static FooBox instance;
 	private MainActivity activity;
