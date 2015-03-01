@@ -74,4 +74,7 @@
 	<string name="donate_text">Développer une telle application demande beaucoup de temps et de dévotion. Si Freebox Stats vous est utile, pourriez-vous
 		considérer un don ? Merci !</string>
 	<string name="donate_amount">Veuillez sélectionner le montant du don. (33% de cette somme est prélevée par Google)</string>
+	<string name="dialog_opensource">Le saviez-vous ? Freebox Stats est maintenant gratuite et open-source ! Si vous le voulez, vous pouvez faire un don
+		ou contribuer au développement sur GitHub</string>
+	<string name="contribute">Contribuer</string>
 </resources>

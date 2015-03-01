@@ -698,6 +698,8 @@ public class MainActivity extends ActionBarActivity {
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
+
+		displayOpenSourceAlertIfNeeded();
 	}
 	
 	@Override
@@ -810,5 +812,23 @@ public class MainActivity extends ActionBarActivity {
 			default: super.onOptionsItemSelected(item); break;
 		}
 		return true;
+	}
+
+	private void displayOpenSourceAlertIfNeeded() {
+		if (!Util.getPrefBoolean(this, "openSourceDialogShown", false)) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.dialog_opensource)
+					.setCancelable(true)
+					.setPositiveButton(R.string.contribute, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/chteuchteu/Freebox-Stats/")));
+						}
+					})
+					.setNegativeButton(R.string.close, null);
+			builder.create().show();
+
+			Util.setPref(this, "openSourceDialogShown", true);
+		}
 	}
 }
