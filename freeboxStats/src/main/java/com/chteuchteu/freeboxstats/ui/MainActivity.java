@@ -299,30 +299,39 @@ public class MainActivity extends ActionBarActivity {
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
 		
 		plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-		if (plotType == FooBox.PlotType.TEMP)
-			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
-		else if (plotType == FooBox.PlotType.XDSL)
-			plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
-		else if (plotType == FooBox.PlotType.SW1 || plotType == FooBox.PlotType.SW2
-				|| plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
-		plot.setRangeStep(XYStepMode.INCREMENT_BY_PIXELS, 100);
-		
-		
-		// Legend
-		if (plotType == FooBox.PlotType.TEMP)
-			plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
-		else
-			plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
+		switch (plotType) {
+			case TEMP:
+				plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
+				break;
+			case XDSL:
+				plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
+				break;
+			case SW1:case SW2:case SW3:case SW4:
+				plot.setRangeStep(XYStepMode.INCREMENT_BY_PIXELS, 100);
+				break;
+		}
 
-		plot.getLegendWidget().setSize(new SizeMetrics(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
-		Paint bgPaint = new Paint();
-		bgPaint.setARGB(100, 0, 0, 0);
-		bgPaint.setStyle(Paint.Style.FILL);
-		plot.getLegendWidget().setBackgroundPaint(bgPaint);
-		plot.getLegendWidget().setPadding(10, 1, 1, 3);
-		plot.getLegendWidget().position(160, XLayoutStyle.ABSOLUTE_FROM_LEFT,
-				40, YLayoutStyle.ABSOLUTE_FROM_TOP, AnchorPosition.LEFT_TOP);
-		
+		// Legend
+		switch (plotType) {
+			case RATEDOWN:case RATEUP: /* No legend */ break;
+			default:
+				// Show legend
+				if (plotType == FooBox.PlotType.TEMP)
+					plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
+				else
+					plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
+
+				plot.getLegendWidget().setSize(new SizeMetrics(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
+				Paint bgPaint = new Paint();
+				bgPaint.setARGB(100, 0, 0, 0);
+				bgPaint.setStyle(Paint.Style.FILL);
+				plot.getLegendWidget().setBackgroundPaint(bgPaint);
+				plot.getLegendWidget().setPadding(10, 1, 1, 3);
+				plot.getLegendWidget().position(160, XLayoutStyle.ABSOLUTE_FROM_LEFT,
+						40, YLayoutStyle.ABSOLUTE_FROM_TOP, AnchorPosition.LEFT_TOP);
+				break;
+		}
+
 		// Set range label
 		if (plotType == FooBox.PlotType.TEMP)
 			plot.setRangeLabel(getString(R.string.temp));
@@ -573,7 +582,7 @@ public class MainActivity extends ActionBarActivity {
 						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error).toString()));
 					else
 						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error_notpremium).toString()));
-					
+
 					loadingFail.setVisibility(View.VISIBLE);
 					findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
 						@Override

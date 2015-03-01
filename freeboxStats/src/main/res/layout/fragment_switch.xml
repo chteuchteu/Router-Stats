@@ -13,17 +13,14 @@
 
 		<TextView
 			android:id="@+id/textView_switch1"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="45dp"
+			style="@style/GraphTitle"
 			android:layout_marginTop="15dp"
 			android:text="@string/switch1"/>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch1"
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
+			android:layout_height="match_parent"
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
@@ -45,16 +42,13 @@
 
 		<TextView
 			android:id="@+id/textView_switch2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/switch2"
-			android:layout_marginLeft="45dp"/>
+			style="@style/GraphTitle"
+			android:text="@string/switch2"/>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch2"
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
+			android:layout_height="match_parent"
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
@@ -76,16 +70,13 @@
 
 		<TextView
 			android:id="@+id/textView_switch3"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/switch3"
-			android:layout_marginLeft="45dp"/>
+			style="@style/GraphTitle"
+			android:text="@string/switch3"/>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch3"
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
+			android:layout_height="match_parent"
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
@@ -107,16 +98,13 @@
 
 		<TextView
 			android:id="@+id/textView_switch4"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/switch4"
-			android:layout_marginLeft="45dp"/>
+			style="@style/GraphTitle"
+			android:text="@string/switch4"/>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch4"
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
+			android:layout_height="match_parent"
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
