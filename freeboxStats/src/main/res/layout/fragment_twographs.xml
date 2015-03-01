@@ -13,6 +13,7 @@
 
 		<TextView
 			style="@style/GraphTitle"
+			android:layout_marginTop="15dp"
 			android:text="@string/rate_down"/>
 
 		<com.androidplot.xy.XYPlot
@@ -22,7 +23,7 @@
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
-			androidPlot.graphWidget.marginTop="20dp"
+			androidPlot.graphWidget.marginTop="3dp"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
@@ -51,7 +52,7 @@
 			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
-			androidPlot.graphWidget.marginTop="20dp"
+			androidPlot.graphWidget.marginTop="3dp"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
