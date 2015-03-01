@@ -10,7 +10,6 @@ public class Session {
 	}
 	
 	public void setChallenge(String val) { this.challenge = val; }
-	public String getChallenge() { return this.challenge; }
 	
 	public void setSessionToken(String val) { this.sessionToken = val; }
 	public String getSessionToken() { return this.sessionToken; }

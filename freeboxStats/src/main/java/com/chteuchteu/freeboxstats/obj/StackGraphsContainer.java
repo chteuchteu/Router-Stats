@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class StackGraphsContainer extends GraphsContainer {
 	
 	public StackGraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) {
-		super(fields, data, period);
+		super(fields, data, Enums.FieldType.DATA, period);
 		
 		// Construct StackGraphsContainer from raw data from the Freebox
 		this.period = period;

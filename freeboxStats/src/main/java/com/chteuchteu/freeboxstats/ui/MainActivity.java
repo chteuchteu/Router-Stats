@@ -345,8 +345,9 @@ public class MainActivity extends ActionBarActivity {
 	@SuppressWarnings("serial")
 	public void loadGraph(FooBox.PlotType plotType, final GraphsContainer graphsContainer, final Period period, Unit unit) {
 		XYPlot plot = FooBox.getInstance().getPlot(plotType);
-		
-		plot.setVisibility(View.VISIBLE);
+
+		if (plot.getVisibility() != View.VISIBLE)
+			plot.setVisibility(View.VISIBLE);
 		
 		// Reset plot
 		plot.clear();
@@ -403,16 +404,21 @@ public class MainActivity extends ActionBarActivity {
 		});
 		
 		// Set range label
-		if (plotType == FooBox.PlotType.STACK)
-			plot.setRangeLabel(getString(R.string.stack) + " (" + unit.name() + ")");
-		else if (plotType == FooBox.PlotType.RATEDOWN)
-			plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
-		else if (plotType == FooBox.PlotType.RATEUP)
-			plot.setRangeLabel(getString(R.string.rate_up) + " (" + unit.name() + "/s)");
-		else if (plotType == FooBox.PlotType.SW1 || plotType == FooBox.PlotType.SW2
-				|| plotType == FooBox.PlotType.SW3 || plotType == FooBox.PlotType.SW4)
-			plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
-		
+		switch (plotType) {
+			case STACK:
+				plot.setRangeLabel(getString(R.string.stack) + " (" + unit.name() + ")");
+				break;
+			case RATEDOWN:
+				plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
+				break;
+			case RATEUP:
+				plot.setRangeLabel(getString(R.string.rate_up) + " (" + unit.name() + "/s)");
+				break;
+			case SW1:case SW2:case SW3:case SW4:
+				plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
+				break;
+		}
+
 		plot.redraw();
 
 		if (plotType == lastPlot)

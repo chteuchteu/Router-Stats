@@ -81,4 +81,8 @@
 	<string name="refresh">Actualiser</string>
 	<string name="finished">Terminé</string>
 	<string name="retry">Réessayer</string>
+	<string name="outage_less_than_one_hour">Moins d\'une heure</string>
+	<string name="outage_less_than_one_minute">Moins d\'une minute</string>
+	<string name="outage_one_minute">Une minute</string>
+	<string name="outage_minutes">XX minutes</string>
 </resources>

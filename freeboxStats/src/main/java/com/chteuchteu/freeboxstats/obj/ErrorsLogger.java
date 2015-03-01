@@ -9,7 +9,6 @@ public class ErrorsLogger {
 	private MainActivity activity;
 	
 	public ErrorsLogger() {
-		this.activity = activity;
 		this.errors = new ArrayList<>();
 	}
 	

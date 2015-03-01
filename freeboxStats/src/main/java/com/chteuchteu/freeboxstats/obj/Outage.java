@@ -1,5 +1,9 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import android.content.Context;
+
+import com.chteuchteu.freeboxstats.R;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,19 +22,21 @@ public class Outage {
 	
 	@Override
 	public String toString() {
-		return "[" + this.from + " -> " + this.to + " = " + getDurationString() + "]";
+		return "[" + this.from + " -> " + this.to;
 	}
 	
-	public String getDurationString() {
+	public String getDurationString(Context context) {
 		if (this.outageLengthSecs == 3600)
-			return "Moins d'une heure";
+			return context.getString(R.string.outage_less_than_one_hour);
 		
 		if (this.outageLengthSecs < 60)
-			return "Moins d'une minute";
+			return context.getString(R.string.outage_less_than_one_minute);
 		else if (this.outageLengthSecs < 3600) {
 			if (this.outageLengthSecs == 60)
-				return "1 minutes";
-			return (this.outageLengthSecs%3600)/60 + " minutes";
+				return context.getString(R.string.outage_one_minute);
+
+			return context.getString(R.string.outage_minutes).replace("XX",
+					String.valueOf(this.outageLengthSecs%3600/60));
 		}
 		
 		return String.format("%d:%02d:%02d", this.outageLengthSecs/3600, (this.outageLengthSecs%3600)/60, (this.outageLengthSecs%60));

@@ -1,6 +1,5 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -48,10 +47,6 @@ public class Util {
 	
 	public static boolean getPrefBoolean(Context c, String key, boolean defaultValue) {
 		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).getBoolean(key, defaultValue);
-	}
-	
-	public static boolean hasPref(Context c, String key) {
-		return c.getSharedPreferences("user_pref", Context.MODE_PRIVATE).contains(key);
 	}
 	
 	public static void setPref(Context c, String key, String value) {
@@ -114,8 +109,7 @@ public class Util {
 			return new String(hexChars);
 		}
 	}
-	
-	@SuppressLint("NewApi")
+
 	public static boolean isScreenOn(Context context) {
 		PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH && powerManager.isInteractive()
@@ -137,8 +131,6 @@ public class Util {
 	public static final class Times {
 		/**
 		 * Gets "from" timestamp when retrieving data from Freebox
-		 * @param period
-		 * @return
 		 */
 		public static long getFrom(Period period) {
 			Calendar cal = Calendar.getInstance();
@@ -440,7 +432,7 @@ public class Util {
 			View v;
 			for (int i = 0; i < count; i++) {
 				v = group.getChildAt(i);
-				if (v instanceof TextView || v instanceof EditText || v instanceof Button) {
+				if (v instanceof TextView) {
 					((TextView) v).setTypeface(font);
 				} else if (v instanceof ViewGroup)
 					setFont((ViewGroup) v, font);

@@ -4,10 +4,6 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class DataSet {
@@ -21,29 +17,10 @@ public class DataSet {
 		this.valuesUnit = valuesUnit;
 	}
 	
-	public DataSet(Field field, JSONArray jsonArray, Unit valuesUnit) {
-		this.valuesUnit = valuesUnit;
-		this.values = new ArrayList<>();
-		try {
-			for (int i=0; i<jsonArray.length(); i++) {
-				JSONObject jsonObj = jsonArray.getJSONObject(i);
-				
-				if (jsonObj.has(field.getSerializedValue())) {
-					int intValue = jsonObj.getInt(field.getSerializedValue());
-					Number value = Util.convertUnit(Unit.o, valuesUnit, intValue);
-					this.values.add(value);
-				}
-				else
-					this.values.add(0);
-			}
-		} catch (JSONException e) { e.printStackTrace(); }
-	}
-	
 	public Field getField() { return this.field; }
 	/**
 	 * Get this DataSet values.
-	 * This shouldn't be used to add values, use addValue(Unit, int) insted
-	 * @return
+	 * This shouldn't be used to add values, use addValue(Unit, int) instead
 	 */
 	public ArrayList<Number> getValues() { return this.values; }
 	

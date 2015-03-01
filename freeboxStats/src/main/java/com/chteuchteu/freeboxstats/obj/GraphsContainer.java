@@ -20,10 +20,7 @@ public class GraphsContainer {
 	protected Unit valuesUnit;
 	public static final Unit defaultUnit = Unit.Mo;
 	private FieldType fieldType;
-	
-	// Since StackGraphsContainer extends GraphsContainer
-	public GraphsContainer(ArrayList<Field> fields, JSONArray data, Period period) { }
-	
+
 	public GraphsContainer(ArrayList<Field> fields, JSONArray data, FieldType fieldType, Period period) {
 		// Construct GraphsContainer from raw data from the Freebox
 		this.period = period;

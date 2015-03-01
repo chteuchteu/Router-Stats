@@ -1,9 +1,9 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.crashlytics.android.Crashlytics;
 
 public class NetResponse {
 	private boolean success;

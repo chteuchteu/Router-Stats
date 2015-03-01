@@ -1,12 +1,12 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.content.Context;
 
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 
-import android.content.Context;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Freebox {
 	public static final String ApiUri = "http://mafreebox.freebox.fr";
