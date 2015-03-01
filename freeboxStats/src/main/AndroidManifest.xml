@@ -26,12 +26,8 @@
 					android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" />
-		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />
 		
 		<meta-data android:name="com.crashlytics.ApiKey" android:value="b7bc84aa870bd35d3de03f69309f1748a52354a4"/>
-		<meta-data android:name="applovin.sdk.key"
-			android:value="7aXuBHP4DVuTPpEmpIH0M1UtUJo4LuASThKezkkAEcddPtND9fEWhiOB1AFM2QqV6994uuF6Uukvl66vmKPR2p"  />
 		<meta-data android:name="com.google.android.gms.version"
 			android:value="@integer/google_play_services_version" />
 	</application>

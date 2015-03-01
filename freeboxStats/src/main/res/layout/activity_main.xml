@@ -96,40 +96,25 @@
 				</LinearLayout>
 				
 			</LinearLayout>
-			
-			<RelativeLayout
+
+			<LinearLayout
 				android:layout_width="match_parent"
-				android:layout_height="match_parent" >
-				
-				<com.applovin.adview.AppLovinAdView
-					android:id="@+id/ad"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignParentBottom="true"
-					android:visibility="gone" />
-				
-				<LinearLayout
+				android:layout_height="match_parent"
+				android:orientation="vertical">
+
+				<com.astuetz.PagerSlidingTabStrip
+					android:id="@+id/tabs"
+					android:layout_width="match_parent"
+					android:layout_height="45dip"
+					android:background="@color/colorPrimary"
+					style="@style/PagerSlidingTabStrip" />
+
+				<com.chteuchteu.freeboxstats.CustomViewPager
+					android:id="@+id/pager"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
-					android:orientation="vertical"
-					android:layout_above="@id/ad">
-				
-					<com.astuetz.PagerSlidingTabStrip
-						android:id="@+id/tabs"
-						android:layout_width="match_parent"
-						android:layout_height="45dip"
-						android:background="@color/colorPrimary"
-						style="@style/PagerSlidingTabStrip" />
-					
-					<com.chteuchteu.freeboxstats.CustomViewPager
-						android:id="@+id/pager"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent"
-						android:fitsSystemWindows="true" />
-					
-				</LinearLayout>
-				
-			</RelativeLayout>
+					android:fitsSystemWindows="true" />
+			</LinearLayout>
 			
 			<LinearLayout
 				android:id="@+id/ll_loading"

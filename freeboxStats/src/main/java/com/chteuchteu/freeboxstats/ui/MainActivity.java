@@ -47,11 +47,6 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
-import com.applovin.adview.AppLovinAdView;
-import com.applovin.sdk.AppLovinAd;
-import com.applovin.sdk.AppLovinAdLoadListener;
-import com.applovin.sdk.AppLovinAdSize;
-import com.applovin.sdk.AppLovinSdk;
 import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.CustomViewPager;
 import com.chteuchteu.freeboxstats.FooBox;
@@ -99,13 +94,6 @@ public class MainActivity extends ActionBarActivity {
 	
 	public boolean sessionOpened = false;
 	private boolean appStarted = false;
-	/**
-	 * If the app should load ads the next time this boolean is checked
-	 */
-	private boolean loadAds;
-	
-	private AppLovinAd cachedAd;
-	private AppLovinAdView adView;
 	
 	public boolean updating;
 
@@ -129,7 +117,6 @@ public class MainActivity extends ActionBarActivity {
 		graphsDisplayed = false;
 		justRefreshed = false;
 		updating = false;
-		loadAds = false;
 		
 		this.drawerHelper = new DrawerHelper(this, this);
 		this.drawerHelper.initDrawer();
@@ -421,13 +408,8 @@ public class MainActivity extends ActionBarActivity {
 		
 		plot.redraw();
 
-		if (plotType == lastPlot) {
+		if (plotType == lastPlot)
 			toggleSpinningMenuItem(false);
-			
-			// Load ads if needed
-			if (loadAds)
-				loadAds();
-		}
 	}
 	
 	public void displayDebugMenuItem() {
@@ -717,8 +699,6 @@ public class MainActivity extends ActionBarActivity {
 		if (!FooBox.getInstance().isPremium()) {
 			findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
 			findViewById(R.id.drawer_outages).setVisibility(View.GONE);
-			// Load the ads the next time this boolean will be checked
-			loadAds = true;
 		}
 	}
 	
@@ -737,34 +717,6 @@ public class MainActivity extends ActionBarActivity {
 		
 		findViewById(R.id.screen3).setVisibility(View.VISIBLE);
 		findViewById(R.id.firstlaunch).setVisibility(View.GONE);
-	}
-	
-	/**
-	 * Load the ads once we now that the user isn't premium
-	 */
-	private void loadAds() {
-		if (FooBox.getInstance().isPremium() || !loadAds)
-			return;
-		
-		AppLovinSdk.initializeSdk(context);
-		adView = (AppLovinAdView) findViewById(R.id.ad);
-		AppLovinSdk.getInstance(context).getAdService().loadNextAd(AppLovinAdSize.BANNER, new AppLovinAdLoadListener() {
-			@Override
-			public void adReceived(AppLovinAd ad) {
-				cachedAd = ad;
-				adView.renderAd(cachedAd);
-				adView.setVisibility(View.VISIBLE);
-			}
-			
-			@Override
-			public void failedToReceiveAd(int errorCode) {
-				adView.setVisibility(View.GONE);
-			}
-		});
-	}
-	
-	private void dismissAds() {
-		adView.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -847,7 +799,7 @@ public class MainActivity extends ActionBarActivity {
 					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
 					
 					FooBox.getInstance().setIsPremium(true);
-					dismissAds();
+
 					TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 					freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
 				} else
