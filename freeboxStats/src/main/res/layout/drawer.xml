@@ -23,20 +23,6 @@
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/drawer_premium"
-		style="@style/Drawer_Row"
-		android:visibility="gone" >
-
-		<ImageView
-			style="@style/Drawer_Row_Icon"
-			android:src="@drawable/ic_action_not_secure" />
-
-		<TextView
-			style="@style/Drawer_Row_Text"
-			android:text="@string/premium" />
-	</LinearLayout>
-
-	<LinearLayout
 		android:id="@+id/drawer_freebox"
 		style="@style/Drawer_Row"
 		android:visibility="gone" >

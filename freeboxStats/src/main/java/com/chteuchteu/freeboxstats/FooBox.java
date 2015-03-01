@@ -10,7 +10,6 @@ import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.net.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
@@ -25,11 +24,8 @@ public class FooBox extends Application {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
 	public static final String DEVICE_NAME = "Android";
-	
-	public enum Premium { TRUE, FALSE, UNKNOWN }
-	private Premium premium = Premium.TRUE;
+
 	public static final boolean DEBUG_INAPPPURCHASE = false;
-	private static final boolean FORCE_NOTPREMIUM = false;
 	
 	private static FooBox instance;
 	private MainActivity activity;
@@ -81,10 +77,6 @@ public class FooBox extends Application {
 		this.context = activity;
 		this.activity = activity;
 		this.errorsLogger.setActivity(activity);
-		this.premium = Premium.UNKNOWN;
-
-		if (BuildConfig.DEBUG && !FORCE_NOTPREMIUM)
-			this.premium = Premium.TRUE;
 
 		activity.displayLoadingScreen();
 
@@ -99,18 +91,10 @@ public class FooBox extends Application {
 				ex.printStackTrace();
 				Crashlytics.logException(ex);
 			}
-			FooBox.log("this.premum = Premium." + this.premium.name());
-			if (this.premium == Premium.UNKNOWN) {
-				// Init Billing Service
-				BillingService.getInstance(this.activity);
-				// Once done :
-				//  * open session
-				//  * update the graph
-			} else if (this.premium == Premium.TRUE) { // When debug
-				// Open session
-				new SessionOpener(this.freebox, this.activity).execute();
-				// (once done, we'll update the graph)
-			}
+
+			// Open session
+			new SessionOpener(this.freebox, this.activity).execute();
+			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
 			new FreeboxDiscoverer(activity).execute();
@@ -143,9 +127,6 @@ public class FooBox extends Application {
 	public void setPeriod(Period val) { this.currentPeriod = val; }
 	
 	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
-	
-	public boolean isPremium() { return this.premium == Premium.TRUE; }
-	public void setIsPremium(boolean val) { this.premium = val ? Premium.TRUE : Premium.FALSE; }
 	
 	public String getAppVersion() {
 		String versionName = "";

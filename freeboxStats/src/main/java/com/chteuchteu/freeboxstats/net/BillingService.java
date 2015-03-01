@@ -56,7 +56,7 @@ public class BillingService {
 				// Binding finished : check if premium
 				if (!checkedIfPremium && !BuildConfig.DEBUG) {
 					boolean premium = checkIfHasPurchased();
-					FooBox.getInstance().setIsPremium(premium);
+					//FooBox.getInstance().setIsPremium(premium);
 					activityContext.finishedLoading();
 					checkedIfPremium = true;
 				}

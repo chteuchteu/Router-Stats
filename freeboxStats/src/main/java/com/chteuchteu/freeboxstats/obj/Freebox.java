@@ -2,7 +2,6 @@ package com.chteuchteu.freeboxstats.obj;
 
 import android.content.Context;
 
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 
 import org.json.JSONException;
@@ -58,14 +57,14 @@ public class Freebox {
 	}
 	
 	public String getApiCallUrl() {
-		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
+		if (this.ip.equals(""))
 			return Freebox.ApiUri + this.apiBaseUrl + "v3/";
 		else
 			return "http://" + this.ip + this.apiBaseUrl + "v3/";
 	}
 	
 	public String getDisplayUrl() {
-		if (!FooBox.getInstance().isPremium() || this.ip.equals(""))
+		if (this.ip.equals(""))
 			return Freebox.ApiUri.substring(7);
 		else {
 			if (this.ip.contains(":"))

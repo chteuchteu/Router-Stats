@@ -584,10 +584,7 @@ public class MainActivity extends ActionBarActivity {
 					final TextView chargement = (TextView) findViewById(R.id.tv_loadingtxt);
 					chargement.setText(R.string.connection_failed);
 					final TextView loadingFail = (TextView) findViewById(R.id.sessionfailmessage);
-					if (FooBox.getInstance().isPremium())
-						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error).toString()));
-					else
-						loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error_notpremium).toString()));
+					loadingFail.setText(Html.fromHtml(getText(R.string.sessionopening_error).toString()));
 
 					loadingFail.setVisibility(View.VISIBLE);
 					findViewById(R.id.retrybutton).setOnClickListener(new OnClickListener() {
@@ -708,11 +705,6 @@ public class MainActivity extends ActionBarActivity {
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
-		
-		if (!FooBox.getInstance().isPremium()) {
-			findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
-			findViewById(R.id.drawer_outages).setVisibility(View.GONE);
-		}
 	}
 	
 	@Override
@@ -791,10 +783,9 @@ public class MainActivity extends ActionBarActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
 		switch (requestCode) {
 			case BillingService.REQUEST_CODE:
+				// TODO
 				if (resultCode == RESULT_OK) {
 					Toast.makeText(context, R.string.thanks_bought_premium, Toast.LENGTH_LONG).show();
-					
-					FooBox.getInstance().setIsPremium(true);
 
 					TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 					freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());

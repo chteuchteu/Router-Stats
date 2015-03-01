@@ -29,15 +29,6 @@
 		android:id="@+id/settings_graphprecision"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" />
-	<TextView
-		android:id="@+id/settings_graphprecisiondisabled"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		android:textSize="13sp"
-		android:paddingLeft="25dp"
-		android:textColor="@color/textSecondary"
-		android:text="@string/settings_graphprecisiondisabled" />
 	
 	<CheckBox
 		android:id="@+id/settings_displayxdsltab"

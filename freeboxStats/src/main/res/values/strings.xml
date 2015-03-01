@@ -23,7 +23,6 @@
 	<string name="cancel">Annuler</string>
 	<string name="yes">Oui</string>
 	<string name="no">Non</string>
-	<string name="buy">Acheter</string>
 	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
 	<string name="thanks_bought_premium">Merci d\'avoir acheté la version premium !</string>
@@ -43,29 +42,17 @@
 		Veuillez la redémarrer afin de la mettre à jour. Sans cela, l\'application ne pourra pas accéder aux statistiques.</string>
 	<string name="freeboxupdateneededtitle">Mise à jour nécessaire</string>
 	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
-	<string name="settings_graphprecisiondisabled">(désactivé dans la version gratuite)</string>
 	<string name="send_errors">Envoyer le rapport d\'erreurs</string>
 	<string name="send_errors_explanation">La liste des erreurs va être envoyée au développeur. Merci d\'ajouter le plus détails possibles à propos de cette/ces erreur(s).</string>
 	<string name="send">Envoyer</string>
 	
-	<string name="premium_text"><![CDATA[&#8226;  Accédez aux stats en-dehors de votre réseau local<br />\n
-								&#8226;  Pas de publicités<br />\n
-								&#8226;  Affichage de la liste des coupures<br />\n
-								&#8226;  Supportez le développement de l\'application<br />\n
-								&#8226;  Un seul achat pour toutes les fonctionnalités à venir]]></string>
 	<string name="sessionopening_error"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
 								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
 								&#8226;  Votre téléphone a un problème de connexion<br />\n
 								&#8226;  Le point d\'accès auquel vous êtes connecté bloque la connexion ]]></string>
-	<string name="sessionopening_error_notpremium"><![CDATA[Impossible de se connecter à la Freebox : <br />\n
-								&#8226;  Vous tentez d\'accéder à votre Freebox en-dehors de votre réseau local (le pack de fonctionnalités Premium est nécessaire)<br />\n
-								&#8226;  Votre Freebox n\'est pas à jour<br />\n
-								&#8226;  Votre Freebox est indisponible<br />\n
-								&#8226;  Votre téléphone a un problème de connexion ]]></string>
 								
 	<string name="settings">Paramètres</string>
-	<string name="premium">Premium</string>
 	<string name="freebox">Freebox</string>
 	<string name="debug">Debug</string>
 	<string name="outages">Coupures</string>

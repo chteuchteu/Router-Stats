@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v4.widget.DrawerLayout;
-import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
-import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 
@@ -69,10 +65,6 @@ public class DrawerHelper {
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				settings_graphPrecision.setAdapter(adapter);
 				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-				if (!FooBox.getInstance().isPremium()) {
-					dialog_layout.findViewById(R.id.settings_graphprecisiondisabled).setVisibility(View.VISIBLE);
-					settings_graphPrecision.setEnabled(false);
-				}
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -105,37 +97,6 @@ public class DrawerHelper {
 				});
 				builder.setView(dialog_layout);
 				builder.show();
-			}
-		});
-
-		activity.findViewById(R.id.drawer_premium).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				LayoutInflater inflater = LayoutInflater.from(context);
-				View dialog_layout = inflater.inflate(R.layout.premium_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
-
-				final TextView tv = (TextView) dialog_layout.findViewById(R.id.premium_tv);
-				tv.setText(Html.fromHtml(context.getString(R.string.premium_text)));
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setPositiveButton(R.string.buy, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						BillingService.getInstance().launchPurchase();
-					}
-				});
-				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.setTitle(R.string.freeboxstats_premium);
-				builder.setView(dialog_layout);
-				// Avoid error when the app is closing or something
-				if (!activity.isFinishing())
-					builder.show();
 			}
 		});
 

@@ -27,7 +27,7 @@ public class OutagesAdapter extends ArrayAdapter<Outage> {
 		
 		if (v == null) {
 			LayoutInflater vi = LayoutInflater.from(context);
-			v = vi.inflate(R.layout.outage_item, null);
+			v = vi.inflate(R.layout.outage_item, parent);
 			Util.Fonts.setFont(context, (ViewGroup) v, CustomFont.RobotoCondensed_Regular);
 		}
 		
@@ -35,7 +35,7 @@ public class OutagesAdapter extends ArrayAdapter<Outage> {
 		
 		if (o != null) {
 			TextView tv_duration = (TextView) v.findViewById(R.id.outage_duration);
-			tv_duration.setText(o.getDurationString());
+			tv_duration.setText(o.getDurationString(context));
 			
 			if (o.isSingleDay()) {
 				v.findViewById(R.id.outage_fromto_severaldays).setVisibility(View.GONE);
