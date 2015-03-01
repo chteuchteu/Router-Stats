@@ -26,8 +26,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -700,23 +698,6 @@ public class MainActivity extends ActionBarActivity {
 			findViewById(R.id.drawer_premium).setVisibility(View.VISIBLE);
 			findViewById(R.id.drawer_outages).setVisibility(View.GONE);
 		}
-	}
-	
-	public void displayNeedAuthScreen() {
-		validerMenuItem.setVisible(true);
-		refreshMenuItem.setVisible(false);
-		periodMenuItem.setVisible(false);
-		
-		WebView wv = (WebView) findViewById(R.id.firstlaunch_wv);
-		wv.setVerticalScrollBarEnabled(true);
-		wv.getSettings().setDefaultTextEncodingName("utf-8");
-		wv.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-		wv.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		wv.loadUrl("file:///android_asset/tuto/index.html");
-		wv.setBackgroundColor(0x00000000);
-		
-		findViewById(R.id.screen3).setVisibility(View.VISIBLE);
-		findViewById(R.id.firstlaunch).setVisibility(View.GONE);
 	}
 	
 	@Override

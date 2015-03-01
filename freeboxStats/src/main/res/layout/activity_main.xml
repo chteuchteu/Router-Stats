@@ -182,21 +182,6 @@
 				
 			</LinearLayout>
 			
-			<LinearLayout
-				android:id="@+id/screen3"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:orientation="vertical"
-				android:background="@color/colorPrimary"
-				android:visibility="gone" >
-				
-				<WebView
-					android:id="@+id/firstlaunch_wv"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent" />
-				
-			</LinearLayout>
-			
 		</RelativeLayout>
 			
 		<LinearLayout

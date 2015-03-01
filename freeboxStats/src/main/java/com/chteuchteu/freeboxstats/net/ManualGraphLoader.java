@@ -29,7 +29,6 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private GraphsContainer graph4;
 	
 	private boolean graphLoadingFailed;
-	private boolean needAuth;
 	private boolean needUpdate;
 	
 	public ManualGraphLoader(Freebox freebox, Period period, MainActivity activity) {
@@ -41,7 +40,6 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		this.graph3 = null;
 		this.graph4 = null;
 		this.graphLoadingFailed = false;
-		this.needAuth = false;
 		this.needUpdate = false;
 	}
 	
@@ -77,9 +75,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 			activity.toggleSpinningMenuItem(false);
 			activity.graphLoadingFailed();
 		}
-		
-		if (needAuth)
-			activity.displayNeedAuthScreen();
+
 		if (needUpdate)
 			activity.displayFreeboxUpdateNeededScreen();
 	}
@@ -147,7 +143,6 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 							break;
 						case "insufficient_rights":
 							cancel = true;
-							needAuth = true;
 							break;
 						case "invalid_request":
 						case "invalid_api_version":
