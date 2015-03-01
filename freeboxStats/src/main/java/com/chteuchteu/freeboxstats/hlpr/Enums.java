@@ -78,7 +78,7 @@ public class Enums {
 		public static GraphPrecision get(int index) { return GraphPrecision.values()[index]; }
 		public int getIndex() { return Arrays.asList(GraphPrecision.values()).indexOf(this); }
 		public static List<String> getStringArray() {
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<String> list = new ArrayList<>();
 			for (GraphPrecision g : GraphPrecision.values())
 				list.add(g.getLabel());
 			return list;

@@ -47,6 +47,7 @@ public class DrawerHelper {
 		// Set font
 		Util.Fonts.setFont(context, (ViewGroup) activity.findViewById(R.id.drawer), Util.Fonts.CustomFont.Roboto_Regular);
 
+		// Settings
 		activity.findViewById(R.id.drawer_settings).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -54,10 +55,15 @@ public class DrawerHelper {
 				LayoutInflater inflater = LayoutInflater.from(context);
 				View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
 
+				// Auto refresh
 				final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
 				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+
+				// Display xDSL tab
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
+
+				// Graph precision
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

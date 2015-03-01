@@ -823,7 +823,6 @@ public class MainActivity extends ActionBarActivity {
 				validerMenuItem.setVisible(false);
 				refreshMenuItem.setVisible(true);
 				periodMenuItem.setVisible(true);
-				findViewById(R.id.screen3).setVisibility(View.GONE);
 				refreshGraph();
 				break;
 			default: super.onOptionsItemSelected(item); break;
