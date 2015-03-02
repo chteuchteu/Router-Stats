@@ -19,6 +19,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -301,12 +302,12 @@ public class NetHelper {
 			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "rrd/";
 			FooBox.log("Polling uri " + uri);
-			
+
 			Db db = GraphHelper.getDbFromField(fFields.get(0));
 			JSONArray fields = new JSONArray();
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());
-			
+
 			List<NameValuePair> nameValuePairs = new ArrayList<>();
 			nameValuePairs.add(new BasicNameValuePair("db", db.getSerializedValue()));
 			nameValuePairs.add(new BasicNameValuePair("fields", fields.toString()));
@@ -322,11 +323,11 @@ public class NetHelper {
 			httpGet = new HttpGet(uri + "?" + paramsString);
 			httpGet.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
 			httpGet.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			
+
 			// Execute and get the response
 			HttpResponse response = httpClient.execute(httpGet);
 			HttpEntity entity = response.getEntity();
-			
+
 			if (entity != null) {
 				inStream = entity.getContent();
 				try {
@@ -339,6 +340,8 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
+		} catch (ConnectTimeoutException ignoredException) {
+			// Ignore exception
 		} catch (IOException | JSONException exception) {
 			exception.printStackTrace();
 			Crashlytics.logException(exception);
