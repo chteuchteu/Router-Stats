@@ -815,7 +815,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	private void displayOpenSourceAlertIfNeeded() {
-		if (!Util.getPrefBoolean(this, "openSourceDialogShown", false)) {
+		if (!Util.getPrefBoolean(this, "openSourceDialogShown", false) && !this.isFinishing()) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.dialog_opensource)
 					.setCancelable(true)
