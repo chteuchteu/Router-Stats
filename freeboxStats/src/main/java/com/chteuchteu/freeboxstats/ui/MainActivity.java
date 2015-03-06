@@ -3,20 +3,13 @@ package com.chteuchteu.freeboxstats.ui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,8 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -67,50 +58,39 @@ import com.chteuchteu.freeboxstats.net.SwitchLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
-import com.crashlytics.android.Crashlytics;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 
-public class MainActivity extends ActionBarActivity implements IMainActivity {
-	public static MainActivity activity;
-	private Context context;
-	private static final int NB_TABS = 5;
+public class MainActivity extends FreeboxStatsActivity implements IMainActivity {
+    private MainActivity activity;
+
+	public static final int NB_TABS = 5;
 	private static final FooBox.PlotType lastPlot = FooBox.PlotType.SW4;
-	private DrawerHelper drawerHelper;
 
 	private Thread refreshThread;
 	private boolean justRefreshed;
 	private final int AUTOREFRESH_TIME = 20000;
-	private boolean graphsDisplayed;
 	
 	private MenuItem refreshMenuItem;
 	private MenuItem periodMenuItem;
 	private MenuItem validerMenuItem;
 
 	private boolean appStarted = false;
-	
-	public boolean updating;
+	private boolean updating;
+    private boolean graphsDisplayed;
 
 	private ProgressBar progressBar;
 	
 	@SuppressLint("InlinedApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        this.viewToInflate = R.layout.activity_main;
 		super.onCreate(savedInstanceState);
-		Crashlytics.start(this);
-		setContentView(R.layout.activity_main);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-
-		progressBar = Util.prepareGmailStyleProgressBar(this, getSupportActionBar(), findViewById(R.id.tabs));
-		progressBar.setIndeterminate(true);
-
-		context = this;
-		activity = this;
+        activity = this;
 		graphsDisplayed = false;
 		justRefreshed = false;
 		updating = false;
@@ -118,16 +98,9 @@ public class MainActivity extends ActionBarActivity implements IMainActivity {
 		this.drawerHelper = new DrawerHelper(this, this);
 		this.drawerHelper.initDrawer();
 
-		// Some design
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			int id = getResources().getIdentifier("config_enableTranslucentDecor", "bool", "android");
-			if (id != 0 && getResources().getBoolean(id)) { // Translucent available
-				Window w = getWindow();
-				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-				w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			}
-		}
-		
+        this.progressBar = Util.prepareGmailStyleProgressBar(this, getSupportActionBar(), findViewById(R.id.tabs));
+        this.progressBar.setIndeterminate(true);
+
 		FooBox.getInstance().init(this);
 	}
 
@@ -196,7 +169,7 @@ public class MainActivity extends ActionBarActivity implements IMainActivity {
 		refreshMenuItem.setVisible(true);
 		periodMenuItem.setVisible(true);
 
-		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager(), this);
 		CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
 		
@@ -212,75 +185,7 @@ public class MainActivity extends ActionBarActivity implements IMainActivity {
 		graphsDisplayed = true;
 	}
 	
-	public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
-		public MainActivityPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-		
-		@Override
-		public Fragment getItem(int i) {
-			// displayXdslTab = true:
-			//  0       1     2       3       4
-			// RATE | TEMP | XDSL | STACK | SWITCH
-			// displayXdslTab = false:
-			//  0       1     2        3
-			// RATE | TEMP | STACK | SWITCH
-
-			boolean displayXdslTab = SettingsHelper.getInstance().getDisplayXdslTab();
-			boolean isRate = i == 0;
-			boolean isTemp = i == 1;
-			boolean isXdsl = displayXdslTab && i == 2;
-			boolean isStack = (displayXdslTab && i == 3 || !displayXdslTab && i == 2);
-			boolean isSwitch = (displayXdslTab && i == 4 || !displayXdslTab && i == 3);
-
-			if (isRate)
-				return new TwoGraphsFragment();
-			else if (isTemp || isXdsl) {
-				Fragment fragment = new GraphFragment();
-				Bundle args = new Bundle();
-				args.putString(GraphFragment.ARG_GRAPHTYPE, isTemp ? "temp" : "xdsl");
-				fragment.setArguments(args);
-				return fragment;
-			}
-			else if (isStack)
-				return new StackFragment();
-			else if (isSwitch)
-				return new SwitchFragment();
-
-			return null;
-		}
-		
-		@Override
-		public int getCount() {
-			if (SettingsHelper.getInstance().getDisplayXdslTab())
-				return NB_TABS;
-			else
-				return NB_TABS-1;
-		}
-		
-		@Override
-		public CharSequence getPageTitle(int position) {
-			switch (position) {
-				case 0: return getString(R.string.tab1_name);
-				case 1: return getString(R.string.tab3_name);
-				case 2:
-					if (SettingsHelper.getInstance().getDisplayXdslTab())
-						return getString(R.string.tab4_name);
-					else
-						return getString(R.string.tab5_name);
-				case 3:
-					if (SettingsHelper.getInstance().getDisplayXdslTab())
-						return getString(R.string.tab5_name);
-					else
-						return getString(R.string.tab6_name);
-				case 4:
-					return getString(R.string.tab6_name);
-				default: return "";
-			}
-		}
-	}
-
-    @Override
+	@Override
 	public void initPlot(XYPlot plot, FooBox.PlotType plotType) {
 		plot.setVisibility(View.GONE);
 		
