@@ -16,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +53,6 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.net.StackLoader;
 import com.chteuchteu.freeboxstats.net.SwitchLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
-import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
@@ -340,65 +337,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				findViewById(R.id.drawer_debug).setVisibility(View.VISIBLE);
-				findViewById(R.id.drawer_debug).setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View arg0) {
-						LayoutInflater inflater = LayoutInflater.from(context);
-						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) findViewById(R.id.root_layout));
-						
-						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
-						ArrayAdapter<ErrorsLogger.AppError> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
-								FooBox.getInstance().getErrorsLogger().getErrors());
-						lv.setAdapter(arrayAdapter);
-						
-						AlertDialog.Builder builder = new AlertDialog.Builder(context);
-						builder.setPositiveButton(R.string.send_dev, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-								
-								new AlertDialog.Builder(context)
-								.setTitle(R.string.send_errors)
-								.setMessage(R.string.send_errors_explanation)
-								.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) {
-										String txt = "Version de l'application : " + FooBox.getInstance().getAppVersion() + "\r\n"
-                                                + "Freebox: " + Freebox.staticToString(FooBox.getInstance().getFreebox())
-												+ "\r\n\r\nListe des erreurs : \r\n"
-												+ FooBox.getInstance().getErrorsLogger().getErrorsString();
-										Intent send = new Intent(Intent.ACTION_SENDTO);
-										String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") + 
-												"?subject=" + Uri.encode("Rapport de bug") + 
-												"&body=" + Uri.encode(txt);
-										Uri uri = Uri.parse(uriText);
-										
-										send.setData(uri);
-										startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
-									}
-								})
-								.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) { 
-										dialog.dismiss();
-									}
-								})
-								.setIcon(R.drawable.ic_action_error_light)
-								.show();
-							}
-						});
-						builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-						builder.setTitle(R.string.debug);
-						builder.setView(dialog_layout);
-						// Avoid error when the app is closing or something
-						if (!isFinishing())
-							builder.show();
-					}
-				});
+                if (findViewById(R.id.drawer_debug).getVisibility() != View.VISIBLE)
+				    findViewById(R.id.drawer_debug).setVisibility(View.VISIBLE);
 			}
 		});
 	}
