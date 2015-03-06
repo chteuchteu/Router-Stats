@@ -382,6 +382,8 @@ public class NetHelper {
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}
+
+		FooBox.log(responseBody);
 		
 		if (responseBody.equals(""))
 			return null;
@@ -392,7 +394,12 @@ public class NetHelper {
 			JSONObject result = obj.getJSONObject("result");
 			String ip = result.getString("remote_access_ip");
 			int port = result.getInt("remote_access_port");
-			return ip + ":" + port;
+			boolean remote_access = result.getBoolean("remote_access");
+			boolean api_remote_access = result.getBoolean("api_remote_access");
+			if (remote_access && api_remote_access)
+				return ip + ":" + port;
+			else
+				return "";
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
