@@ -74,7 +74,7 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements IMainActivity {
 	public static MainActivity activity;
 	private Context context;
 	private static final int NB_TABS = 5;
@@ -130,16 +130,19 @@ public class MainActivity extends ActionBarActivity {
 		
 		FooBox.getInstance().init(this);
 	}
-	
+
+    @Override
 	public void displayLoadingScreen() {
 		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
-	
+
+    @Override
 	public void hideLoadingScreen() {
 		findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
-	
+
+    @Override
 	public void startRefreshThread() {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
@@ -179,7 +182,8 @@ public class MainActivity extends ActionBarActivity {
 		});
 		refreshThread.start();
 	}
-	
+
+    @Override
 	public void stopRefreshThread() {
 		if (refreshThread != null && refreshThread.isAlive())
 			refreshThread.interrupt();
@@ -275,7 +279,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		}
 	}
-	
+
+    @Override
 	public void initPlot(XYPlot plot, FooBox.PlotType plotType) {
 		plot.setVisibility(View.GONE);
 		
@@ -340,7 +345,8 @@ public class MainActivity extends ActionBarActivity {
 		if (plotType == FooBox.PlotType.TEMP || plotType == FooBox.PlotType.XDSL)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
-	
+
+    @Override
 	@SuppressWarnings("serial")
 	public void loadGraph(FooBox.PlotType plotType, final GraphsContainer graphsContainer, final Period period, Unit unit) {
 		XYPlot plot = FooBox.getInstance().getPlot(plotType);
@@ -423,7 +429,8 @@ public class MainActivity extends ActionBarActivity {
 		if (plotType == lastPlot)
 			toggleSpinningMenuItem(false);
 	}
-	
+
+    @Override
 	public void displayDebugMenuItem() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -489,7 +496,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void displayOutagesDialog() {
 		if (FooBox.getInstance().getFreebox() == null)
 			return;
@@ -514,11 +522,15 @@ public class MainActivity extends ActionBarActivity {
 			new OutagesFetcher(this, FooBox.getInstance().getFreebox(), dialog, dialog_layout).execute();
 		}
 	}
-	
+
+    @Override
 	public void toggleSpinningMenuItem(boolean visible) {
 		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
 	}
-	
+    @Override
+    public void setUpdating(boolean val) { this.updating = val; }
+
+    @Override
 	public void refreshGraph() { refreshGraph(false); }
 	private void refreshGraph(boolean manualRefresh) {
 		if (FooBox.getInstance().getFreebox() == null)
@@ -539,7 +551,8 @@ public class MainActivity extends ActionBarActivity {
 		new StackLoader(freebox, period, this).execute();
 		new SwitchLoader(freebox, period, this).execute();
 	}
-	
+
+    @Override
 	public void displayLaunchPairingScreen() {
 		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
 		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
@@ -558,7 +571,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void pairingFinished(final AuthorizeStatus aStatus) {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -570,7 +584,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void sessionOpenFailed() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -600,7 +615,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void displayFreeboxSearchFailedScreen() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -626,7 +642,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void displayFreeboxUpdateNeededScreen() {
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 		
@@ -648,7 +665,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void displayFreeboxUpdateNeededScreenBeforePairing() {
 		findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
 		findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
@@ -668,7 +686,8 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void graphLoadingFailed() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -677,13 +696,15 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+
+    @Override
 	public void restartActivity() {
 		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
 	}
-	
+
+    @Override
 	public void finishedLoading() {
 		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());

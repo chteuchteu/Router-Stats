@@ -10,7 +10,7 @@ import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private Period period;
-	private MainActivity activity;
+	private IMainActivity activity;
 	
 	private GraphsContainer graph1;
 	private GraphsContainer graph2;
@@ -31,7 +31,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	private boolean graphLoadingFailed;
 	private boolean needUpdate;
 	
-	public ManualGraphLoader(Freebox freebox, Period period, MainActivity activity) {
+	public ManualGraphLoader(Freebox freebox, Period period, IMainActivity activity) {
 		this.freebox = freebox;
 		this.period = period;
 		this.activity = activity;
@@ -58,7 +58,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
-		activity.updating = false;
+        activity.setUpdating(false);
 		
 		if (!graphLoadingFailed) {
 			if (graph1 != null)

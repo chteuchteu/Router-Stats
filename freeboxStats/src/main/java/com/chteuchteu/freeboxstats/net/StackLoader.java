@@ -8,7 +8,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.StackContainer;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
@@ -20,9 +20,9 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	private boolean stackLoadingFailed;
 	private StackContainer stackContainer;
 	private Period period;
-	private MainActivity activity;
+	private IMainActivity activity;
 	
-	public StackLoader(Freebox freebox, Period period, MainActivity activity) {
+	public StackLoader(Freebox freebox, Period period, IMainActivity activity) {
 		this.freebox = freebox;
 		this.activity = activity;
 		this.stackLoadingFailed = false;
@@ -38,7 +38,7 @@ public class StackLoader extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void res) {
-		activity.updating = false;
+        activity.setUpdating(false);
 		
 		if (!stackLoadingFailed)
 			activity.loadGraph(FooBox.PlotType.STACK, this.stackContainer.getStackGraphsContainer(), period,

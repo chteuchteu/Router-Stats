@@ -15,6 +15,7 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
@@ -26,7 +27,7 @@ public class FooBox extends Application {
 	public static final String DEVICE_NAME = "Android";
 	
 	private static FooBox instance;
-	private MainActivity activity;
+	private IMainActivity iActivity;
 	private Context context;
 	
 	private Freebox freebox;
@@ -71,12 +72,12 @@ public class FooBox extends Application {
 	 * 		-> ask for app_token
 	 * Then, ask for auth_token.
 	 */
-	public void init(MainActivity activity) {
-		this.context = activity;
-		this.activity = activity;
-		this.errorsLogger.setActivity(activity);
+	public void init(MainActivity mainActivity) {
+		this.context = mainActivity;
+		this.iActivity = mainActivity;
+		this.errorsLogger.setActivity(iActivity);
 
-		activity.displayLoadingScreen();
+        iActivity.displayLoadingScreen();
 
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		
@@ -91,11 +92,11 @@ public class FooBox extends Application {
 			}
 
 			// Open session
-			new SessionOpener(this.freebox, this.activity).execute();
+			new SessionOpener(this.freebox, this.iActivity).execute();
 			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer(activity).execute();
+			new FreeboxDiscoverer(iActivity).execute();
 		}
 	}
 	
@@ -168,5 +169,5 @@ public class FooBox extends Application {
 		}
 	}
 
-	public MainActivity getActivity() { return this.activity; }
+	public IMainActivity getActivity() { return this.iActivity; }
 }

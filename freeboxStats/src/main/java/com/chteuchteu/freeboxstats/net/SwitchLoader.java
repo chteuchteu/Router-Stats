@@ -7,7 +7,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
@@ -19,14 +19,14 @@ public class SwitchLoader extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;
 	private boolean switchLoadingFailed;
 	private Enums.Period period;
-	private MainActivity activity;
+	private IMainActivity activity;
 
 	private GraphsContainer switch1;
 	private GraphsContainer switch2;
 	private GraphsContainer switch3;
 	private GraphsContainer switch4;
 
-	public SwitchLoader(Freebox freebox, Enums.Period period, MainActivity activity) {
+	public SwitchLoader(Freebox freebox, Enums.Period period, IMainActivity activity) {
 		this.freebox = freebox;
 		this.switchLoadingFailed = false;
 		this.period = period;
@@ -52,7 +52,7 @@ public class SwitchLoader extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected void onPostExecute(Void res) {
-		activity.updating = false;
+        activity.setUpdating(false);
 
 		if (!switchLoadingFailed) {
 			if (this.switch1 != null)

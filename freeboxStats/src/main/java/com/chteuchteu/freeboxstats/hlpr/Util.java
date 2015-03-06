@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +12,6 @@ import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
 
 import javax.crypto.Mac;
@@ -110,7 +110,8 @@ public class Util {
 		}
 	}
 
-	public static boolean isScreenOn(Context context) {
+	@SuppressLint("NewApi")
+    public static boolean isScreenOn(Context context) {
 		PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH && powerManager.isInteractive()
 				|| Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH&&powerManager.isScreenOn();
@@ -207,13 +208,13 @@ public class Util {
 		public static String getDate_oneMonthAgo() {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.MONTH, -1);
-			SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
+			SimpleDateFormat formater = new SimpleDateFormat("dd/MM", Locale.FRENCH);
 			return formater.format(calendar.getTime());
 		}
 		
 		public static String getDate_today() {
 			Date date = new Date();
-			SimpleDateFormat formater = new SimpleDateFormat("dd/MM");
+			SimpleDateFormat formater = new SimpleDateFormat("dd/MM", Locale.FRENCH);
 			return formater.format(date);
 		}
 		

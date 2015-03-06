@@ -27,7 +27,7 @@ public class GraphHelper {
 			else if (period == Period.WEEK)
 				dateFormat = new SimpleDateFormat("dd/MM:kk");
 			else if (period == Period.MONTH) {
-				dateFormat = new SimpleDateFormat("dd/MM");
+				//dateFormat = new SimpleDateFormat("dd/MM");
 				return String.valueOf(jsonTimestamp);
 			} else// (period == null)
 				dateFormat = new SimpleDateFormat("dd/MM");
@@ -41,8 +41,6 @@ public class GraphHelper {
 	
 	/**
 	 * Returns net / temp / dsl / switch from field
-	 * @param field
-	 * @return
 	 */
 	public static Db getDbFromField(Field field) {
 		switch (field) {
@@ -137,8 +135,6 @@ public class GraphHelper {
 	/**
 	 * Returns the last value of a stack values list
 	 * (should always be the last one)
-	 * @param dataSets
-	 * @return
 	 */
 	public static long getHighestStackValue(ArrayList<DataSet> dataSets) {
 		long highestValueAll = 0;

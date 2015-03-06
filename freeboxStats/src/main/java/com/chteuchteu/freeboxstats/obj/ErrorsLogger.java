@@ -1,12 +1,13 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 import java.util.ArrayList;
 
 public class ErrorsLogger {
 	private ArrayList<String> errors;
-	private MainActivity activity;
+	private IMainActivity iActivity;
 	
 	public ErrorsLogger() {
 		this.errors = new ArrayList<>();
@@ -14,8 +15,8 @@ public class ErrorsLogger {
 	
 	public void logError(String error) {
 		this.errors.add(error);
-		if (this.activity != null)
-			this.activity.displayDebugMenuItem();
+		if (this.iActivity != null)
+			this.iActivity.displayDebugMenuItem();
 	}
 	public void logError(NetResponse netResponse) {
 		if (netResponse != null)
@@ -23,8 +24,8 @@ public class ErrorsLogger {
 		else
 			this.errors.add("Error 418");
 
-		if (this.activity != null)
-			this.activity.displayDebugMenuItem();
+		if (this.iActivity != null)
+			this.iActivity.displayDebugMenuItem();
 	}
 	
 	public ArrayList<String> getErrors() { return this.errors; }
@@ -35,5 +36,5 @@ public class ErrorsLogger {
 		return out;
 	}
 
-	public void setActivity(MainActivity activity) { this.activity = activity; }
+	public void setActivity(IMainActivity activity) { this.iActivity = activity; }
 }

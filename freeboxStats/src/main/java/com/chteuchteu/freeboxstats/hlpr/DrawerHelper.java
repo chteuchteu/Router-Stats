@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -21,20 +22,23 @@ import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.Freebox;
+import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DrawerHelper {
-	private MainActivity activity;
+	private IMainActivity iActivity;
+    private Activity activity;
 	private boolean isDrawerOpened;
 	private Context context;
 	private DrawerLayout drawerLayout;
 	private MaterialMenuIconToolbar materialMenu;
 
 	public DrawerHelper(MainActivity activity, Context context) {
-		this.activity = activity;
+		this.iActivity = activity;
+        this.activity = activity;
 		this.context = context;
 		drawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
 	}
@@ -85,13 +89,13 @@ public class DrawerHelper {
 								Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
 
 						if (settings_autorefresh.isChecked())
-							activity.startRefreshThread();
+							iActivity.startRefreshThread();
 						else
-							activity.stopRefreshThread();
+                            iActivity.stopRefreshThread();
 
 						// Remove tab
 						if (displayXdslTabChanged)
-							activity.restartActivity();
+                            iActivity.restartActivity();
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -136,7 +140,7 @@ public class DrawerHelper {
 			@Override
 			public void onClick(View arg0) {
 				drawerLayout.closeDrawers();
-				activity.displayOutagesDialog();
+				iActivity.displayOutagesDialog();
 			}
 		});
 
@@ -184,6 +188,7 @@ public class DrawerHelper {
 			drawerLayout.openDrawer(Gravity.START);
 	}
 
+    @SuppressLint("InflateParams")
 	private void donate() {
 		new AlertDialog.Builder(activity)
 				.setTitle(R.string.donate)
@@ -192,7 +197,7 @@ public class DrawerHelper {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-						View view = inflater.inflate(R.layout.dialog_donate, null);
+                        View view = inflater.inflate(R.layout.dialog_donate, null);
 
 						final Spinner spinnerAmount = (Spinner) view.findViewById(R.id.donate_amountSpinner);
 						List<String> list = new ArrayList<>();
