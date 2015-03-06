@@ -85,17 +85,16 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 			boolean success = NetHelper.openSession(freebox);
 			if (success) {
 				// Get Freebox IP
-				String freeboxIP = NetHelper.getPublicIP(freebox);
-				if (freeboxIP != null && !freeboxIP.equals(""))
-					freebox.setIp(freeboxIP);
-				FooBox.log("Found IP " + freeboxIP);
-				
-				// Save Freebox
-				try {
-					freebox.save(context);
-				} catch (JSONException ex) {
-					ex.printStackTrace();
-					Crashlytics.logException(ex);
+				boolean ipChanged = NetHelper.getPublicIP(freebox);
+
+				if (ipChanged) {
+					// Save Freebox
+					try {
+						freebox.save(context);
+					} catch (JSONException ex) {
+						ex.printStackTrace();
+						Crashlytics.logException(ex);
+					}
 				}
 			}
 			else

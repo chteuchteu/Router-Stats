@@ -2,6 +2,7 @@ package com.chteuchteu.freeboxstats.obj;
 
 import android.content.Context;
 
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 
 import org.json.JSONException;
@@ -17,6 +18,7 @@ public class Freebox {
 	private String deviceType;
 	private String appToken;
 	private String ip;
+	private Enums.SpecialBool apiRemoteAccess;
 	
 	public Freebox() {
 		this.uid = "";
@@ -36,6 +38,7 @@ public class Freebox {
 		this.deviceType = deviceType;
 		this.appToken = "";
 		this.ip = "";
+		this.apiRemoteAccess = Enums.SpecialBool.UNKNOWN;
 	}
 	
 	@Override
@@ -57,14 +60,14 @@ public class Freebox {
 	}
 	
 	public String getApiCallUrl() {
-		if (this.ip.equals(""))
-			return Freebox.ApiUri + this.apiBaseUrl + "v3/";
-		else
+		if (this.apiRemoteAccess != Enums.SpecialBool.FALSE && !this.ip.equals(""))
 			return "http://" + this.ip + this.apiBaseUrl + "v3/";
+		else
+			return Freebox.ApiUri + this.apiBaseUrl + "v3/";
 	}
 	
 	public String getDisplayUrl() {
-		if (this.ip.equals(""))
+		if (this.apiRemoteAccess == Enums.SpecialBool.FALSE || this.ip.equals(""))
 			return Freebox.ApiUri.substring(7);
 		else {
 			if (this.ip.contains(":"))
@@ -82,6 +85,7 @@ public class Freebox {
 		obj.put("deviceType", this.deviceType);
 		obj.put("appToken", this.appToken);
 		obj.put("publicIp", this.ip);
+		obj.put("apiRemoteAccess", this.apiRemoteAccess.getSerializedValue());
 		
 		Util.setPref(c, "freebox", obj.toString());
 	}
@@ -112,6 +116,8 @@ public class Freebox {
 			f.setAppToken(obj.getString("appToken"));
 		if (obj.has("publicIp"))
 			f.setIp(obj.getString("publicIp"));
+		if (obj.has("apiRemoteAccess"))
+			f.setApiRemoteAccess(Enums.SpecialBool.get(obj.getString("apiRemoteAccess")));
 		
 		return f;
 	}
@@ -123,6 +129,7 @@ public class Freebox {
 	public String getAppToken() { return this.appToken; }
 	public void setAppToken(String val) { this.appToken = val; }
 	public void setIp(String val) { this.ip = val; }
+	public void setApiRemoteAccess(Enums.SpecialBool val) { this.apiRemoteAccess = val; }
 
     public static String staticToString(Freebox freebox) {
         return freebox == null ? "(null)" : freebox.toString();

@@ -1,6 +1,7 @@
 package com.chteuchteu.freeboxstats.net;
 
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
@@ -365,7 +366,7 @@ public class NetHelper {
 		return netResponse;
 	}
 	
-	public static String getPublicIP(Freebox freebox) {
+	public static boolean getPublicIP(Freebox freebox) {
 		String apiCallUri = freebox.getApiCallUrl() + "connection/config";
 		FooBox.log("Polling URI " + apiCallUri);
 		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
@@ -386,7 +387,7 @@ public class NetHelper {
 		FooBox.log(responseBody);
 		
 		if (responseBody.equals(""))
-			return null;
+			return false;
 		
 		// Parse JSON
 		try {
@@ -394,15 +395,17 @@ public class NetHelper {
 			JSONObject result = obj.getJSONObject("result");
 			String ip = result.getString("remote_access_ip");
 			int port = result.getInt("remote_access_port");
+
+			freebox.setIp(ip + ":" + port);
+
 			boolean remote_access = result.getBoolean("remote_access");
 			boolean api_remote_access = result.getBoolean("api_remote_access");
-			if (remote_access && api_remote_access)
-				return ip + ":" + port;
-			else
-				return "";
+
+			freebox.setApiRemoteAccess(remote_access && api_remote_access ? Enums.SpecialBool.TRUE : Enums.SpecialBool.FALSE);
+			return true;
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			return false;
 		}
 	}
 }

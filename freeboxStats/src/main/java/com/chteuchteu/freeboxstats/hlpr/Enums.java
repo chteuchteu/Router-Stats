@@ -84,4 +84,16 @@ public class Enums {
 			return list;
 		}
 	}
+
+	public enum SpecialBool {
+		TRUE, FALSE, UNKNOWN;
+		public static SpecialBool get(String serializedValue) {
+			for (SpecialBool specialBool : SpecialBool.values()) {
+				if (specialBool.getSerializedValue().equals(serializedValue))
+					return specialBool;
+			}
+			return UNKNOWN;
+		}
+		public String getSerializedValue() { return this.name().toLowerCase(); }
+	}
 }
