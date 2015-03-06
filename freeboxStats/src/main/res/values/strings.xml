@@ -25,7 +25,8 @@
 	<string name="no">Non</string>
 	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
-	<string name="freeboxstats_premium">Freebox Stats : premium</string>
+	<string name="menu_accessOptions">Configuration</string>
+	<string name="menu_dissociate">Dissocier</string>
 	<string name="dissociate">Voulez-vous dissocier l\'application de cette Freebox ?</string>
 	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
 	<string name="firstlaunch_aut_explanation">Lors de sa première utilisation, l\'application a besoin d\'être autorisée auprès de la Freebox.
@@ -77,4 +78,9 @@
 	<string name="dialog_opensource">Le saviez-vous ? Freebox Stats est maintenant gratuite et open-source ! Si vous le voulez, vous pouvez faire un don
 		ou contribuer au développement sur GitHub</string>
 	<string name="contribute">Contribuer</string>
+	<string name="freebox_access_address">Adresse d\'accès de votre Freebox</string>
+	<string name="freebox_access_address_explanation">Cette adresse est utilisée par l\'application pour communiquer avec votre Freebox. Si elle est
+		accessible depuis l\'extérieur de votre réseau local, utilisez son adresse IP. Ceci peut être configuré dans l\'interface d\'administration
+		de votre Freebox (Paramètres de la Freebox > Mode avancé > Configuration > Activer l\'authentification par mot de passe.</string>
+	<string name="unknown">Inconnue</string>
 </resources>

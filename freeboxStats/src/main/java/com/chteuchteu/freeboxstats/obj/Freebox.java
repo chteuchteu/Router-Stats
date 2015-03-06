@@ -68,7 +68,7 @@ public class Freebox {
 	
 	public String getDisplayUrl() {
 		if (this.apiRemoteAccess == Enums.SpecialBool.FALSE || this.ip.equals(""))
-			return Freebox.ApiUri.substring(7);
+			return Freebox.ApiUri.substring("http://".length());
 		else {
 			if (this.ip.contains(":"))
 				return this.ip.substring(0, this.ip.indexOf(':'));
@@ -128,7 +128,9 @@ public class Freebox {
 	public void setApiBaseUrl(String val) { this.apiBaseUrl = val; }
 	public String getAppToken() { return this.appToken; }
 	public void setAppToken(String val) { this.appToken = val; }
+	public String getIp() { return this.ip; }
 	public void setIp(String val) { this.ip = val; }
+	public Enums.SpecialBool getApiRemoteAccess() { return this.apiRemoteAccess; }
 	public void setApiRemoteAccess(Enums.SpecialBool val) { this.apiRemoteAccess = val; }
 
     public static String staticToString(Freebox freebox) {

@@ -13,12 +13,17 @@ import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
@@ -29,6 +34,8 @@ import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,25 +127,73 @@ public class DrawerHelper {
 		activity.findViewById(R.id.drawer_freebox).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				drawerLayout.closeDrawers();
-				AlertDialog.Builder builder = new AlertDialog.Builder(context)
-						.setMessage(R.string.dissociate)
-						.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Freebox.delete(context);
-								Util.restartApp(context);
-							}
-						})
-						.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						}).setIcon(android.R.drawable.ic_dialog_alert);
-				// Avoid error when the app is closing or something
-				if (!activity.isFinishing())
-					builder.show();
+				PopupMenu popupMenu = new PopupMenu(context, activity.findViewById(R.id.drawer_freebox));
+				Menu menu = popupMenu.getMenu();
+				popupMenu.getMenuInflater().inflate(R.menu.freebox, menu);
+				popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						switch (item.getItemId()) {
+							case R.id.action_dissociate:
+								drawerLayout.closeDrawers();
+								AlertDialog.Builder builder = new AlertDialog.Builder(context)
+										.setMessage(R.string.dissociate)
+										.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												Freebox.delete(context);
+												Util.restartApp(context);
+											}
+										})
+										.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.dismiss();
+											}
+										}).setIcon(android.R.drawable.ic_dialog_alert);
+								// Avoid error when the app is closing or something
+								if (!activity.isFinishing())
+									builder.show();
+								return true;
+
+							case R.id.action_options:
+								LayoutInflater inflater = LayoutInflater.from(context);
+								View dialog_layout = inflater.inflate(R.layout.freeboxsettings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+
+								final RadioButton radioButtonIp = (RadioButton) dialog_layout.findViewById(R.id.radio_ip);
+								RadioButton radioButtonLocal = (RadioButton) dialog_layout.findViewById(R.id.radio_local);
+
+								final Freebox freebox = FooBox.getInstance().getFreebox();
+								String ip = freebox.getIp();
+								radioButtonIp.setText(ip == null || ip.equals("") ? context.getString(R.string.unknown) : ip);
+								radioButtonLocal.setText(Freebox.ApiUri.substring("http://".length()));
+
+								radioButtonIp.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.TRUE
+										|| freebox.getApiRemoteAccess() == Enums.SpecialBool.UNKNOWN);
+								radioButtonLocal.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.FALSE);
+
+								AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
+								builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										freebox.setApiRemoteAccess(radioButtonIp.isChecked() ? Enums.SpecialBool.TRUE : Enums.SpecialBool.FALSE);
+										try {
+											freebox.save(context);
+										} catch (JSONException ex) {
+											ex.printStackTrace();
+										}
+										((TextView) activity.findViewById(R.id.drawer_freebox_uri)).setText(freebox.getDisplayUrl());
+									}
+								});
+								builder2.setNegativeButton(R.string.cancel, null);
+								builder2.setView(dialog_layout);
+								builder2.show();
+								return true;
+						}
+						return false;
+					}
+				});
+				popupMenu.show();
 			}
 		});
 
