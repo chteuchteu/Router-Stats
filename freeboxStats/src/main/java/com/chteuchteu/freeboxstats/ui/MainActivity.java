@@ -1,7 +1,6 @@
 package com.chteuchteu.freeboxstats.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -56,6 +55,7 @@ import com.chteuchteu.freeboxstats.net.SessionOpener;
 import com.chteuchteu.freeboxstats.net.StackLoader;
 import com.chteuchteu.freeboxstats.net.SwitchLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
+import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
@@ -106,7 +106,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 
     @Override
 	public void displayLoadingScreen() {
-		Util.Fonts.setFont(context, (TextView) ((Activity) context).findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
+		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 
@@ -348,7 +348,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) findViewById(R.id.root_layout));
 						
 						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
-						ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
+						ArrayAdapter<ErrorsLogger.AppError> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
 								FooBox.getInstance().getErrorsLogger().getErrors());
 						lv.setAdapter(arrayAdapter);
 						
@@ -364,7 +364,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 								.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int which) {
 										String txt = "Version de l'application : " + FooBox.getInstance().getAppVersion() + "\r\n"
-												+ "Explication de l'erreur rencontrée : \r\n\r\n\r\n\r\nListe des erreurs : \r\n"
+                                                + "Freebox: " + Freebox.staticToString(FooBox.getInstance().getFreebox())
+												+ "\r\n\r\nListe des erreurs : \r\n"
 												+ FooBox.getInstance().getErrorsLogger().getErrorsString();
 										Intent send = new Intent(Intent.ACTION_SENDTO);
 										String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") + 

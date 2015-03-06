@@ -7,6 +7,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.crashlytics.android.Crashlytics;
@@ -184,7 +185,7 @@ public class NetHelper {
 				return false;
 			}
 		} else {
-			FooBox.getInstance().getErrorsLogger().logError(response);
+			ErrorsLogger.log(response);
 			return false;
 		}
 		
@@ -200,7 +201,7 @@ public class NetHelper {
 				return false;
 			}
 		} else {
-			FooBox.getInstance().getErrorsLogger().logError(response2);
+			ErrorsLogger.log(response2);
 			return false;
 		}
 	}
@@ -290,8 +291,14 @@ public class NetHelper {
 	}
 	
 	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields, boolean stack) {
-		if (fFields.size() == 0 || freebox == null)
-			return null;
+        if (freebox == null) {
+            ErrorsLogger.log("Freebox loading fail");
+            return null;
+        }
+        if (fFields.isEmpty()) {
+            ErrorsLogger.log("Empty field list");
+            return null;
+        }
 		
 		HttpClient httpClient;
 		HttpGet httpGet;

@@ -41,7 +41,7 @@ public class Freebox {
 	@Override
 	public String toString() {
 		return "Freebox[uid=" + this.uid + ", deviceName=" + this.deviceName + ", apiVersion=" + this.apiVersion
-				+ ", apiBaseUrl=" + this.apiBaseUrl + ", deviceType=" + this.deviceType + "]";
+				+ ", apiBaseUrl=" + this.apiBaseUrl + ", deviceType=" + this.deviceType + ", ip=" + this.ip + "]";
 	}
 	
 	public boolean isApiVersionOk() {
@@ -123,4 +123,8 @@ public class Freebox {
 	public String getAppToken() { return this.appToken; }
 	public void setAppToken(String val) { this.appToken = val; }
 	public void setIp(String val) { this.ip = val; }
+
+    public static String staticToString(Freebox freebox) {
+        return freebox == null ? "(null)" : freebox.toString();
+    }
 }

@@ -7,6 +7,7 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
+import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -131,7 +132,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 			boolean cancel = true;
 			
 			if (netResponse != null) {
-				FooBox.getInstance().getErrorsLogger().logError(netResponse);
+				ErrorsLogger.log(netResponse);
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
 					// If the session has expired / hasn't beed opened, open it
@@ -156,7 +157,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 					return null;
 				}
 			} else
-				FooBox.getInstance().getErrorsLogger().logError("GraphLoader - error 401");
+				ErrorsLogger.log("GraphLoader - error 401");
 			
 			graphLoadingFailed = cancel;
 			

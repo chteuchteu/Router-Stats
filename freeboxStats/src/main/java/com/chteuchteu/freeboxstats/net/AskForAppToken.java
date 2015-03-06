@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
@@ -43,7 +44,6 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 		}
 		
 		NetResponse response = NetHelper.authorize(freebox, obj.toString());
-		
 		
 		if (response != null && response.hasSucceeded()) {
 			JSONObject res = response.getJsonObject();
@@ -101,7 +101,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 			else
 				activity.sessionOpenFailed();
 		} else {
-			FooBox.getInstance().getErrorsLogger().logError(response);
+			ErrorsLogger.log(response);
 		}
 		
 		return null;
