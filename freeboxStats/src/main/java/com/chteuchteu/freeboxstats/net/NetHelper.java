@@ -22,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -348,7 +349,7 @@ public class NetHelper {
 					inStream.close();
 				}
 			}
-		} catch (ConnectTimeoutException ignoredException) {
+		} catch (ConnectTimeoutException | HttpHostConnectException ignoredException) {
 			// Ignore exception
 		} catch (IOException | JSONException exception) {
 			exception.printStackTrace();

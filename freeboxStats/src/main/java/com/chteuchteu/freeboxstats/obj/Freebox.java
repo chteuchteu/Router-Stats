@@ -44,7 +44,8 @@ public class Freebox {
 	@Override
 	public String toString() {
 		return "Freebox[uid=" + this.uid + ", deviceName=" + this.deviceName + ", apiVersion=" + this.apiVersion
-				+ ", apiBaseUrl=" + this.apiBaseUrl + ", deviceType=" + this.deviceType + ", ip=" + this.ip + "]";
+				+ ", apiBaseUrl=" + this.apiBaseUrl + ", deviceType=" + this.deviceType + ", ip=" + this.ip
+				+ ", apiRemoteAccess=" + this.apiRemoteAccess.name() + ", apiCallurl=" + getApiCallUrl() + "]";
 	}
 	
 	public boolean isApiVersionOk() {
