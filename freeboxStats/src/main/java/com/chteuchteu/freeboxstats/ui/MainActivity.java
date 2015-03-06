@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,7 +35,6 @@ import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.astuetz.PagerSlidingTabStrip;
-import com.chteuchteu.freeboxstats.CustomViewPager;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
@@ -167,7 +167,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		periodMenuItem.setVisible(true);
 
 		MainActivityPagerAdapter pagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager(), this);
-		CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.pager);
+		ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPager.setAdapter(pagerAdapter);
 		
 		// Let Android load all the tabs at once (= disable lazy load)
