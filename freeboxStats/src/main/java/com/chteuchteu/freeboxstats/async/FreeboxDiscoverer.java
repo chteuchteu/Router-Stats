@@ -1,11 +1,11 @@
-package com.chteuchteu.freeboxstats.net;
+package com.chteuchteu.freeboxstats.async;
 
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.net.NetHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.ui.IMainActivity;
-import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 public class FreeboxDiscoverer extends AsyncTask<Void, Void, Void> {
 	private Freebox freebox;

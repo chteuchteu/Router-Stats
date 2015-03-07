@@ -96,4 +96,6 @@ public class Enums {
 		}
 		public String getSerializedValue() { return this.name().toLowerCase(); }
 	}
+
+	public enum SwitchStatusLink { UP, DOWN, UNKNOWN }
 }

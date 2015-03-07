@@ -83,4 +83,6 @@
 		accessible en-dehors de votre réseau local, utilisez son adresse IP. Ceci peut être configuré dans l\'interface d\'administration
 		de votre Freebox (Paramètres de la Freebox > Mode avancé > Configuration > Activer l\'authentification par mot de passe).</string>
 	<string name="unknown">Inconnue</string>
+	<string name="connected_devices">Périphériques connectés</string>
+	<string name="no_connected_devices">Aucun périphérique connecté</string>
 </resources>

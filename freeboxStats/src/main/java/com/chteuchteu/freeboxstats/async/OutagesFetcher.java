@@ -1,4 +1,4 @@
-package com.chteuchteu.freeboxstats.net;
+package com.chteuchteu.freeboxstats.async;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,12 +9,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chteuchteu.freeboxstats.OutagesAdapter;
+import com.chteuchteu.freeboxstats.adptr.OutagesAdapter;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.OutagesHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.net.NetHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.Outage;
@@ -63,7 +64,7 @@ public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 				tv_text.setVisibility(View.VISIBLE);
 			} else {
 				ListView listView = (ListView) dialogLayout.findViewById(R.id.outages_lv);
-				OutagesAdapter outagesAdapter = new OutagesAdapter(context, R.layout.outage_item, OutagesHelper.reverseOrder(outages));
+				OutagesAdapter outagesAdapter = new OutagesAdapter(context, OutagesHelper.reverseOrder(outages));
 				listView.setAdapter(outagesAdapter);
 			}
 		} else {

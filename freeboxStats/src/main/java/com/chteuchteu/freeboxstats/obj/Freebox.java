@@ -19,6 +19,8 @@ public class Freebox {
 	private String appToken;
 	private String ip;
 	private Enums.SpecialBool apiRemoteAccess;
+
+	private SwitchPortStatuses switchPortStatuses;
 	
 	public Freebox() {
 		this.uid = "";
@@ -28,6 +30,8 @@ public class Freebox {
 		this.deviceType = "";
 		this.appToken = "";
 		this.ip = "";
+		this.apiRemoteAccess = Enums.SpecialBool.UNKNOWN;
+		this.switchPortStatuses = SwitchPortStatuses.instantiate();
 	}
 	
 	public Freebox(String uid, String deviceName, String apiVersion, String apiBaseUrl, String deviceType) {
@@ -39,6 +43,7 @@ public class Freebox {
 		this.appToken = "";
 		this.ip = "";
 		this.apiRemoteAccess = Enums.SpecialBool.UNKNOWN;
+		this.switchPortStatuses = SwitchPortStatuses.instantiate();
 	}
 	
 	@Override
@@ -133,6 +138,7 @@ public class Freebox {
 	public void setIp(String val) { this.ip = val; }
 	public Enums.SpecialBool getApiRemoteAccess() { return this.apiRemoteAccess; }
 	public void setApiRemoteAccess(Enums.SpecialBool val) { this.apiRemoteAccess = val; }
+	public SwitchPortStatuses getSwitchPortStatuses() { return this.switchPortStatuses; }
 
     public static String staticToString(Freebox freebox) {
         return freebox == null ? "(null)" : freebox.toString();

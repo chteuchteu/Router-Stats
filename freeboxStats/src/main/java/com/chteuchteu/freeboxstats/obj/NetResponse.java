@@ -2,12 +2,13 @@ package com.chteuchteu.freeboxstats.obj;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NetResponse {
 	private boolean success;
-	private JSONObject result;
+	private Object result;
 	private JSONObject completeResponse;
 	
 	public NetResponse(JSONObject response) {
@@ -19,7 +20,7 @@ public class NetResponse {
 			this.success = response.getBoolean("success");
 			this.completeResponse = response;
 			if (success)
-				this.result = response.getJSONObject("result");
+				this.result = response.get("result");
 			
 		} catch (JSONException ex) {
 			ex.printStackTrace();
@@ -39,6 +40,7 @@ public class NetResponse {
 	}
 	
 	public boolean hasSucceeded() { return this.success; }
-	public JSONObject getJsonObject() { return this.result; }
+	public JSONObject getJsonObject() { return (JSONObject) this.result; }
+	public JSONArray getJsonArray() { return (JSONArray) this.result; }
 	public JSONObject getCompleteResponse() { return this.completeResponse; }
 }

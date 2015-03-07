@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/root_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:padding="20dp">
+
+	<!-- TODO REFRESH -->
+	
+	<TextView
+		android:id="@+id/switch_noConnectedDevices"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/no_connected_devices"
+		android:layout_marginBottom="20dp"
+		android:visibility="gone"/>
+
+	<ProgressBar
+		android:id="@+id/progressBar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal|center_vertical"
+		android:indeterminate="true"
+		android:visibility="gone"/>
+
+	<ListView
+		android:id="@+id/listView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+	
+</LinearLayout>

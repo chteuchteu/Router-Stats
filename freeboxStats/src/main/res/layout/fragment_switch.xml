@@ -11,11 +11,27 @@
 		android:layout_weight="1"
 		android:orientation="vertical">
 
-		<TextView
-			android:id="@+id/textView_switch1"
-			style="@style/GraphTitle"
-			android:layout_marginTop="15dp"
-			android:text="@string/switch1"/>
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView_switch1"
+				style="@style/GraphTitle"
+				android:layout_marginTop="15dp"
+				android:text="@string/switch1"
+				android:layout_centerVertical="true"/>
+
+			<ImageButton
+				android:id="@+id/switch1_overflow"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_action_navigation_more"
+				android:background="@null"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:tag="1"/>
+		</RelativeLayout>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch1"
@@ -40,10 +56,27 @@
 		android:layout_weight="1"
 		android:orientation="vertical">
 
-		<TextView
-			android:id="@+id/textView_switch2"
-			style="@style/GraphTitle"
-			android:text="@string/switch2"/>
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView_switch2"
+				style="@style/GraphTitle"
+				android:layout_marginTop="15dp"
+				android:text="@string/switch2"
+				android:layout_centerVertical="true"/>
+
+			<ImageButton
+				android:id="@+id/switch2_overflow"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_action_navigation_more"
+				android:background="@null"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:tag="2"/>
+		</RelativeLayout>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch2"
@@ -68,10 +101,27 @@
 		android:layout_weight="1"
 		android:orientation="vertical">
 
-		<TextView
-			android:id="@+id/textView_switch3"
-			style="@style/GraphTitle"
-			android:text="@string/switch3"/>
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView_switch3"
+				style="@style/GraphTitle"
+				android:layout_marginTop="15dp"
+				android:text="@string/switch3"
+				android:layout_centerVertical="true"/>
+
+			<ImageButton
+				android:id="@+id/switch3_overflow"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_action_navigation_more"
+				android:background="@null"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:tag="3"/>
+		</RelativeLayout>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch3"
@@ -96,10 +146,27 @@
 		android:layout_weight="1"
 		android:orientation="vertical">
 
-		<TextView
-			android:id="@+id/textView_switch4"
-			style="@style/GraphTitle"
-			android:text="@string/switch4"/>
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:id="@+id/textView_switch4"
+				style="@style/GraphTitle"
+				android:layout_marginTop="15dp"
+				android:text="@string/switch4"
+				android:layout_centerVertical="true"/>
+
+			<ImageButton
+				android:id="@+id/switch4_overflow"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_action_navigation_more"
+				android:background="@null"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:tag="4"/>
+		</RelativeLayout>
 
 		<com.androidplot.xy.XYPlot
 			android:id="@+id/xyPlot_switch4"

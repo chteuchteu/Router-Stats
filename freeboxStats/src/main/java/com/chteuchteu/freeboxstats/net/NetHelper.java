@@ -409,4 +409,40 @@ public class NetHelper {
 			return false;
 		}
 	}
+
+	public static NetResponse getSwitchStatus(Freebox freebox) {
+		if (freebox == null)
+			return null;
+
+		NetResponse netResponse = null;
+		String apiCallUri = freebox.getApiCallUrl() + "switch/status/";
+
+		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
+		String responseBody = "";
+		try {
+			HttpGet httpGet = new HttpGet(apiCallUri);
+			httpGet.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+			httpGet.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			responseBody = httpclient.execute(httpGet, responseHandler);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			httpclient.getConnectionManager().shutdown();
+		}
+
+		if (responseBody.equals(""))
+			return null;
+
+		// Check server's response
+		try {
+			JSONObject obj = new JSONObject(responseBody);
+			netResponse = new NetResponse(obj);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Crashlytics.logException(e);
+		}
+
+		return netResponse;
+	}
 }

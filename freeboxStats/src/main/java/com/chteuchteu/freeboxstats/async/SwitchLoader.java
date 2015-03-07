@@ -1,9 +1,10 @@
-package com.chteuchteu.freeboxstats.net;
+package com.chteuchteu.freeboxstats.async;
 
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
+import com.chteuchteu.freeboxstats.net.NetHelper;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 import com.chteuchteu.freeboxstats.obj.NetResponse;

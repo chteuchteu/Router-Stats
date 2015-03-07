@@ -1,9 +1,10 @@
-package com.chteuchteu.freeboxstats.net;
+package com.chteuchteu.freeboxstats.async;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.chteuchteu.freeboxstats.FooBox;
+import com.chteuchteu.freeboxstats.net.NetHelper;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
@@ -52,10 +53,10 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 			
 			try {
 				trackId = res.getInt("track_id");
-				String appTocken = res.getString("app_token");
+				String appToken = res.getString("app_token");
 				
 				//FooBox.getInstance().setTrackId(trackId);
-				FooBox.getInstance().saveAppToken(appTocken);
+				FooBox.getInstance().saveAppToken(appToken);
 				
 				ok = true;
 			} catch (JSONException ex) {
