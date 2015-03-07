@@ -80,7 +80,7 @@
 	<string name="contribute">Contribuer</string>
 	<string name="freebox_access_address">Adresse d\'accès de votre Freebox</string>
 	<string name="freebox_access_address_explanation">Cette adresse est utilisée par l\'application pour communiquer avec votre Freebox. Si elle est
-		accessible depuis l\'extérieur de votre réseau local, utilisez son adresse IP. Ceci peut être configuré dans l\'interface d\'administration
-		de votre Freebox (Paramètres de la Freebox > Mode avancé > Configuration > Activer l\'authentification par mot de passe.</string>
+		accessible en-dehors de votre réseau local, utilisez son adresse IP. Ceci peut être configuré dans l\'interface d\'administration
+		de votre Freebox (Paramètres de la Freebox > Mode avancé > Configuration > Activer l\'authentification par mot de passe).</string>
 	<string name="unknown">Inconnue</string>
 </resources>
