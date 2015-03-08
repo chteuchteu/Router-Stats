@@ -7,19 +7,14 @@ import java.util.List;
 
 public class SwitchPortStatus {
 	private int switchIndex;
-	private boolean fetched;
 	private Enums.SwitchStatusLink switchStatusLink;
 	private List<SwitchDevice> connectedDevices;
 
 	public SwitchPortStatus(int switchIndex) {
 		this.switchIndex = switchIndex;
-		this.fetched = false;
 		this.switchStatusLink = Enums.SwitchStatusLink.UNKNOWN;
 		this.connectedDevices = new ArrayList<>();
 	}
-
-	public boolean isFetched() { return this.fetched; }
-	public void setFetched() { this.fetched = true; }
 
 	public int getSwitchIndex() { return this.switchIndex; }
 

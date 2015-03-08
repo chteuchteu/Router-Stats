@@ -3,6 +3,8 @@ package com.chteuchteu.freeboxstats.obj;
 import java.util.ArrayList;
 
 public class SwitchPortStatuses extends ArrayList<SwitchPortStatus> {
+	private boolean fetched;
+
 	public static SwitchPortStatuses instantiate() {
 		SwitchPortStatuses list = new SwitchPortStatuses();
 		list.add(new SwitchPortStatus(1));
@@ -19,4 +21,7 @@ public class SwitchPortStatuses extends ArrayList<SwitchPortStatus> {
 		}
 		return null;
 	}
+
+	public boolean isFetched() { return this.fetched; }
+	public void setFetched() { this.fetched = true; }
 }

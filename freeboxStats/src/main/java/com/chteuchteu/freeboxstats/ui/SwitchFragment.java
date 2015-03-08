@@ -85,14 +85,14 @@ public class SwitchFragment extends Fragment {
 		@SuppressLint("InflateParams")
 		final View dialogLayout = inflater.inflate(R.layout.switch_connecteddevicesdialog, null, false);
 
-		SwitchPortStatuses switchPortStatuses = FooBox.getInstance().getFreebox().getSwitchPortStatuses();
+		final SwitchPortStatuses switchPortStatuses = FooBox.getInstance().getFreebox().getSwitchPortStatuses();
 		final SwitchPortStatus switchPortStatus = switchPortStatuses.getSwitchPortStatus(switchIndex);
 
 		Runnable loadList = new Runnable() {
 			@Override
 			public void run() {
 				List<SwitchDevice> connectedDevices = switchPortStatus.getConnectedDevices();
-				switchPortStatus.setFetched();
+				switchPortStatuses.setFetched();
 
 				dialogLayout.findViewById(R.id.progressBar).setVisibility(View.GONE);
 				if (connectedDevices.isEmpty())
@@ -105,7 +105,7 @@ public class SwitchFragment extends Fragment {
 			}
 		};
 
-		if (switchPortStatus.isFetched())
+		if (switchPortStatuses.isFetched())
 			loadList.run();
 		else {
 			dialogLayout.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
