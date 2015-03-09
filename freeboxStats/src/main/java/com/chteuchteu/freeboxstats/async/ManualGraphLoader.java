@@ -74,7 +74,7 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 		}
 		
 		if (graphLoadingFailed) {
-			activity.toggleSpinningMenuItem(false);
+			activity.toggleProgressBar(false);
 			activity.graphLoadingFailed();
 		}
 

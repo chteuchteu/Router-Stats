@@ -329,7 +329,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		plot.redraw();
 
 		if (plotType == lastPlot)
-			toggleSpinningMenuItem(false);
+			toggleProgressBar(false);
 	}
 
     @Override
@@ -370,7 +370,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 	}
 
     @Override
-	public void toggleSpinningMenuItem(boolean visible) {
+	public void toggleProgressBar(boolean visible) {
 		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
 	}
     @Override
@@ -389,7 +389,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		if (manualRefresh)
 			justRefreshed = true;
 		
-		toggleSpinningMenuItem(true);
+		toggleProgressBar(true);
 		
 		Freebox freebox = FooBox.getInstance().getFreebox();
 		Period period = FooBox.getInstance().getPeriod();

@@ -28,7 +28,7 @@ public interface IMainActivity {
     public void stopRefreshThread();
     public void restartActivity();
     public void displayOutagesDialog();
-    public void toggleSpinningMenuItem(boolean val);
+    public void toggleProgressBar(boolean val);
     public void loadGraph(FooBox.PlotType plotType, GraphsContainer graph, Enums.Period period, Enums.Unit unit);
 
     /* Setters */
