@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.chteuchteu.freeboxstats"
@@ -15,17 +15,17 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../proguard-app.txt'
         }
     }
 }
 
 dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:support-v4:21.0.3'
-    compile 'com.google.android.gms:play-services:6.5.87'
-    compile files('libs/androidplot-core-0.6.1.jar')
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.google.android.gms:play-services:7.0.0'
+    compile "com.androidplot:androidplot-core:0.6.1"
     compile files('libs/crashlytics.jar')
     compile 'com.balysv.materialmenu:material-menu-toolbar:1.4.0'
 }
