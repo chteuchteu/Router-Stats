@@ -12,6 +12,8 @@ import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
 import com.crashlytics.android.Crashlytics;
 
+import io.fabric.sdk.android.Fabric;
+
 public class FreeboxStatsActivity extends ActionBarActivity {
     protected Context context;
     protected DrawerHelper drawerHelper;
@@ -20,7 +22,7 @@ public class FreeboxStatsActivity extends ActionBarActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+        Fabric.with(this, new Crashlytics());
 
         setContentView(viewToInflate);
 
