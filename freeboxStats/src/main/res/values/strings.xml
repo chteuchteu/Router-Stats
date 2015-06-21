@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Freebox Stats</string>
-	<string name="tab1_name">Débit</string>
-	<string name="tab3_name">Temp.</string>
-	<string name="tab4_name">xDSL</string>
-	<string name="tab5_name">Cumul</string>
-	<string name="tab6_name">Switch</string>
+	<string name="temp_tab">Temp.</string>
+	<string name="xdsl">xDSL</string>
+	<string name="switch_tab">Switch</string>
 	<string name="switch1">Switch 1</string>
 	<string name="switch2">Switch 2</string>
 	<string name="switch3">Switch 3</string>
@@ -35,6 +33,7 @@
 	<string name="loading">Chargement…</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
+	<string name="settings_displayStackTab">Afficher l\'onglet cumul</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local… Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.

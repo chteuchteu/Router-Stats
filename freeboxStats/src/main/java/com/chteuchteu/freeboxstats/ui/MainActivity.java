@@ -253,6 +253,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 	public void loadGraph(FooBox.PlotType plotType, final GraphsContainer graphsContainer, final Period period, Unit unit) {
 		XYPlot plot = FooBox.getInstance().getPlot(plotType);
 
+		if (plot == null)
+			return;
+
 		if (plot.getVisibility() != View.VISIBLE)
 			plot.setVisibility(View.VISIBLE);
 		
@@ -394,7 +397,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		Freebox freebox = FooBox.getInstance().getFreebox();
 		Period period = FooBox.getInstance().getPeriod();
 		new ManualGraphLoader(freebox, period, this).execute();
-		new StackLoader(freebox, period, this).execute();
+		if (SettingsHelper.getInstance().getDisplayStackTab())
+			new StackLoader(freebox, period, this).execute();
 		new SwitchLoader(freebox, period, this).execute();
 	}
 

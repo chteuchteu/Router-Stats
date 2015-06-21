@@ -115,7 +115,7 @@ public class SwitchFragment extends Fragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setView(dialogLayout);
 		builder.setNeutralButton(R.string.close, null);
-		builder.setTitle(getString(R.string.tab6_name) + " " + switchIndex + " - " + getString(R.string.connected_devices));
+		builder.setTitle(getString(R.string.switch_tab) + " " + switchIndex + " - " + getString(R.string.connected_devices));
 		builder.show();
 	}
 }

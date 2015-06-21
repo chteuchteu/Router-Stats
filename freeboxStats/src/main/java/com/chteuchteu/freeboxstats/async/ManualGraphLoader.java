@@ -84,7 +84,6 @@ public class ManualGraphLoader extends AsyncTask<Void, Void, Void> {
 	
 	/**
 	 * Load the graph and display the result on MainActivity
-	 * PlotIndex from 1 to 3
 	 * @param plotIndex int
 	 */
 	private GraphsContainer loadGraph(int plotIndex) {
