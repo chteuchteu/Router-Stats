@@ -23,8 +23,8 @@ android {
         applicationId "com.chteuchteu.freeboxstats"
         minSdkVersion 11
         targetSdkVersion 21
-        versionCode 19
-        versionName "2.6"
+        versionCode 20
+        versionName "2.7"
     }
 
     buildTypes {
