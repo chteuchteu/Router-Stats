@@ -7,30 +7,30 @@ import com.chteuchteu.freeboxstats.obj.GraphsContainer;
 
 public interface IMainActivity {
     /* Actions results */
-    public void pairingFinished(Enums.AuthorizeStatus authorizeStatus);
-    public void sessionOpenFailed();
-    public void finishedLoading();
-    public void graphLoadingFailed();
+    void pairingFinished(Enums.AuthorizeStatus authorizeStatus);
+    void sessionOpenFailed();
+    void finishedLoading();
+    void graphLoadingFailed();
 
     /* Actions */
     // App start
-    public void displayLoadingScreen();
-    public void hideLoadingScreen();
-    public void displayLaunchPairingScreen();
-    public void displayFreeboxUpdateNeededScreenBeforePairing();
-    public void displayFreeboxSearchFailedScreen();
-    public void displayFreeboxUpdateNeededScreen();
+    void displayLoadingScreen();
+    void hideLoadingScreen();
+    void displayLaunchPairingScreen();
+    void displayFreeboxUpdateNeededScreenBeforePairing();
+    void displayFreeboxSearchFailedScreen();
+    void displayFreeboxUpdateNeededScreen();
 
-    public void refreshGraph();
-    public void initPlot(XYPlot plot, FooBox.PlotType plotType);
-    public void displayDebugMenuItem();
-    public void startRefreshThread();
-    public void stopRefreshThread();
-    public void restartActivity();
-    public void displayOutagesDialog();
-    public void toggleProgressBar(boolean val);
-    public void loadGraph(FooBox.PlotType plotType, GraphsContainer graph, Enums.Period period, Enums.Unit unit);
+    void refreshGraph();
+    void initPlot(XYPlot plot, FooBox.PlotType plotType);
+    void displayDebugMenuItem();
+    void startRefreshThread();
+    void stopRefreshThread();
+    void restartActivity();
+    void displayOutagesDialog();
+    void toggleProgressBar(boolean val);
+    void loadGraph(FooBox.PlotType plotType, GraphsContainer graph, Enums.Period period, Enums.Unit unit);
 
     /* Setters */
-    public void setUpdating(boolean val);
+    void setUpdating(boolean val);
 }

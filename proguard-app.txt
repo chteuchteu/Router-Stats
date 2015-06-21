@@ -22,3 +22,4 @@
 
 # Optimize build time
 -keep class com.crashlytics.** { *; }
+-keep class com.androidplot.** { *; }
