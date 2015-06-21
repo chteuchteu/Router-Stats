@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,7 +15,7 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 
-public class FreeboxStatsActivity extends ActionBarActivity {
+public class FreeboxStatsActivity extends AppCompatActivity {
     protected Context context;
     protected DrawerHelper drawerHelper;
 
