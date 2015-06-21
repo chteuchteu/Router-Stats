@@ -18,7 +18,7 @@ public class SettingsHelper {
 		this.context = context;
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
 		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
-		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", true);
+		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", false);
 	}
 	
 	public static synchronized SettingsHelper getInstance(Context context) {
