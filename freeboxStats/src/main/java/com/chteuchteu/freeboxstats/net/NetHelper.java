@@ -1,5 +1,7 @@
 package com.chteuchteu.freeboxstats.net;
 
+import android.util.Pair;
+
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
@@ -13,29 +15,24 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.crashlytics.android.Crashlytics;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -44,14 +41,79 @@ import java.util.List;
 
 
 public class NetHelper {
-	/**
-	 * Get HttpParams with timeout and all
-	 */
-	private static HttpParams getHttpParams() {
-		HttpParams httpParameters = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParameters, 20000);
-		HttpConnectionParams.setSoTimeout(httpParameters, 30000);
-		return httpParameters;
+	private static final int CONNECTION_TIMEOUT = 20000;
+	private static final int READ_TIMEOUT = 30000;
+	private static final String USER_AGENT = "FreeboxStats";
+	private enum RequestMethod { GET, POST }
+
+	private static String fetch(String uri, RequestMethod requestMethod) { return fetch(uri, requestMethod, null, null); }
+	private static String fetch(String uri, RequestMethod requestMethod, String postParams) { return fetch(uri, requestMethod, postParams, null); }
+	private static String fetch(String uri, RequestMethod requestMethod, String postParams, List<Pair<String, String>> headers) {
+		URL url;
+		try {
+			url = new URL(uri);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		FooBox.log("Polling URL " + uri);
+
+		HttpURLConnection connection = null;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod(requestMethod.name());
+			connection.setConnectTimeout(CONNECTION_TIMEOUT);
+			connection.setReadTimeout(READ_TIMEOUT);
+			connection.setRequestProperty("User-Agent", USER_AGENT);
+			connection.setRequestProperty("Accept", "*/*");
+
+			if (requestMethod == RequestMethod.POST && postParams != null) {
+				connection.setDoInput(true);
+				connection.setDoOutput(true);
+
+				// Write POST
+				OutputStream os = connection.getOutputStream();
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+				writer.write(postParams);
+				writer.flush();
+				writer.close();
+			}
+
+			if (headers != null) {
+				for (Pair<String, String> header : headers)
+					connection.setRequestProperty(header.first, header.second);
+			}
+
+
+			connection.connect();
+
+			int responseCode = connection.getResponseCode();
+			//String responseMessage = connection.getResponseMessage();
+
+			// Get response
+			InputStream in = responseCode == 200 ? connection.getInputStream() : connection.getErrorStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			StringBuilder html = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null)
+				html.append(line);
+
+			in.close();
+			reader.close();
+
+			return html.toString();
+		} catch (SocketTimeoutException | ConnectException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null)
+				connection.disconnect();
+		}
+
+		return null;
 	}
 	
 	/**
@@ -59,21 +121,8 @@ public class NetHelper {
 	 */
 	public static Freebox checkFreebox() {
 		String apiCallUri = Freebox.ApiUri + "/api_version";
-		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-		String responseBody = "";
-		try {
-			HttpGet httpget = new HttpGet(apiCallUri);
-			
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
-		
-		if (responseBody.equals(""))
-			return null;
+
+		String responseBody = fetch(apiCallUri, RequestMethod.GET);
 		
 		// Parse JSON
 		try {
@@ -88,68 +137,27 @@ public class NetHelper {
 	}
 	
 	public static NetResponse authorize(Freebox freebox, String appInfo) {
-		HttpClient httpClient;
-		HttpPost httpPost;
-		InputStream inStream = null;
-		NetResponse netResponse = null;
-		
 		try {
-			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "login/authorize/";
-			FooBox.log("Polling uri " + uri);
-			httpPost = new HttpPost(uri);
-			HttpEntity postEntity = new ByteArrayEntity(appInfo.getBytes("UTF-8"));
-			httpPost.setEntity(postEntity);
-			
-			// Execute and get the response
-			HttpResponse response = httpClient.execute(httpPost);
-			HttpEntity entity = response.getEntity();
-			
-			if (entity != null) {
-				inStream = entity.getContent();
-				try {
-					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					//FooBox.log("serverResponse", serverResponse);
-					// Check server's response
-					JSONObject obj = new JSONObject(serverResponse);
-					netResponse = new NetResponse(obj);
-				} finally {
-					inStream.close();
-				}
-			}
-		} catch (IOException | JSONException ex) {
+			String responseBody = fetch(uri, RequestMethod.POST, appInfo);
+
+			if (responseBody == null)
+				return null;
+
+			return new NetResponse(new JSONObject(responseBody));
+		} catch (JSONException ex) {
 			ex.printStackTrace();
-		} finally {
-			if (inStream != null) {
-				try {
-					inStream.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
+			return null;
 		}
-		
-		return netResponse;
 	}
 	
 	public static AuthorizeStatus getAuthorizeStatus(Freebox freebox, int trackId) {
 		AuthorizeStatus authorizeStatus = null;
 		
 		String apiCallUri = freebox.getApiCallUrl() + "login/authorize/" + trackId;
-		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-		String responseBody = "";
-		try {
-			HttpGet httpget = new HttpGet(apiCallUri);
-			
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
-		
-		if (responseBody.equals(""))
+		String responseBody = fetch(apiCallUri, RequestMethod.GET);
+
+		if (responseBody == null)
 			return null;
 		
 		// Check server's response
@@ -212,84 +220,42 @@ public class NetHelper {
 		if (freebox == null)
 			return null;
 
-		NetResponse netResponse = null;
 		String apiCallUri = freebox.getApiCallUrl() + "login/";
-		
-		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-		String responseBody = "";
-		try {
-			HttpGet httpget = new HttpGet(apiCallUri);
-			
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
-		
-		if (responseBody.equals(""))
+		String responseBody = fetch(apiCallUri, RequestMethod.GET);
+
+		if (responseBody == null)
 			return null;
 		
 		// Check server's response
 		try {
 			JSONObject obj = new JSONObject(responseBody);
-			netResponse = new NetResponse(obj);
+			return new NetResponse(obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			Crashlytics.logException(e);
+			return null;
 		}
-		
-		return netResponse;
 	}
 	
 	private static NetResponse beginSession(Freebox freebox, String challenge) {
-		HttpClient httpClient;
-		HttpPost httpPost;
-		InputStream inStream = null;
-		NetResponse netResponse = null;
-		
 		try {
-			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "login/session/";
-			FooBox.log("Polling uri " + uri);
+
 			// We have to provide app_id and password
 			JSONObject obj = new JSONObject();
 			obj.put("app_id", FooBox.APP_ID);
 			obj.put("password", Util.encodeAppToken(freebox.getAppToken(), challenge));
-			httpPost = new HttpPost(uri);
-			HttpEntity postEntity = new ByteArrayEntity(obj.toString().getBytes("UTF-8"));
-			httpPost.setEntity(postEntity);
-			
-			// Execute and get the response
-			HttpResponse response = httpClient.execute(httpPost);
-			HttpEntity entity = response.getEntity();
-			
-			if (entity != null) {
-				inStream = entity.getContent();
-				try {
-					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					//FooBox.log("serverResponse", serverResponse);
-					// Check server's response
-					JSONObject obj2 = new JSONObject(serverResponse);
-					netResponse = new NetResponse(obj2);
-				} finally {
-					inStream.close();
-				}
-			}
-		} catch (IOException | JSONException | InvalidKeyException | NoSuchAlgorithmException | SignatureException | IllegalArgumentException exception) {
-			exception.printStackTrace();
-		} finally {
-			if (inStream != null) {
-				try {
-					inStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+
+			String responseBody = fetch(uri, RequestMethod.POST, obj.toString());
+
+			if (responseBody == null)
+				return null;
+
+			return new NetResponse(new JSONObject(responseBody));
+		} catch (IOException | JSONException | InvalidKeyException | NoSuchAlgorithmException | SignatureException | IllegalArgumentException ex) {
+			ex.printStackTrace();
+			return null;
 		}
-		
-		return netResponse;
 	}
 	
 	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields, boolean stack) {
@@ -301,93 +267,60 @@ public class NetHelper {
             ErrorsLogger.log("Empty field list");
             return null;
         }
-		
-		HttpClient httpClient;
-		HttpGet httpGet;
-		InputStream inStream = null;
-		NetResponse netResponse = null;
-		
 		try {
-			httpClient = new DefaultHttpClient(getHttpParams());
 			String uri = freebox.getApiCallUrl() + "rrd/";
-			FooBox.log("Polling uri " + uri);
 
 			Db db = GraphHelper.getDbFromField(fFields.get(0));
+
+			if (db == null)
+				return null;
+
 			JSONArray fields = new JSONArray();
 			for (Field f : fFields)
 				fields.put(f.getSerializedValue());
 
-			List<NameValuePair> nameValuePairs = new ArrayList<>();
-			nameValuePairs.add(new BasicNameValuePair("db", db.getSerializedValue()));
-			nameValuePairs.add(new BasicNameValuePair("fields", fields.toString()));
+			List<Pair<String, String>> pairs = new ArrayList<>();
+			pairs.add(new Pair<>("db", db.getSerializedValue()));
+			pairs.add(new Pair<>("fields", fields.toString()));
 			if (period != null) {
 				if (stack)
-					nameValuePairs.add(new BasicNameValuePair("date_start", String.valueOf(Util.Times.getFrom_stack(period))));
+					pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom_stack(period))));
 				else
-					nameValuePairs.add(new BasicNameValuePair("date_start", String.valueOf(Util.Times.getFrom(period))));
+					pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom(period))));
 			}
 			if (db == Db.TEMP)
-				nameValuePairs.add(new BasicNameValuePair("precision", "10"));
-			String paramsString = URLEncodedUtils.format(nameValuePairs, "UTF-8");
-			httpGet = new HttpGet(uri + "?" + paramsString);
-			httpGet.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			httpGet.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
+				pairs.add(new Pair<>("precision", "10"));
 
-			// Execute and get the response
-			HttpResponse response = httpClient.execute(httpGet);
-			HttpEntity entity = response.getEntity();
+			uri = uri + "?" + getQuery(pairs);
 
-			if (entity != null) {
-				inStream = entity.getContent();
-				try {
-					String serverResponse = Util.Streams.convertStreamtoString(inStream);
-					//FooBox.log("serverResponse", serverResponse);
-					// Check server's response
-					JSONObject obj2 = new JSONObject(serverResponse);
-					netResponse = new NetResponse(obj2);
-				} finally {
-					inStream.close();
-				}
-			}
-		} catch (ConnectTimeoutException | HttpHostConnectException ignoredException) {
-			// Ignore exception
-		} catch (IOException | JSONException exception) {
-			exception.printStackTrace();
-			Crashlytics.logException(exception);
-		} finally {
-			if (inStream != null) {
-				try {
-					inStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			// Header params
+			List<Pair<String, String>> headers = new ArrayList<>();
+			headers.add(new Pair<>("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken()));
+
+
+			String responseBody = fetch(uri, RequestMethod.GET, null, headers);
+
+			if (responseBody == null)
+				return null;
+
+			return new NetResponse(new JSONObject(responseBody));
+		} catch (JSONException | UnsupportedEncodingException ex) {
+			ex.printStackTrace();
+			Crashlytics.logException(ex);
+			return null;
 		}
-		
-		return netResponse;
 	}
 	
 	public static boolean getPublicIP(Freebox freebox) {
 		String apiCallUri = freebox.getApiCallUrl() + "connection/config";
-		FooBox.log("Polling URI " + apiCallUri);
-		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-		String responseBody = "";
-		try {
-			HttpGet httpget = new HttpGet(apiCallUri);
-			httpget.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			httpget.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpget, responseHandler);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
 
-		FooBox.log(responseBody);
+		// Header params
+		List<Pair<String, String>> headers = new ArrayList<>();
+		headers.add(new Pair<>("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken()));
+
+		String responseBody = fetch(apiCallUri, RequestMethod.GET, null, headers);
 		
-		if (responseBody.equals(""))
+		if (responseBody == null)
 			return false;
 		
 		// Parse JSON
@@ -414,35 +347,42 @@ public class NetHelper {
 		if (freebox == null)
 			return null;
 
-		NetResponse netResponse = null;
 		String apiCallUri = freebox.getApiCallUrl() + "switch/status/";
 
-		HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-		String responseBody = "";
-		try {
-			HttpGet httpGet = new HttpGet(apiCallUri);
-			httpGet.setHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			httpGet.addHeader("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken());
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			responseBody = httpclient.execute(httpGet, responseHandler);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
+		// Header params
+		List<Pair<String, String>> headers = new ArrayList<>();
+		headers.add(new Pair<>("X-Fbx-App-Auth", FooBox.getInstance().getSession().getSessionToken()));
 
-		if (responseBody.equals(""))
+		String responseBody = fetch(apiCallUri, RequestMethod.GET, null, headers);
+
+		if (responseBody == null)
 			return null;
 
 		// Check server's response
 		try {
-			JSONObject obj = new JSONObject(responseBody);
-			netResponse = new NetResponse(obj);
+			return new NetResponse(new JSONObject(responseBody));
 		} catch (JSONException e) {
 			e.printStackTrace();
 			Crashlytics.logException(e);
+			return null;
+		}
+	}
+
+	private static String getQuery(List<Pair<String, String>> params) throws UnsupportedEncodingException {
+		StringBuilder builder = new StringBuilder();
+		boolean first = true;
+
+		for (Pair<String, String> param : params) {
+			if (first)
+				first = false;
+			else
+				builder.append("&");
+
+			builder.append(URLEncoder.encode(param.first, "UTF-8"));
+			builder.append("=");
+			builder.append(URLEncoder.encode(param.second, "UTF-8"));
 		}
 
-		return netResponse;
+		return builder.toString();
 	}
 }

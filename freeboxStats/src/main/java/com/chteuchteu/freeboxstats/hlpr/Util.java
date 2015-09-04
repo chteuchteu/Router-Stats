@@ -21,7 +21,6 @@ import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Scanner;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -72,16 +70,6 @@ public class Util {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.remove(key);
 		editor.apply();
-	}
-	
-	public static final class Streams {
-		public static String convertStreamtoString(InputStream is) {
-			Scanner s = new Scanner(is);
-			s.useDelimiter("\\A");
-			String ret = s.hasNext() ? s.next() : "";
-			s.close();
-			return ret;
-		}
 	}
 	
 	public static final class Crypto {
@@ -413,7 +401,7 @@ public class Util {
 			RobotoCondensed_Regular("RobotoCondensed-Regular.ttf"),
 			Roboto_Regular("Roboto-Regular.ttf");
 			final String file;
-			private CustomFont(String fileName) { this.file = fileName; }
+			CustomFont(String fileName) { this.file = fileName; }
 			public String getValue() { return this.file; }
 		}
 		
