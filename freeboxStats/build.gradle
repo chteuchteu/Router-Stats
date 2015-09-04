@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.19.2'
     }
 }
 apply plugin: 'com.android.application'
@@ -16,13 +16,13 @@ repositories {
 
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.chteuchteu.freeboxstats"
         minSdkVersion 11
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 20
         versionName "2.7"
     }
@@ -37,11 +37,13 @@ android {
 
 dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.android.support:support-v4:22.1.1'
-    compile 'com.google.android.gms:play-services:7.0.0'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.android.support:support-v4:23.0.0'
+    //compile 'com.google.android.gms:play-services:7.8.0'
+    compile 'com.google.android.gms:play-services-base:7.8.0'
+    compile 'com.google.android.gms:play-services-wallet:7.8.0'
     compile "com.androidplot:androidplot-core:0.6.1"
-    compile 'com.balysv.materialmenu:material-menu-toolbar:1.4.0'
+    compile 'com.balysv.materialmenu:material-menu-toolbar:1.5.4'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.4@aar') {
         transitive = true;
     }
