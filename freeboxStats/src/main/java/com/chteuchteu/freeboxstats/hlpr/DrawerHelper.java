@@ -61,7 +61,6 @@ public class DrawerHelper {
 				return R.id.toolbar;
 			}
 		};
-		this.materialMenu.setNeverDrawTouch(true);
 
 		// Set font
 		Util.Fonts.setFont(context, (ViewGroup) activity.findViewById(R.id.drawer), Util.Fonts.CustomFont.Roboto_Regular);

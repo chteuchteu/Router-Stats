@@ -5,18 +5,10 @@
 	<style name="AppTheme.Base" parent="Theme.AppCompat">
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/accentColor</item>
 		<item name="windowNoTitle">true</item>
 		<item name="windowActionBar">false</item>
 		<item name="android:windowContentOverlay">@null</item>
-	</style>
-	
-	<!-- PagerSlidingTabStrip -->
-	<style name="PagerSlidingTabStrip">
-		<item name="pstsIndicatorColor">#fff</item>
-		<item name="pstsUnderlineColor">@color/colorPrimaryDark</item>
-		<item name="pstsIndicatorHeight">4dp</item>
-		<item name="pstsShouldExpand">true</item>
-		<item name="pstsTabPaddingLeftRight">0dp</item>
 	</style>
 
 	<style name="Drawer_Row">

@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -34,7 +35,6 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
-import com.astuetz.PagerSlidingTabStrip;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
@@ -172,13 +172,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		
 		// Let Android load all the tabs at once (= disable lazy load)
 		viewPager.setOffscreenPageLimit(NB_TABS - 1);
-		
-		PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-		tabs.setViewPager(viewPager);
-		tabs.setTextColor(Color.WHITE);
-		tabs.setDividerColor(Color.TRANSPARENT);
-		Util.Fonts.setFont(context, (ViewGroup) tabs.getRootView(), CustomFont.Roboto_Regular);
-		
+
+		TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+		tabs.setupWithViewPager(viewPager);
 		graphsDisplayed = true;
 	}
 	
