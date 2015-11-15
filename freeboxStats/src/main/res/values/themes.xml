@@ -3,7 +3,7 @@
 
     <style name="AppTheme" parent="AppTheme.Base" />
 
-    <style name="AppTheme.Base" parent="MaterialDrawerTheme.ActionBar.TranslucentStatus">
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 

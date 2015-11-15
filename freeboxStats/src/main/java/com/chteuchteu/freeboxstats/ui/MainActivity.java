@@ -1,6 +1,5 @@
 package com.chteuchteu.freeboxstats.ui;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,7 +53,6 @@ import com.chteuchteu.freeboxstats.async.SwitchLoader;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
@@ -81,8 +78,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
     private boolean graphsDisplayed;
 
 	private ProgressBar progressBar;
-	
-	@SuppressLint("InlinedApi")
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.viewToInflate = R.layout.activity_main;
@@ -93,8 +89,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		justRefreshed = false;
 		updating = false;
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		this.drawerHelper = new DrawerHelper(this, toolbar);
+		this.drawerHelper = new DrawerHelper(this);
 		this.drawerHelper.initDrawer();
 
         this.progressBar = Util.prepareGmailStyleProgressBar(this, getSupportActionBar(), findViewById(R.id.tabs));
@@ -340,8 +335,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				IDrawerItem debug = drawerHelper.getDrawerItem(DrawerHelper.DrawerMenuItem.Debug);
-				// TODO
+				View drawer_debug = findViewById(R.id.drawer_debug);
+				if (drawer_debug.getVisibility() != View.VISIBLE)
+					drawer_debug.setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -550,10 +546,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 
     @Override
 	public void finishedLoading() {
-		/*TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
+		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
 		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
-		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);*/
-	    // TODO
+		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
 		
 		appStarted = true;
 		
@@ -566,6 +561,18 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 			startRefreshThread();
 
 		displayOpenSourceAlertIfNeeded();
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		drawerHelper.getToolbarIcon().syncState(savedInstanceState);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		drawerHelper.getToolbarIcon().onSaveInstanceState(outState);
 	}
 	
 	@Override
@@ -584,6 +591,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		menu.findItem(R.id.period_day).setTitle(Period.DAY.getLabel());
 		menu.findItem(R.id.period_week).setTitle(Period.WEEK.getLabel());
 		menu.findItem(R.id.period_month).setTitle(Period.MONTH.getLabel());
+
+		drawerHelper.setupAnimatedIcon();
 		
 		return true;
 	}

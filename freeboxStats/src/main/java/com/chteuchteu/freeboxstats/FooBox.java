@@ -19,6 +19,7 @@ import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
+import io.fabric.sdk.android.Fabric;
 import org.json.JSONException;
 
 public class FooBox extends Application {
@@ -52,6 +53,7 @@ public class FooBox extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Fabric.with(this, new Crashlytics());
 		instance = this;
 		loadInstance();
 	}
