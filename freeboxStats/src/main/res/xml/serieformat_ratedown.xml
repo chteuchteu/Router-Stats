@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
-	linePaint.strokeWidth="2dp"
+	linePaint.strokeWidth="1dp"
 	linePaint.color="#EEA61120"
 	vertexPaint.color="#00000000"
 	fillPaint.color="#AAA61120"
