@@ -638,6 +638,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				drawerHelper.toggleDrawer();
+				break;
 			case R.id.action_refresh:
 				refreshGraph(true);
 				break;
