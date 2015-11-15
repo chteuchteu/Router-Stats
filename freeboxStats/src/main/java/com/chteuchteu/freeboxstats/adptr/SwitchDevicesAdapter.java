@@ -8,8 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.chteuchteu.freeboxstats.R;
-import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.obj.SwitchDevice;
 
 import java.util.List;
@@ -29,7 +27,6 @@ public class SwitchDevicesAdapter extends ArrayAdapter<SwitchDevice> {
 		if (v == null) {
 			LayoutInflater vi = LayoutInflater.from(context);
 			v = vi.inflate(R.layout.switch_deviceslist, parent, false);
-			Util.Fonts.setFont(context, (ViewGroup) v, CustomFont.RobotoCondensed_Regular);
 		}
 		
 		SwitchDevice device = getItem(position);

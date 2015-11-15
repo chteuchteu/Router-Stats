@@ -393,42 +393,7 @@ public class Util {
 		else // if (fromIndex > toIndex)
 			return value * Math.pow(1024, fromIndex - toIndex);
 	}
-	
-	public static final class Fonts {
-		/* ENUM Custom Fonts */
-		public enum CustomFont {
-			RobotoCondensed_Light("RobotoCondensed-Light.ttf"),
-			RobotoCondensed_Regular("RobotoCondensed-Regular.ttf"),
-			Roboto_Regular("Roboto-Regular.ttf");
-			final String file;
-			CustomFont(String fileName) { this.file = fileName; }
-			public String getValue() { return this.file; }
-		}
-		
-		/* Fonts */
-		public static void setFont(Context c, ViewGroup g, CustomFont font) {
-			Typeface mFont = Typeface.createFromAsset(c.getAssets(), font.getValue());
-			setFont(g, mFont);
-		}
-		
-		public static void setFont(Context c, TextView t, CustomFont font) {
-			Typeface mFont = Typeface.createFromAsset(c.getAssets(), font.getValue());
-			t.setTypeface(mFont);
-		}
-		
-		private static void setFont(ViewGroup group, Typeface font) {
-			int count = group.getChildCount();
-			View v;
-			for (int i = 0; i < count; i++) {
-				v = group.getChildAt(i);
-				if (v instanceof TextView) {
-					((TextView) v).setTypeface(font);
-				} else if (v instanceof ViewGroup)
-					setFont((ViewGroup) v, font);
-			}
-		}
-	}
-	
+
 	/**
 	 * Compares two version strings. 
 	 * 

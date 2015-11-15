@@ -44,7 +44,6 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.hlpr.Util.Fonts.CustomFont;
 import com.chteuchteu.freeboxstats.async.AskForAppToken;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
@@ -106,7 +105,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 
     @Override
 	public void displayLoadingScreen() {
-		Util.Fonts.setFont(context, (TextView) activity.findViewById(R.id.tv_loadingtxt), CustomFont.Roboto_Regular);
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 
@@ -356,8 +354,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View dialog_layout = inflater.inflate(R.layout.outages_dialog, (ViewGroup) findViewById(R.id.root_layout));
 		
-		Util.Fonts.setFont(context, (TextView) dialog_layout.findViewById(R.id.outages_text), CustomFont.RobotoCondensed_Light);
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 			@Override
@@ -406,9 +402,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 
     @Override
 	public void displayLaunchPairingScreen() {
-		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text1), CustomFont.RobotoCondensed_Light);
-		Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text2), CustomFont.RobotoCondensed_Light);
-		
 		findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
 		findViewById(R.id.screen1).setVisibility(View.VISIBLE);
 		
@@ -416,7 +409,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		findViewById(R.id.firstlaunch_ok).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Util.Fonts.setFont(context, (TextView) findViewById(R.id.firstlaunch_text3), CustomFont.RobotoCondensed_Light);
 				findViewById(R.id.screen1).setVisibility(View.GONE);
 				findViewById(R.id.screen2).setVisibility(View.VISIBLE);
 				new AskForAppToken(FooBox.getInstance().getFreebox(), activity).execute();
