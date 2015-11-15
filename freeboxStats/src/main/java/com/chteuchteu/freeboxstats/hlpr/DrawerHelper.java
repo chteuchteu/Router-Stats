@@ -7,26 +7,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.balysv.materialmenu.MaterialMenuDrawable;
-import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.net.BillingService;
@@ -34,106 +25,256 @@ import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
-
-import org.json.JSONException;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DrawerHelper {
 	private IMainActivity iActivity;
     private Activity activity;
-	private boolean isDrawerOpened;
 	private Context context;
-	private DrawerLayout drawerLayout;
-	private MaterialMenuIconToolbar materialMenu;
+	private Toolbar toolbar;
 
-	public DrawerHelper(MainActivity activity, Context context) {
+	private HashMap<DrawerMenuItem, IDrawerItem> drawerItems;
+
+	public enum DrawerMenuItem {
+		Parametres(0),
+		Coupures(1),
+		Debug(2),
+		Don(3);
+
+		private int identifier;
+		public int getIdentifier() { return this.identifier; }
+		DrawerMenuItem(int identifier) { this.identifier = identifier; }
+		public static DrawerMenuItem from(int identifier) {
+			for (DrawerMenuItem item : DrawerMenuItem.values()) {
+				if (item.getIdentifier() == identifier)
+					return item;
+			}
+			return Parametres;
+		}
+	}
+
+
+	public DrawerHelper(MainActivity activity, Toolbar toolbar) {
 		this.iActivity = activity;
         this.activity = activity;
-		this.context = context;
-		drawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
+		this.context = activity;
+		this.toolbar = toolbar;
+		this.drawerItems = new HashMap<>();
+	}
+
+	public IDrawerItem getDrawerItem(DrawerMenuItem type) {
+		return this.drawerItems.get(type);
 	}
 
 	public void initDrawer() {
-		this.materialMenu = new MaterialMenuIconToolbar(activity, Color.WHITE, MaterialMenuDrawable.Stroke.THIN) {
-			@Override public int getToolbarViewId() {
-				return R.id.toolbar;
-			}
-		};
+		// Paramètres
+		this.drawerItems.put(DrawerMenuItem.Parametres,
+				new PrimaryDrawerItem()
+						.withName(R.string.settings)
+						.withIdentifier(DrawerMenuItem.Parametres.getIdentifier())
+						.withIcon(CommunityMaterial.Icon.cmd_settings)
+						.withSelectable(false)
+		);
 
-		// Set font
-		Util.Fonts.setFont(context, (ViewGroup) activity.findViewById(R.id.drawer), Util.Fonts.CustomFont.Roboto_Regular);
+		// Coupures
+		this.drawerItems.put(DrawerMenuItem.Coupures,
+				new PrimaryDrawerItem()
+						.withName(R.string.outages)
+						.withIdentifier(DrawerMenuItem.Coupures.getIdentifier())
+						.withIcon(CommunityMaterial.Icon.cmd_flash)
+						.withSelectable(false)
+		);
 
-		// Settings
-		activity.findViewById(R.id.drawer_settings).setOnClickListener(new View.OnClickListener() {
+		// Debug
+		this.drawerItems.put(DrawerMenuItem.Debug,
+				new PrimaryDrawerItem()
+						.withName(R.string.debug)
+						.withIdentifier(DrawerMenuItem.Debug.getIdentifier())
+						.withIcon(CommunityMaterial.Icon.cmd_help_circle)
+						.withSelectable(false)
+						.withEnabled(false)
+		);
+
+		// Don
+		this.drawerItems.put(DrawerMenuItem.Don,
+				new SecondaryDrawerItem()
+						.withName(R.string.donate)
+						.withIdentifier(DrawerMenuItem.Don.getIdentifier())
+						.withIcon(CommunityMaterial.Icon.cmd_heart)
+						.withSelectable(false)
+		);
+
+		DrawerBuilder builder = new DrawerBuilder()
+				.withActivity(this.activity)
+				.withToolbar(this.toolbar)
+				.withSelectedItem(-1);
+
+		// Add items
+		builder.addDrawerItems(
+				this.drawerItems.get(DrawerMenuItem.Parametres),
+				this.drawerItems.get(DrawerMenuItem.Coupures),
+				this.drawerItems.get(DrawerMenuItem.Debug),
+				new DividerDrawerItem(),
+				this.drawerItems.get(DrawerMenuItem.Don)
+		);
+
+		builder.withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
 			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				LayoutInflater inflater = LayoutInflater.from(context);
-				View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+			public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+				DrawerMenuItem item = DrawerMenuItem.from(drawerItem.getIdentifier());
 
-				// Auto refresh
-				final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
-				settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+				switch (item) {
+					case Parametres: {
+						LayoutInflater inflater = LayoutInflater.from(context);
+						View dialog_layout = inflater.inflate(R.layout.settings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
 
-				// Display xDSL tab
-				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
-				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
-
-				// Display stack tab
-				final CheckBox settings_displayStackTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayStackTab);
-				settings_displayStackTab.setChecked(SettingsHelper.getInstance().getDisplayStackTab());
-
-				// Graph precision
-				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
-				ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				settings_graphPrecision.setAdapter(adapter);
-				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
-
-						boolean displayXdslTabChanged = SettingsHelper.getInstance().getDisplayXdslTab()
-								!= settings_displayXdslTab.isChecked();
-						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
-
-						boolean displayStackTabChanged = SettingsHelper.getInstance().getDisplayStackTab()
-								!= settings_displayStackTab.isChecked();
-						SettingsHelper.getInstance().setDisplayStackTab(settings_displayStackTab.isChecked());
-
-						SettingsHelper.getInstance().setGraphPrecision(
-								Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-
-						if (settings_autorefresh.isChecked())
-							iActivity.startRefreshThread();
-						else
-                            iActivity.stopRefreshThread();
-
-						// Remove tab
-						if (displayXdslTabChanged || displayStackTabChanged)
-                            iActivity.restartActivity();
-					}
-				});
-				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+						// Auto refresh
+						final CheckBox settings_autorefresh = (CheckBox) dialog_layout.findViewById(R.id.settings_autorefresh);
 						settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+
+						// Display xDSL tab
+						final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
+						settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
+
+						// Display stack tab
+						final CheckBox settings_displayStackTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayStackTab);
+						settings_displayStackTab.setChecked(SettingsHelper.getInstance().getDisplayStackTab());
+
+						// Graph precision
+						final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
+						ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
+						adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+						settings_graphPrecision.setAdapter(adapter);
 						settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-						dialog.dismiss();
+
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								SettingsHelper.getInstance().setAutoRefresh(settings_autorefresh.isChecked());
+
+								boolean displayXdslTabChanged = SettingsHelper.getInstance().getDisplayXdslTab()
+										!= settings_displayXdslTab.isChecked();
+								SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
+
+								boolean displayStackTabChanged = SettingsHelper.getInstance().getDisplayStackTab()
+										!= settings_displayStackTab.isChecked();
+								SettingsHelper.getInstance().setDisplayStackTab(settings_displayStackTab.isChecked());
+
+								SettingsHelper.getInstance().setGraphPrecision(
+										Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
+
+								if (settings_autorefresh.isChecked())
+									iActivity.startRefreshThread();
+								else
+									iActivity.stopRefreshThread();
+
+								// Remove tab
+								if (displayXdslTabChanged || displayStackTabChanged)
+									iActivity.restartActivity();
+							}
+						});
+						builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
+								settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
+								dialog.dismiss();
+							}
+						});
+						builder.setView(dialog_layout);
+						builder.show();
+						return true;
 					}
-				});
-				builder.setView(dialog_layout);
-				builder.show();
+
+					case Coupures:
+						iActivity.displayOutagesDialog();
+						return true;
+
+					case Don:
+						donate();
+						return true;
+
+					case Debug: {
+						LayoutInflater inflater = LayoutInflater.from(context);
+						View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+
+						final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
+						ArrayAdapter<ErrorsLogger.AppError> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
+								FooBox.getInstance().getErrorsLogger().getErrors());
+						lv.setAdapter(arrayAdapter);
+
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder.setPositiveButton(R.string.send_dev, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+
+								new AlertDialog.Builder(context)
+										.setTitle(R.string.send_errors)
+										.setMessage(R.string.send_errors_explanation)
+										.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int which) {
+												String txt = "Version de l'application : " + FooBox.getInstance().getAppVersion() + "\r\n"
+														+ "Freebox: " + Freebox.staticToString(FooBox.getInstance().getFreebox()) + "\r\n"
+														+ "API URL: " + FooBox.getInstance().getFreebox().getApiCallUrl() + "\r\n"
+														+ "\r\nListe des erreurs : \r\n"
+														+ FooBox.getInstance().getErrorsLogger().getErrorsString();
+												Intent send = new Intent(Intent.ACTION_SENDTO);
+												String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") +
+														"?subject=" + Uri.encode("Rapport de bug") +
+														"&body=" + Uri.encode(txt);
+												Uri uri = Uri.parse(uriText);
+
+												send.setData(uri);
+												activity.startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
+											}
+										})
+										.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.dismiss();
+											}
+										})
+										.setIcon(R.drawable.ic_action_error_light)
+										.show();
+							}
+						});
+						builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+						builder.setTitle(R.string.debug);
+						builder.setView(dialog_layout);
+						// Avoid error when the app is closing or something
+						if (!activity.isFinishing())
+							builder.show();
+						return true;
+					}
+
+					default:
+						return false;
+				}
 			}
 		});
 
+
         // Freebox
-		activity.findViewById(R.id.drawer_freebox).setOnClickListener(new View.OnClickListener() {
+		/*activity.findViewById(R.id.drawer_freebox).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				PopupMenu popupMenu = new PopupMenu(context, activity.findViewById(R.id.drawer_freebox));
@@ -204,121 +345,19 @@ public class DrawerHelper {
 				});
 				popupMenu.show();
 			}
-		});
+		});*/
 
-        // Outages
-		activity.findViewById(R.id.drawer_outages).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				drawerLayout.closeDrawers();
-				iActivity.displayOutagesDialog();
-			}
-		});
+		// Header
+		AccountHeader header = new AccountHeaderBuilder()
+				.withActivity(this.activity)
+				.withCompactStyle(true)
+				.addProfiles(
+						new ProfileDrawerItem().withName("Freebox").withEmail("88888888").withIcon(CommunityMaterial.Icon.cmd_server)
+				)
+				.build();
+		builder.withAccountHeader(header);
 
-        // Donate
-		activity.findViewById(R.id.drawer_donate).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				drawerLayout.closeDrawers();
-				donate();
-			}
-		});
-
-        // Debug
-        activity.findViewById(R.id.drawer_debug).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                View dialog_layout = inflater.inflate(R.layout.debug_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
-
-                final ListView lv = (ListView) dialog_layout.findViewById(R.id.debug_lv);
-                ArrayAdapter<ErrorsLogger.AppError> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,
-                        FooBox.getInstance().getErrorsLogger().getErrors());
-                lv.setAdapter(arrayAdapter);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setPositiveButton(R.string.send_dev, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-
-                        new AlertDialog.Builder(context)
-                                .setTitle(R.string.send_errors)
-                                .setMessage(R.string.send_errors_explanation)
-                                .setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String txt = "Version de l'application : " + FooBox.getInstance().getAppVersion() + "\r\n"
-                                                + "Freebox: " + Freebox.staticToString(FooBox.getInstance().getFreebox()) + "\r\n"
-                                                + "API URL: " + FooBox.getInstance().getFreebox().getApiCallUrl() + "\r\n"
-                                                + "\r\nListe des erreurs : \r\n"
-                                                + FooBox.getInstance().getErrorsLogger().getErrorsString();
-                                        Intent send = new Intent(Intent.ACTION_SENDTO);
-                                        String uriText = "mailto:" + Uri.encode("chteuchteu@gmail.com") +
-                                                "?subject=" + Uri.encode("Rapport de bug") +
-                                                "&body=" + Uri.encode(txt);
-                                        Uri uri = Uri.parse(uriText);
-
-                                        send.setData(uri);
-                                        activity.startActivity(Intent.createChooser(send, context.getString(R.string.send_errors)));
-                                    }
-                                })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .setIcon(R.drawable.ic_action_error_light)
-                                .show();
-                    }
-                });
-                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.setTitle(R.string.debug);
-                builder.setView(dialog_layout);
-                // Avoid error when the app is closing or something
-                if (!activity.isFinishing())
-                    builder.show();
-            }
-        });
-	}
-
-	public MaterialMenuIconToolbar getToolbarIcon() { return this.materialMenu; }
-
-	public void setupAnimatedIcon() {
-		drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-			@Override
-			public void onDrawerSlide(View view, float slideOffset) {
-				materialMenu.setTransformationOffset(
-						MaterialMenuDrawable.AnimationState.BURGER_ARROW,
-						isDrawerOpened ? 2 - slideOffset : slideOffset);
-			}
-
-			@Override
-			public void onDrawerOpened(View view) {
-				isDrawerOpened = true;
-				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.ARROW);
-			}
-
-			@Override
-			public void onDrawerClosed(View view) {
-				isDrawerOpened = false;
-				materialMenu.animatePressedState(MaterialMenuDrawable.IconState.BURGER);
-			}
-
-			@Override
-			public void onDrawerStateChanged(int i) { }
-		});
-	}
-
-	public void toggleDrawer() {
-		if (isDrawerOpened)
-			drawerLayout.closeDrawer(Gravity.START);
-		else
-			drawerLayout.openDrawer(Gravity.START);
+		builder.build();
 	}
 
     @SuppressLint("InflateParams")
