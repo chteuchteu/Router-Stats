@@ -5,13 +5,6 @@
 	android:orientation="vertical"
 	android:padding="20dp">
 	
-	<CheckBox
-		android:id="@+id/settings_autorefresh"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/settings_autorefresh"
-		android:layout_marginBottom="20dp" />
-	
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -23,27 +16,36 @@
 		android:layout_height="wrap_content"
 		android:textSize="15sp"
 		android:paddingLeft="10dp"
+		android:layout_marginBottom="5dp"
 		android:textColor="@color/textSecondary"
 		android:text="@string/settings_graphprecisiondetails" />
 	<Spinner
 		android:id="@+id/settings_graphprecision"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="10dp"/>
+
+	<CheckBox
+		android:id="@+id/settings_autorefresh"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/settings_autorefresh"
+		android:layout_marginBottom="5dp"
+		android:layout_marginTop="5dp" />
 	
 	<CheckBox
 		android:id="@+id/settings_displayxdsltab"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="@string/settings_displayxdsltab"
-		android:layout_marginBottom="15dp"
-		android:layout_marginTop="20dp" />
+		android:layout_marginBottom="5dp"
+		android:layout_marginTop="5dp" />
 
 	<CheckBox
 		android:id="@+id/settings_displayStackTab"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="@string/settings_displayStackTab"
-		android:layout_marginBottom="20dp"
-		android:layout_marginTop="15dp" />
+		android:layout_marginTop="5dp" />
 	
 </LinearLayout>
