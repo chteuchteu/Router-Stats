@@ -3,7 +3,6 @@ package com.chteuchteu.freeboxstats.ui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,8 +22,8 @@ import android.widget.Toast;
 
 import com.androidplot.ui.AnchorPosition;
 import com.androidplot.ui.DynamicTableModel;
+import com.androidplot.ui.Size;
 import com.androidplot.ui.SizeLayoutType;
-import com.androidplot.ui.SizeMetrics;
 import com.androidplot.ui.XLayoutStyle;
 import com.androidplot.ui.YLayoutStyle;
 import com.androidplot.xy.BoundaryMode;
@@ -36,20 +35,20 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
-import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
-import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
-import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
-import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.async.AskForAppToken;
-import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.async.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.async.OutagesFetcher;
 import com.chteuchteu.freeboxstats.async.SessionOpener;
 import com.chteuchteu.freeboxstats.async.StackLoader;
 import com.chteuchteu.freeboxstats.async.SwitchLoader;
+import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
+import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
+import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
+import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
+import com.chteuchteu.freeboxstats.hlpr.Util;
+import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.GraphsContainer;
@@ -177,25 +176,20 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 	@Override
 	public void initPlot(XYPlot plot, FooBox.PlotType plotType) {
 		plot.setVisibility(View.GONE);
-		
+
 		// Styling
-		plot.setBorderStyle(XYPlot.BorderStyle.NONE, null, null);
-		plot.setPlotMargins(10, 0, 0, 10);
-		plot.setPlotPadding(0, 0, 0, 0);
-		plot.setGridPadding(4, 10, 15, 0);
-		plot.getGraphWidget().setGridPaddingRight(15);
-		plot.getGraphWidget().setGridPaddingTop(15);
-		plot.getGraphWidget().setPaddingLeft(15);
-		plot.getGraphWidget().getBackgroundPaint().setColor(Color.TRANSPARENT);
-		plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
-		plot.getGraphWidget().getDomainLabelPaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.TRANSPARENT);
-		plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-		
+		Paint transparentPaint = new Paint();
+		transparentPaint.setAlpha(0);
+
+		// Background
+		plot.setBackgroundPaint(transparentPaint);
+		plot.getGraphWidget().setBackgroundPaint(transparentPaint);
+		plot.getGraphWidget().setGridBackgroundPaint(transparentPaint);
+
+		// Border
+		plot.setBorderPaint(transparentPaint);
+		plot.getGraphWidget().setDomainGridLinePaint(transparentPaint);
+
 		plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
 		switch (plotType) {
 			case TEMP:
@@ -219,7 +213,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 				else
 					plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
 
-				plot.getLegendWidget().setSize(new SizeMetrics(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
+				plot.getLegendWidget().setSize(new Size(180, SizeLayoutType.ABSOLUTE, 460, SizeLayoutType.ABSOLUTE));
+
 				Paint bgPaint = new Paint();
 				bgPaint.setARGB(100, 0, 0, 0);
 				bgPaint.setStyle(Paint.Style.FILL);
@@ -253,7 +248,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		
 		// Reset plot
 		plot.clear();
-		plot.getSeriesSet().clear();
+		plot.getSeriesRegistry().clear(); //plot.getSeriesSet().clear();
 		plot.removeMarkers();
 		
 		for (DataSet dSet : graphsContainer.getDataSets()) {

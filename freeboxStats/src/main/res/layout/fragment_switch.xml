@@ -37,16 +37,14 @@
 			android:id="@+id/xyPlot_switch1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
 			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainLabelPaint.textSize="@dimen/domain_tick_label_font_size"
-			androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
 	</LinearLayout>
 
@@ -82,16 +80,14 @@
 			android:id="@+id/xyPlot_switch2"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
 			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainLabelPaint.textSize="@dimen/domain_tick_label_font_size"
-			androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
 	</LinearLayout>
 
@@ -127,16 +123,14 @@
 			android:id="@+id/xyPlot_switch3"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
 			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainLabelPaint.textSize="@dimen/domain_tick_label_font_size"
-			androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
 	</LinearLayout>
 
@@ -172,16 +166,14 @@
 			android:id="@+id/xyPlot_switch4"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			androidPlot.rangeLabel="Range"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
 			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainLabelPaint.textSize="@dimen/domain_tick_label_font_size"
-			androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
 	</LinearLayout>
 	
