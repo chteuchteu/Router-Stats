@@ -25,7 +25,6 @@ public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
         RATE(R.string.rate),
         TEMP(R.string.temp_tab),
         XDSL(R.string.xdsl),
-        STACK(R.string.stack),
         SWITCH(R.string.switch_tab);
 
         Tab(int tabTitle) { this.tabTitle = tabTitle; }
@@ -34,21 +33,16 @@ public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     /**
-     * Make a list of tabs, and remove hidden ones.
-     * Way easier than previous pfusch
+     * Make a list of tabs, and remove hidden ones
      */
     private static Tab getTab(int index) {
         List<Tab> tabs = new ArrayList<>();
         Collections.addAll(tabs, Tab.values());
 
         boolean displayXdslTab = SettingsHelper.getInstance().getDisplayXdslTab();
-        boolean displayStackTab = SettingsHelper.getInstance().getDisplayStackTab();
 
         if (!displayXdslTab)
             tabs.remove(Tab.XDSL);
-
-        if (!displayStackTab)
-            tabs.remove(Tab.STACK);
 
         return tabs.get(index);
     }
@@ -67,8 +61,6 @@ public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
                 args.putString(GraphFragment.ARG_GRAPHTYPE, tab == Tab.TEMP ? "temp" : "xdsl");
                 fragment.setArguments(args);
                 return fragment;
-            case STACK:
-                return new StackFragment();
             case SWITCH:
                 return new SwitchFragment();
             default:
@@ -79,9 +71,6 @@ public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         int nbTabs = MainActivity.NB_TABS;
-
-        if (!SettingsHelper.getInstance().getDisplayStackTab())
-            nbTabs--;
 
         if (!SettingsHelper.getInstance().getDisplayXdslTab())
             nbTabs--;

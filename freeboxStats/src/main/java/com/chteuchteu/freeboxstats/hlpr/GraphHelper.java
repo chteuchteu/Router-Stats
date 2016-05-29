@@ -131,28 +131,7 @@ public class GraphHelper {
 		}
 		return highestValue;
 	}
-	
-	/**
-	 * Returns the last value of a stack values list
-	 * (should always be the last one)
-	 */
-	public static long getHighestStackValue(ArrayList<DataSet> dataSets) {
-		long highestValueAll = 0;
-		
-		for (DataSet ds : dataSets) {
-			if (ds.getValues().isEmpty())
-				continue;
-			
-			long lastValue = ds.getValues().get(ds.getValues().size()-1).longValue();
-			
-			if (lastValue > highestValueAll)
-				highestValueAll = lastValue;
-		}
-		
-		// Convert value to octets
-		return Util.convertUnit(dataSets.get(0).getValuesUnit(), Unit.o, highestValueAll).longValue();
-	}
-	
+
 	public static int getTimestampDiff(JSONArray data) throws JSONException {
 		// For every period > HOUR, the time between 2 values
 		// becomes smaller at 3/4 from the beginning.

@@ -78,10 +78,6 @@ public class DrawerHelper {
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
 
-				// Display stack tab
-				final CheckBox settings_displayStackTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayStackTab);
-				settings_displayStackTab.setChecked(SettingsHelper.getInstance().getDisplayStackTab());
-
 				// Graph precision
 				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
 				ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
@@ -99,10 +95,6 @@ public class DrawerHelper {
 								!= settings_displayXdslTab.isChecked();
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 
-						boolean displayStackTabChanged = SettingsHelper.getInstance().getDisplayStackTab()
-								!= settings_displayStackTab.isChecked();
-						SettingsHelper.getInstance().setDisplayStackTab(settings_displayStackTab.isChecked());
-
 						SettingsHelper.getInstance().setGraphPrecision(
 								Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
 
@@ -112,7 +104,7 @@ public class DrawerHelper {
 							iActivity.stopRefreshThread();
 
 						// Remove tab
-						if (displayXdslTabChanged || displayStackTabChanged)
+						if (displayXdslTabChanged)
 							iActivity.restartActivity();
 					}
 				});

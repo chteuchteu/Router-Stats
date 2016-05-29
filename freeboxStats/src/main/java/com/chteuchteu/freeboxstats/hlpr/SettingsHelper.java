@@ -11,7 +11,6 @@ public class SettingsHelper {
 	/* Settings */
 	private boolean autoRefresh;
 	private boolean displayXdslTab;
-	private boolean displayStackTab;
 	private GraphPrecision graphPrecision;
 	
 	
@@ -20,7 +19,6 @@ public class SettingsHelper {
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
 		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
 		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", false);
-		this.displayStackTab = Util.getPrefBoolean(context, "settings_displayStackTab", false);
 	}
 	
 	public static synchronized SettingsHelper getInstance(Context context) {
@@ -47,11 +45,5 @@ public class SettingsHelper {
 	public void setDisplayXdslTab(boolean val) {
 		this.displayXdslTab = val;
 		Util.setPref(context, "settings_displayXdslTab", val);
-	}
-
-	public boolean getDisplayStackTab() { return this.displayStackTab; }
-	public void setDisplayStackTab(boolean val) {
-		this.displayStackTab = val;
-		Util.setPref(context, "settings_displayStackTab", val);
 	}
 }

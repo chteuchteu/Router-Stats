@@ -39,12 +39,11 @@ public class FooBox extends Application {
 	private Period currentPeriod;
 	
 	// MainActivity context
-	public enum PlotType { RATEDOWN, RATEUP, TEMP, XDSL, STACK, SW1, SW2, SW3, SW4 }
+	public enum PlotType { RATEDOWN, RATEUP, TEMP, XDSL, SW1, SW2, SW3, SW4 }
 	private XYPlot plot_rateDown;
 	private XYPlot plot_rateUp;
 	private XYPlot plot_temp;
 	private XYPlot plot_xdsl;
-	private XYPlot plot_stack;
     private XYPlot plot_switch_1;
     private XYPlot plot_switch_2;
     private XYPlot plot_switch_3;
@@ -148,7 +147,6 @@ public class FooBox extends Application {
 			case RATEUP: plot_rateUp = plot; break;
 			case TEMP: plot_temp = plot; break;
 			case XDSL: plot_xdsl = plot; break;
-			case STACK: plot_stack = plot; break;
 			case SW1: plot_switch_1 = plot; break;
 			case SW2: plot_switch_2 = plot; break;
 			case SW3: plot_switch_3 = plot; break;
@@ -162,7 +160,6 @@ public class FooBox extends Application {
 			case RATEUP: return plot_rateUp;
 			case TEMP: return plot_temp;
 			case XDSL: return plot_xdsl;
-			case STACK: return plot_stack;
 			case SW1: return plot_switch_1;
 			case SW2: return plot_switch_2;
 			case SW3: return plot_switch_3;

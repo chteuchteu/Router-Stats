@@ -93,7 +93,7 @@ public class SwitchLoader extends AsyncTask<Void, Void, Void> {
 				break;
 		}
 
-		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields, false);
+		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields);
 
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {

@@ -32,20 +32,7 @@ public class DataSet {
 		else
 			this.values.add(Util.convertUnit(unit, valuesUnit, value));
 	}
-	
-	public void stackValue(long val) {
-		Number value = Util.convertUnit(Unit.o, valuesUnit, val);
-		
-		// val = (val-1)+val
-		if (this.values.isEmpty())
-			this.values.add(value);
-		else {
-			Number previousVal = this.values.get(this.values.size()-1);
-			value = previousVal.floatValue() + value.floatValue();
-			this.values.add(value);
-		}
-	}
-	
+
 	public void setValuesUnit(Unit unit, boolean convertAll) {
 		if (convertAll) {
 			ArrayList<Number> newValues = new ArrayList<>();

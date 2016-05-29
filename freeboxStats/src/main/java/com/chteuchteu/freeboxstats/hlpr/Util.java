@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v7.app.ActionBar;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.androidplot.xy.XValueMarker;
 import com.chteuchteu.freeboxstats.R;
@@ -141,48 +139,7 @@ public class Util {
 			}
 			return cal.getTime().getTime() / 1000;
 		}
-		
-		public static long getFrom_stack(Period period) {
-			Calendar cal = Calendar.getInstance();
-			Calendar now = Calendar.getInstance();
-			switch (period) {
-				case HOUR:
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
 
-					if (now.get(Calendar.MINUTE) < 10)
-						cal.add(Calendar.MINUTE, -10);
-					break;
-				case DAY:
-					cal.set(Calendar.HOUR_OF_DAY, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-
-					if (now.get(Calendar.MINUTE) < 10)
-						cal.add(Calendar.MINUTE, -10);
-					break;
-				case WEEK:
-					cal.set(Calendar.HOUR_OF_DAY, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-					cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-					break;
-				case MONTH:
-					cal.set(Calendar.HOUR_OF_DAY, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-					cal.set(Calendar.DAY_OF_MONTH, 1);
-					break;
-				default:
-					break;
-			}
-			return cal.getTime().getTime() / 1000;
-		}
-		
 		public static long getDayBeginFromTimestamp(long timestamp) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(timestamp*1000);

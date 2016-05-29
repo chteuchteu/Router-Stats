@@ -258,7 +258,7 @@ public class NetHelper {
 		}
 	}
 	
-	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields, boolean stack) {
+	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields) {
         if (freebox == null) {
             ErrorsLogger.log("Freebox loading fail");
             return null;
@@ -282,12 +282,9 @@ public class NetHelper {
 			List<Pair<String, String>> pairs = new ArrayList<>();
 			pairs.add(new Pair<>("db", db.getSerializedValue()));
 			pairs.add(new Pair<>("fields", fields.toString()));
-			if (period != null) {
-				if (stack)
-					pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom_stack(period))));
-				else
-					pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom(period))));
-			}
+			if (period != null)
+				pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom(period))));
+
 			if (db == Db.TEMP)
 				pairs.add(new Pair<>("precision", "10"));
 

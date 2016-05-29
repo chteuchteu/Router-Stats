@@ -11,7 +11,6 @@
 	<string name="rate">Débit</string>
 	<string name="rate_down">Débit down</string>
 	<string name="rate_up">Débit up</string>
-	<string name="stack">Cumul</string>
 	<string name="temp">Température (°C)</string>
 	<string name="noise">Marge de bruit (dB)</string>
 	<string name="connection_failed">Connection échouée</string>
@@ -33,7 +32,6 @@
 	<string name="loading">Chargement…</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
-	<string name="settings_displayStackTab">Afficher l\'onglet cumul</string>
 	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local… Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.

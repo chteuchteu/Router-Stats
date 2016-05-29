@@ -40,7 +40,6 @@ import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
 import com.chteuchteu.freeboxstats.async.ManualGraphLoader;
 import com.chteuchteu.freeboxstats.async.OutagesFetcher;
 import com.chteuchteu.freeboxstats.async.SessionOpener;
-import com.chteuchteu.freeboxstats.async.StackLoader;
 import com.chteuchteu.freeboxstats.async.SwitchLoader;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
@@ -61,7 +60,7 @@ import java.text.ParsePosition;
 public class MainActivity extends FreeboxStatsActivity implements IMainActivity {
     private MainActivity activity;
 
-	public static final int NB_TABS = 5;
+	public static final int NB_TABS = 4;
 	private static final FooBox.PlotType lastPlot = FooBox.PlotType.SW4;
 
 	private Thread refreshThread;
@@ -305,9 +304,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		
 		// Set range label
 		switch (plotType) {
-			case STACK:
-				plot.setRangeLabel(getString(R.string.stack) + " (" + unit.name() + ")");
-				break;
 			case RATEDOWN:
 				plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
 				break;
@@ -386,8 +382,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		Freebox freebox = FooBox.getInstance().getFreebox();
 		Period period = FooBox.getInstance().getPeriod();
 		new ManualGraphLoader(freebox, period, this).execute();
-		if (SettingsHelper.getInstance().getDisplayStackTab())
-			new StackLoader(freebox, period, this).execute();
 		new SwitchLoader(freebox, period, this).execute();
 	}
 
