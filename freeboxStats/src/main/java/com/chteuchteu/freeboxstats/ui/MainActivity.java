@@ -64,7 +64,9 @@ public class MainActivity extends FreeboxStatsActivity {
 
 	private Thread refreshThread;
 	private boolean justRefreshed;
-	private final int AUTOREFRESH_TIME = 20000;
+	private long lastRefresh;
+	private static final int MIN_TIME_BETWEEN_REFRESHS = 2000;
+	private static final int AUTOREFRESH_TIME = 20000;
 	
 	private MenuItem refreshMenuItem;
 	private MenuItem periodMenuItem;
@@ -369,7 +371,14 @@ public class MainActivity extends FreeboxStatsActivity {
 			return;
 		if (updating)
 			return;
-		
+
+		long timeSinceLastRefresh = Math.abs(System.currentTimeMillis() - lastRefresh);
+		if (timeSinceLastRefresh < MIN_TIME_BETWEEN_REFRESHS) {
+			FooBox.log("Skipped refresh, last one was " + timeSinceLastRefresh + "ms ago");
+			return;
+		}
+
+		lastRefresh = System.currentTimeMillis();
 		updating = true;
 		
 		if (manualRefresh)

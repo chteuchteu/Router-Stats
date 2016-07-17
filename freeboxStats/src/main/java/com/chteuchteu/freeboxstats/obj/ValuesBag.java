@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -13,10 +14,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ValuesBag {
-	private Enums.Graph graph;
 	private Field[] fields;
 	private FieldType fieldType;
 
@@ -29,8 +28,8 @@ public class ValuesBag {
 	private Unit valuesUnit;
 	public static final Unit defaultUnit = Unit.Mo;
 
-	public ValuesBag(Enums.Graph graph) {
-		this.graph = graph;
+	public ValuesBag(Enums.Graph graph, Period period) {
+		this.period = period;
 		this.fields = deduceFields(graph);
 		this.fieldType = deduceFieldType(graph);
 		this.valuesUnit = deduceUnit(fieldType);
@@ -119,13 +118,18 @@ public class ValuesBag {
 		for (int i=0; i<data.length(); i++) {
 			try {
 				JSONObject obj = (JSONObject) data.get(i);
+				int time = obj.getInt("time");
 
-				if (lastAddedTimestamp == -1)
-					lastAddedTimestamp = obj.getInt("time");
-
+				// Skip already processed values
+				if (lastTimestamp != -1 && time <= lastTimestamp)
+					continue;
 				// Keep "time" for upcoming request
 				if (i == data.length()-1)
-					this.lastTimestamp = obj.getInt("time");
+					this.lastTimestamp = time;
+
+				if (lastAddedTimestamp == -1)
+					lastAddedTimestamp = time;
+
 
 				if (obj.getInt("time") - lastAddedTimestamp >= timestampDiff
 						|| obj.getInt("time") - lastAddedTimestamp == 0
@@ -156,6 +160,7 @@ public class ValuesBag {
 
 					this.serie.add(GraphHelper.getDateLabelFromTimestamp(obj.getLong("time"), this.period));
 				} else {
+					// Dump buffers
 					for (Field f : fields) {
 						try {
 							int val = 0;
@@ -207,8 +212,9 @@ public class ValuesBag {
 			dataSet.setValuesUnit(to, true);
 	}
 
-	public ArrayList<String> getSerie() { return this.serie; }
+	public void setPeriod(Period period) { this.period = period; }
 
+	public ArrayList<String> getSerie() { return this.serie; }
 	public DataSet[] getDataSets() {
 		return this.dataSets.values().toArray(new DataSet[this.dataSets.values().size()]);
 	}

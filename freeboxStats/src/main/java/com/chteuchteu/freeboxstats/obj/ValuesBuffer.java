@@ -3,69 +3,57 @@ package com.chteuchteu.freeboxstats.obj;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * When skipping values (because the timestampdiff is not respected),
  * we generate the values average (or sum) for each Field.
  */
 public class ValuesBuffer {
-	private ArrayList<ValuesBufferSet> bufferSets;
-	
-	public ValuesBuffer(ArrayList<Field> fields) {
-		this.bufferSets = new ArrayList<>();
-		for (Field f : fields)
-			this.bufferSets.add(new ValuesBufferSet(f));
-	}
-	
-	public void addValue(Field field, int val) {
-		getVBSByField(field).addValue(val);
-	}
-	
-	public void clear(Field field) {
-		getVBSByField(field).clear();
-	}
-	
-	public boolean isEmpty() {
-		for (ValuesBufferSet vbs : this.bufferSets)
-			if (!vbs.getValues().isEmpty())
-				return false;
-		return true;
-	}
+    private HashMap<Field, ValuesBufferSet> bufferSets;
 
-	/**
-	 * Generate buffer average (standard graph)
-	 * @param field Field
-	 * @return (int) sum
-	 */
-	public int getAverage(Field field) {
-		ValuesBufferSet vbs = getVBSByField(field);
-		float sum = 0;
-		int nb = vbs.getValues().size();
-		for (int n : vbs.getValues())
-			sum += n;
-		return (int) (sum/nb);
-	}
-	
-	private ValuesBufferSet getVBSByField(Field field) {
-		for (ValuesBufferSet vbs : this.bufferSets) {
-			if (vbs.getField() == field)
-				return vbs;
-		}
-		return null;
-	}
-	
-	private class ValuesBufferSet {
-		private Field field;
-		private ArrayList<Integer> values;
+    public ValuesBuffer(Field[] fields) {
+        this.bufferSets = new HashMap<>();
+        for (Field field : fields)
+            this.bufferSets.put(field, new ValuesBufferSet());
+    }
 
-		public ValuesBufferSet(Field field) {
-			this.field = field;
-			this.values = new ArrayList<>();
-		}
+    public void addValue(Field field, int val) {
+        this.bufferSets.get(field).addValue(val);
+    }
 
-		public void addValue(int val) { this.values.add(val); }
-		public ArrayList<Integer> getValues() { return this.values; }
-		public Field getField() { return this.field; }
-		public void clear() { this.values.clear(); }
-	}
+    public void clear(Field field) {
+        this.bufferSets.get(field).clear();
+    }
+
+    public boolean isEmpty() {
+        for (ValuesBufferSet vbs : this.bufferSets.values())
+            if (!vbs.getValues().isEmpty())
+                return false;
+        return true;
+    }
+
+    /**
+     * Generate buffer average (standard graph)
+     * @param field Field
+     * @return (int) sum
+     */
+    public int getAverage(Field field) {
+        ValuesBufferSet valuesBufferSet = this.bufferSets.get(field);
+        float sum = 0;
+        int nb = valuesBufferSet.getValues().size();
+        for (int n : valuesBufferSet.getValues())
+            sum += n;
+        return (int) (sum/nb);
+    }
+
+    private class ValuesBufferSet {
+        private ArrayList<Integer> values;
+        public ValuesBufferSet() {
+            this.values = new ArrayList<>();
+        }
+        public void addValue(int val) { this.values.add(val); }
+        public ArrayList<Integer> getValues() { return this.values; }
+        public void clear() { this.values.clear(); }
+    }
 }

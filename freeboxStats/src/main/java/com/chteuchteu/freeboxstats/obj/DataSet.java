@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.androidplot.xy.SimpleXYSeries;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
@@ -10,6 +11,7 @@ public class DataSet {
 	private Field field;
 	private Unit valuesUnit;
 	private ArrayList<Number> values;
+	private SimpleXYSeries xySerieRef;
 	
 	public DataSet(Field field, Unit valuesUnit) {
 		this.field = field;
@@ -42,5 +44,12 @@ public class DataSet {
 		}
 		this.valuesUnit = unit;
 	}
-	public Unit getValuesUnit() { return this.valuesUnit; }
+
+
+	public SimpleXYSeries getXySerieRef() {
+		return xySerieRef;
+	}
+	public void setXySerieRef(SimpleXYSeries xySerieRef) {
+		this.xySerieRef = xySerieRef;
+	}
 }

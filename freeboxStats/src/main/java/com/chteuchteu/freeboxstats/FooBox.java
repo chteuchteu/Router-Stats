@@ -72,7 +72,7 @@ public class FooBox extends Application {
 		// Init ValueBags
 		valuesBags = new HashMap<>();
 		for (Enums.Graph graph : graphs)
-			valuesBags.put(graph, new ValuesBag(graph));
+			valuesBags.put(graph, new ValuesBag(graph, currentPeriod));
 
 		plots = new HashMap<>();
 		progressBars = new HashMap<>();
@@ -139,7 +139,13 @@ public class FooBox extends Application {
 	public Context getContext() { return this.context; }
 	
 	public Period getPeriod() { return this.currentPeriod; }
-	public void setPeriod(Period val) { this.currentPeriod = val; }
+	public void setPeriod(Period val) {
+		this.currentPeriod = val;
+
+		// Update ValuesBags
+		for (ValuesBag valuesBag : valuesBags.values())
+			valuesBag.setPeriod(val);
+	}
 	
 	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
 	
