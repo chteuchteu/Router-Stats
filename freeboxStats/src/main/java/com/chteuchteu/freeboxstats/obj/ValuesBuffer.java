@@ -33,19 +33,6 @@ public class ValuesBuffer {
 	}
 
 	/**
-	 * Generate buffer sum (stack graph)
-	 * @param field Field
-	 * @return (int) sum
-	 */
-	public long getSum(Field field) {
-		ValuesBufferSet vbs = getVBSByField(field);
-		long sum = 0;
-		for (int n : vbs.getValues())
-			sum += n;
-		return sum;
-	}
-
-	/**
 	 * Generate buffer average (standard graph)
 	 * @param field Field
 	 * @return (int) sum
@@ -70,10 +57,12 @@ public class ValuesBuffer {
 	private class ValuesBufferSet {
 		private Field field;
 		private ArrayList<Integer> values;
+
 		public ValuesBufferSet(Field field) {
 			this.field = field;
 			this.values = new ArrayList<>();
 		}
+
 		public void addValue(int val) { this.values.add(val); }
 		public ArrayList<Integer> getValues() { return this.values; }
 		public Field getField() { return this.field; }
