@@ -2,9 +2,7 @@ package com.chteuchteu.freeboxstats.hlpr;
 
 import android.annotation.SuppressLint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @SuppressLint("DefaultLocale")
 public class Enums {
@@ -38,6 +36,9 @@ public class Enums {
 		NET, TEMP, DSL, SWITCH;
 		public String getSerializedValue() { return this.name().toLowerCase(); }
 	}
+
+	public enum Graph { RateDown, RateUp, Temp, XDSL, Switch1, Switch2, Switch3, Switch4 }
+
 	public enum FieldType { DATA, TEMP, NOISE }
 	public enum Field {
 		BW_UP("Débit maximum"), BW_DOWN("Débit maximum"), RATE_UP("Débit up"), RATE_DOWN("Débit down"), VPN_RATE_UP, VPN_RATE_DOWN,
@@ -59,30 +60,6 @@ public class Enums {
 		private int index;
 		Unit(int index) { this.index = index; }
 		public int getIndex() { return this.index; }
-	}
-	
-	public enum GraphPrecision {
-		Max("Maximale"), Medium("Moyenne"), Min("Minimum");
-		private String label;
-		private static final GraphPrecision defaultValue = GraphPrecision.Medium;
-		GraphPrecision(String label) { this.label = label; }
-		public String getLabel() { return this.label; }
-		public String getSerializedValue() { return this.name().toLowerCase(); }
-		public static GraphPrecision get(String serializedValue) {
-			for (GraphPrecision g : GraphPrecision.values()) {
-				if (g.getSerializedValue().equals(serializedValue))
-					return g;
-			}
-			return defaultValue;
-		}
-		public static GraphPrecision get(int index) { return GraphPrecision.values()[index]; }
-		public int getIndex() { return Arrays.asList(GraphPrecision.values()).indexOf(this); }
-		public static List<String> getStringArray() {
-			ArrayList<String> list = new ArrayList<>();
-			for (GraphPrecision g : GraphPrecision.values())
-				list.add(g.getLabel());
-			return list;
-		}
 	}
 
 	public enum SpecialBool {

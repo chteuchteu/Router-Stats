@@ -5,13 +5,14 @@
 	android:orientation="vertical"
 	android:background="@drawable/bottom_shadow">
 
-	<LinearLayout
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:orientation="vertical">
 
 		<RelativeLayout
+			android:id="@+id/graphTitle1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
@@ -37,6 +38,7 @@
 			android:id="@+id/xyPlot_switch1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_below="@id/graphTitle1"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
@@ -46,15 +48,23 @@
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
-	</LinearLayout>
 
-	<LinearLayout
+		<ProgressBar
+			android:id="@+id/progressBar1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:indeterminate="true"
+			android:layout_centerInParent="true" />
+	</RelativeLayout>
+
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:orientation="vertical">
 
 		<RelativeLayout
+			android:id="@+id/graphTitle2"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
@@ -80,6 +90,7 @@
 			android:id="@+id/xyPlot_switch2"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_below="@id/graphTitle2"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
@@ -89,15 +100,23 @@
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
-	</LinearLayout>
 
-	<LinearLayout
+		<ProgressBar
+			android:id="@+id/progressBar2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:indeterminate="true"
+			android:layout_centerInParent="true" />
+	</RelativeLayout>
+
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:orientation="vertical">
 
 		<RelativeLayout
+			android:id="@+id/graphTitle3"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
@@ -123,6 +142,7 @@
 			android:id="@+id/xyPlot_switch3"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_below="@id/graphTitle3"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
@@ -132,15 +152,23 @@
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
-	</LinearLayout>
 
-	<LinearLayout
+		<ProgressBar
+			android:id="@+id/progressBar3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:indeterminate="true"
+			android:layout_centerInParent="true" />
+	</RelativeLayout>
+
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:orientation="vertical">
 
 		<RelativeLayout
+			android:id="@+id/graphTitle4"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
@@ -166,6 +194,7 @@
 			android:id="@+id/xyPlot_switch4"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_below="@id/graphTitle4"
 			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
 			androidPlot.rangeLabelWidget.labelPaint.textSize="@dimen/range_label_font_size"
 			androidPlot.graphWidget.marginLeft="15dp"
@@ -175,6 +204,13 @@
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
-	</LinearLayout>
+
+		<ProgressBar
+			android:id="@+id/progressBar4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:indeterminate="true"
+			android:layout_centerInParent="true" />
+	</RelativeLayout>
 	
 </LinearLayout>

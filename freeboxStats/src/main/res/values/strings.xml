@@ -32,12 +32,10 @@
 	<string name="loading">Chargement…</string>
 	<string name="settings_autorefresh">Rafraîchissement auto</string>
 	<string name="settings_displayxdsltab">Afficher l\'onglet xDSL</string>
-	<string name="settings_graphprecision">Précision des graphiques</string>
 	<string name="freeboxsearchfailmessage">Impossible de trouver une Freebox sur votre réseau local… Veuillez vérifier votre connexion.</string>
 	<string name="freeboxupdateneeded">Impossible de récupérer les graphiques : il apparaît que votre Freebox n\'est pas à jour.
 		Veuillez la redémarrer afin de la mettre à jour. Sans cela, l\'application ne pourra pas accéder aux statistiques.</string>
 	<string name="freeboxupdateneededtitle">Mise à jour nécessaire</string>
-	<string name="settings_graphprecisiondetails">Permet d\'accélérer l\'affichage des graphiques en réduisant la précision des courbes</string>
 	<string name="send_errors">Envoyer le rapport d\'erreurs</string>
 	<string name="send_errors_explanation">La liste des erreurs va être envoyée au développeur. Merci d\'ajouter le plus détails possibles à propos de cette/ces erreur(s).</string>
 	<string name="send">Envoyer</string>

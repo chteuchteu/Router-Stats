@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.net.NetHelper;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
-import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
@@ -20,7 +19,7 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 	private boolean ok;
 	private Freebox freebox;
 	private Context context;
-	private IMainActivity activity;
+	private MainActivity activity;
 	
 	public AskForAppToken(Freebox freebox, MainActivity activity) {
 		this.freebox = freebox;

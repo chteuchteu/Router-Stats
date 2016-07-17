@@ -78,10 +78,7 @@ public class OutagesFetcher extends AsyncTask<Void, Void, Void> {
 	 * PlotIndex from 1 to 3
 	 */
 	private ArrayList<Outage> loadData() {
-		ArrayList<Field> fields = new ArrayList<>();
-		fields.add(Field.BW_DOWN);
-		
-		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.MONTH, fields);
+		NetResponse netResponse = NetHelper.loadGraph(freebox, Period.MONTH, new Field[]{ Field.BW_DOWN }, -1);
 		
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {

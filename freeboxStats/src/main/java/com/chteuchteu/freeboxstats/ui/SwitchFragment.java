@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.adptr.SwitchDevicesAdapter;
 import com.chteuchteu.freeboxstats.async.SwitchPortStatusLoader;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.obj.SwitchDevice;
 import com.chteuchteu.freeboxstats.obj.SwitchPortStatus;
 import com.chteuchteu.freeboxstats.obj.SwitchPortStatuses;
@@ -39,15 +41,20 @@ public class SwitchFragment extends Fragment {
 
 	    FooBox fooBox = FooBox.getInstance();
 
-        fooBox.setPlot(switch_plot1, FooBox.PlotType.SW1);
-        fooBox.setPlot(switch_plot2, FooBox.PlotType.SW2);
-        fooBox.setPlot(switch_plot3, FooBox.PlotType.SW3);
-        fooBox.setPlot(switch_plot4, FooBox.PlotType.SW4);
+        fooBox.getPlots().put(Enums.Graph.Switch1, switch_plot1);
+        fooBox.getPlots().put(Enums.Graph.Switch2, switch_plot2);
+        fooBox.getPlots().put(Enums.Graph.Switch3, switch_plot3);
+        fooBox.getPlots().put(Enums.Graph.Switch4, switch_plot4);
 
-        fooBox.getActivity().initPlot(switch_plot1, FooBox.PlotType.SW1);
-        fooBox.getActivity().initPlot(switch_plot2, FooBox.PlotType.SW2);
-        fooBox.getActivity().initPlot(switch_plot3, FooBox.PlotType.SW3);
-        fooBox.getActivity().initPlot(switch_plot4, FooBox.PlotType.SW4);
+		fooBox.getProgressBars().put(Enums.Graph.Switch1, (ProgressBar) rootView.findViewById(R.id.progressBar1));
+		fooBox.getProgressBars().put(Enums.Graph.Switch2, (ProgressBar) rootView.findViewById(R.id.progressBar2));
+		fooBox.getProgressBars().put(Enums.Graph.Switch3, (ProgressBar) rootView.findViewById(R.id.progressBar3));
+		fooBox.getProgressBars().put(Enums.Graph.Switch4, (ProgressBar) rootView.findViewById(R.id.progressBar4));
+
+        fooBox.getActivity().initPlot(Enums.Graph.Switch1);
+        fooBox.getActivity().initPlot(Enums.Graph.Switch2);
+        fooBox.getActivity().initPlot(Enums.Graph.Switch3);
+        fooBox.getActivity().initPlot(Enums.Graph.Switch4);
 
 	    // Init overflow actions
 	    View.OnClickListener overflowListener = new View.OnClickListener() {

@@ -2,8 +2,6 @@ package com.chteuchteu.freeboxstats.hlpr;
 
 import android.content.Context;
 
-import com.chteuchteu.freeboxstats.hlpr.Enums.GraphPrecision;
-
 public class SettingsHelper {
 	private static SettingsHelper instance;
 	private Context context;
@@ -11,13 +9,11 @@ public class SettingsHelper {
 	/* Settings */
 	private boolean autoRefresh;
 	private boolean displayXdslTab;
-	private GraphPrecision graphPrecision;
 	
 	
 	private SettingsHelper(Context context) {
 		this.context = context;
 		this.autoRefresh = Util.getPrefBoolean(context, "settings_autoRefresh", true);
-		this.graphPrecision = GraphPrecision.get(Util.getPrefString(context, "settings_graphPrecision"));
 		this.displayXdslTab = Util.getPrefBoolean(context, "settings_displayXdslTab", false);
 	}
 	
@@ -33,12 +29,6 @@ public class SettingsHelper {
 	public void setAutoRefresh(boolean val) {
 		this.autoRefresh = val;
 		Util.setPref(context, "settings_autoRefresh", val);
-	}
-	
-	public GraphPrecision getGraphPrecision() { return this.graphPrecision; }
-	public void setGraphPrecision(GraphPrecision val) {
-		this.graphPrecision = val;
-		Util.setPref(context, "settings_graphPrecision", val.getSerializedValue());
 	}
 	
 	public boolean getDisplayXdslTab() { return this.displayXdslTab; }

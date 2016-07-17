@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.androidplot.xy.XYPlot;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
@@ -15,12 +17,14 @@ import com.chteuchteu.freeboxstats.async.SessionOpener;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
-import com.chteuchteu.freeboxstats.ui.IMainActivity;
+import com.chteuchteu.freeboxstats.obj.ValuesBag;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 import org.json.JSONException;
+
+import java.util.HashMap;
 
 public class FooBox extends Application {
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
@@ -28,7 +32,7 @@ public class FooBox extends Application {
 	public static final String DEVICE_NAME = "Android";
 	
 	private static FooBox instance;
-	private IMainActivity iActivity;
+	private MainActivity activity;
 	private Context context;
 	
 	private Freebox freebox;
@@ -38,16 +42,11 @@ public class FooBox extends Application {
 	
 	private Period currentPeriod;
 	
-	// MainActivity context
-	public enum PlotType { RATEDOWN, RATEUP, TEMP, XDSL, SW1, SW2, SW3, SW4 }
-	private XYPlot plot_rateDown;
-	private XYPlot plot_rateUp;
-	private XYPlot plot_temp;
-	private XYPlot plot_xdsl;
-    private XYPlot plot_switch_1;
-    private XYPlot plot_switch_2;
-    private XYPlot plot_switch_3;
-    private XYPlot plot_switch_4;
+	private Enums.Graph[] graphs;
+	private HashMap<Enums.Graph, XYPlot> plots;
+	private HashMap<Enums.Graph, ValuesBag> valuesBags;
+	private HashMap<Enums.Graph, ProgressBar> progressBars;
+
 
 	@Override
 	public void onCreate() {
@@ -62,7 +61,21 @@ public class FooBox extends Application {
 		this.currentPeriod = Period.HOUR;
 		this.errorsLogger = new ErrorsLogger();
 		// Init settings
-		SettingsHelper.getInstance(getApplicationContext());
+		SettingsHelper settings = SettingsHelper.getInstance(getApplicationContext());
+
+		// Instantiate graphs array according to settings
+		graphs = Enums.Graph.values();
+
+		if (!settings.getDisplayXdslTab())
+			graphs = Util.removeElement(graphs, Enums.Graph.XDSL);
+
+		// Init ValueBags
+		valuesBags = new HashMap<>();
+		for (Enums.Graph graph : graphs)
+			valuesBags.put(graph, new ValuesBag(graph));
+
+		plots = new HashMap<>();
+		progressBars = new HashMap<>();
 	}
 	
 	public static synchronized FooBox getInstance() { return instance; }
@@ -73,12 +86,12 @@ public class FooBox extends Application {
 	 * 		-> ask for app_token
 	 * Then, ask for auth_token.
 	 */
-	public void init(MainActivity mainActivity) {
+	public FooBox init(MainActivity mainActivity) {
 		this.context = mainActivity;
-		this.iActivity = mainActivity;
-		this.errorsLogger.setActivity(iActivity);
+		this.activity = mainActivity;
+		this.errorsLogger.setActivity(activity);
 
-        iActivity.displayLoadingScreen();
+		activity.displayLoadingScreen();
 
 		String savedFreebox = Util.getPrefString(this.context, "freebox");
 		
@@ -93,12 +106,14 @@ public class FooBox extends Application {
 			}
 
 			// Open session
-			new SessionOpener(this.freebox, this.iActivity).execute();
+			new SessionOpener(this.freebox, this.activity).execute();
 			// (once done, we'll update the graph)
 		} else {
 			// Discover Freebox
-			new FreeboxDiscoverer(iActivity).execute();
+			new FreeboxDiscoverer(activity).execute();
 		}
+
+		return this;
 	}
 	
 	public void saveAppToken(String appToken) {
@@ -140,33 +155,10 @@ public class FooBox extends Application {
 		
 		return versionName;
 	}
-	
-	public void setPlot(XYPlot plot, PlotType plotType) {
-		switch (plotType) {
-			case RATEDOWN: plot_rateDown = plot; break;
-			case RATEUP: plot_rateUp = plot; break;
-			case TEMP: plot_temp = plot; break;
-			case XDSL: plot_xdsl = plot; break;
-			case SW1: plot_switch_1 = plot; break;
-			case SW2: plot_switch_2 = plot; break;
-			case SW3: plot_switch_3 = plot; break;
-			case SW4: plot_switch_4 = plot; break;
-		}
-	}
-	
-	public XYPlot getPlot(PlotType plotType) {
-		switch (plotType) {
-			case RATEDOWN: return plot_rateDown;
-			case RATEUP: return plot_rateUp;
-			case TEMP: return plot_temp;
-			case XDSL: return plot_xdsl;
-			case SW1: return plot_switch_1;
-			case SW2: return plot_switch_2;
-			case SW3: return plot_switch_3;
-			case SW4: return plot_switch_4;
-			default: return null;
-		}
-	}
 
-	public IMainActivity getActivity() { return this.iActivity; }
+	public HashMap<Enums.Graph, XYPlot> getPlots() { return plots; }
+	public HashMap<Enums.Graph, ValuesBag> getValuesBags() { return valuesBags; }
+	public HashMap<Enums.Graph, ProgressBar> getProgressBars() { return this.progressBars; }
+	public Enums.Graph[] getGraphs() { return graphs; }
+	public MainActivity getActivity() { return this.activity; }
 }

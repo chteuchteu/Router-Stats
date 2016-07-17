@@ -27,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.crypto.Mac;
@@ -392,53 +394,21 @@ public class Util {
 		context.startActivity(i);
 	}
 
-	/**
-	 * Prepares a Gmail-style progressbar on the actionBar
-	 * Should be called in onCreate
-	 */
-	public static ProgressBar prepareGmailStyleProgressBar(final Activity activity, final ActionBar actionBar, final View paddingComponent2) {
-		// create new ProgressBar and style it
-		final ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
-		progressBar.setProgressDrawable(activity.getResources().getDrawable(
-				R.drawable.progress_horizontal_holo_no_background_light));
-		progressBar.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 24));
-		progressBar.setProgress(0);
-		progressBar.setVisibility(View.GONE);
-
-		// retrieve the top view of our application
-		final FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
-		decorView.addView(progressBar);
-
-		// Here we try to position the ProgressBar to the correct position by looking
-		// at the position where content area starts. But during creating time, sizes
-		// of the components are not set yet, so we have to wait until the components
-		// has been laid out
-		// Also note that doing progressBar.setY(136) will not work, because of different
-		// screen densities and different sizes of actionBar
-		ViewTreeObserver observer = progressBar.getViewTreeObserver();
-		observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void onGlobalLayout() {
-				progressBar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
-				View contentView = decorView.findViewById(android.R.id.content);
-				int actionBarHeight = actionBar.getHeight();
-				int paddingComponent2Height = paddingComponent2 != null ? paddingComponent2.getHeight() : 0;
-				int y = Util.getStatusBarHeight(activity) + actionBarHeight;
-
-				progressBar.setY(y + contentView.getY() - 10 + paddingComponent2Height);
-			}
-		});
-
-		return progressBar;
-	}
-
 	public static int getStatusBarHeight(Context c) {
 		int result = 0;
 		int resourceId = c.getResources().getIdentifier("status_bar_height", "dimen", "android");
 		if (resourceId > 0)
 			result = c.getResources().getDimensionPixelSize(resourceId);
 		return result;
+	}
+
+	public static Enums.Graph[] removeElement(Enums.Graph[] original, Enums.Graph element) {
+		List<Enums.Graph> result = new LinkedList<>();
+
+		for (Enums.Graph item : original)
+			if (element != item)
+				result.add(item);
+
+		return result.toArray(original);
 	}
 }

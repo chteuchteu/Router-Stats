@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -37,31 +38,29 @@ import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.async.AskForAppToken;
 import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
-import com.chteuchteu.freeboxstats.async.ManualGraphLoader;
+import com.chteuchteu.freeboxstats.async.GraphLoader;
 import com.chteuchteu.freeboxstats.async.OutagesFetcher;
 import com.chteuchteu.freeboxstats.async.SessionOpener;
-import com.chteuchteu.freeboxstats.async.SwitchLoader;
 import com.chteuchteu.freeboxstats.hlpr.DrawerHelper;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
-import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.DataSet;
-import com.chteuchteu.freeboxstats.obj.Freebox;
-import com.chteuchteu.freeboxstats.obj.GraphsContainer;
+import com.chteuchteu.freeboxstats.obj.ValuesBag;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 
-public class MainActivity extends FreeboxStatsActivity implements IMainActivity {
+public class MainActivity extends FreeboxStatsActivity {
+	private FooBox fooBox;
     private MainActivity activity;
 
 	public static final int NB_TABS = 4;
-	private static final FooBox.PlotType lastPlot = FooBox.PlotType.SW4;
 
 	private Thread refreshThread;
 	private boolean justRefreshed;
@@ -74,8 +73,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 	private boolean appStarted = false;
 	private boolean updating;
     private boolean graphsDisplayed;
-
-	private ProgressBar progressBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,25 +87,19 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		this.drawerHelper = new DrawerHelper(this);
 		this.drawerHelper.initDrawer();
 
-        this.progressBar = Util.prepareGmailStyleProgressBar(this, getSupportActionBar(), findViewById(R.id.tabs));
-        this.progressBar.setIndeterminate(true);
-
-		FooBox.getInstance().init(this);
+		fooBox = FooBox.getInstance().init(this);
 	}
 
-    @Override
 	public void displayLoadingScreen() {
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 	}
 
-    @Override
 	public void hideLoadingScreen() {
 		findViewById(R.id.ll_loading).setVisibility(View.GONE);
 	}
 
-    @Override
 	public void startRefreshThread() {
-		if (FooBox.getInstance().getFreebox() == null)
+		if (fooBox.getFreebox() == null)
 			return;
 		
 		if (!SettingsHelper.getInstance().getAutoRefresh())
@@ -147,7 +138,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		refreshThread.start();
 	}
 
-    @Override
 	public void stopRefreshThread() {
 		if (refreshThread != null && refreshThread.isAlive())
 			refreshThread.interrupt();
@@ -171,9 +161,9 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		tabs.setupWithViewPager(viewPager);
 		graphsDisplayed = true;
 	}
-	
-	@Override
-	public void initPlot(XYPlot plot, FooBox.PlotType plotType) {
+
+	public void initPlot(Enums.Graph graph) {
+		XYPlot plot = fooBox.getPlots().get(graph);
 		plot.setVisibility(View.GONE);
 
 		// Styling
@@ -190,24 +180,30 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		plot.getGraphWidget().setDomainGridLinePaint(transparentPaint);
 
 		plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-		switch (plotType) {
-			case TEMP:
+		switch (graph) {
+			case Temp:
 				plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
 				break;
 			case XDSL:
 				plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
 				break;
-			case SW1:case SW2:case SW3:case SW4:
+			case Switch1:
+			case Switch2:
+			case Switch3:
+			case Switch4:
 				plot.setRangeStep(XYStepMode.INCREMENT_BY_PIXELS, 100);
 				break;
 		}
 
 		// Legend
-		switch (plotType) {
-			case RATEDOWN:case RATEUP: /* No legend */ break;
+		switch (graph) {
+			case RateDown:
+			case RateUp:
+				/* No legend */
+				break;
 			default:
 				// Show legend
-				if (plotType == FooBox.PlotType.TEMP)
+				if (graph == Enums.Graph.Temp)
 					plot.getLegendWidget().setTableModel(new DynamicTableModel(2, 2));
 				else
 					plot.getLegendWidget().setTableModel(new DynamicTableModel(1, 2));
@@ -225,63 +221,73 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		}
 
 		// Set range label
-		if (plotType == FooBox.PlotType.TEMP)
+		if (graph == Enums.Graph.Temp)
 			plot.setRangeLabel(getString(R.string.temp));
-		else if (plotType == FooBox.PlotType.XDSL)
+		else if (graph == Enums.Graph.XDSL)
 			plot.setRangeLabel(getString(R.string.noise));
 		
-		if (plotType == FooBox.PlotType.TEMP || plotType == FooBox.PlotType.XDSL)
+		if (graph == Enums.Graph.Temp || graph == Enums.Graph.XDSL)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
 	}
 
-    @Override
 	@SuppressWarnings("serial")
-	public void loadGraph(FooBox.PlotType plotType, final GraphsContainer graphsContainer, final Period period, Unit unit) {
-		XYPlot plot = FooBox.getInstance().getPlot(plotType);
+	public void loadGraph(Enums.Graph graph) {
+		final ValuesBag valuesBag = fooBox.getValuesBags().get(graph);
+		final Period period = fooBox.getPeriod();
+		XYPlot plot = fooBox.getPlots().get(graph);
+		Enums.Unit unit = valuesBag.getValuesUnit();
 
 		if (plot == null)
 			return;
 
 		if (plot.getVisibility() != View.VISIBLE)
 			plot.setVisibility(View.VISIBLE);
-		
-		// Reset plot
-		plot.clear();
-		plot.getSeriesRegistry().clear(); //plot.getSeriesSet().clear();
-		plot.removeMarkers();
-		
-		for (DataSet dSet : graphsContainer.getDataSets()) {
-			SimpleXYSeries serie = new SimpleXYSeries(dSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dSet.getField().getDisplayName());
-			
-			LineAndPointFormatter serieFormat = new LineAndPointFormatter();
-			serieFormat.setPointLabelFormatter(new PointLabelFormatter());
-			
-			int xmlRef = -1;
-			switch (dSet.getField()) {
-				case BW_DOWN:
-				case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
-				case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
-				case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
-				case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
-				case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
-				case SW:		xmlRef = R.xml.serieformat_sw;		break;
-				case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
-				case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
-				case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break;
-				case RX_1: case RX_2: case RX_3: case RX_4:
-					xmlRef = R.xml.serieformat_ratedown; break;
-				case TX_1: case TX_2: case TX_3: case TX_4:
-					xmlRef = R.xml.serieformat_rateup; break;
-				default: break;
+
+		for (DataSet dataSet : valuesBag.getDataSets()) {
+			if (dataSet.getXySerieRef() == null) {
+				SimpleXYSeries serie = new SimpleXYSeries(dataSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dataSet.getField().getDisplayName());
+
+				// Configure serie
+				dataSet.setXySerieRef(serie);
+
+				LineAndPointFormatter serieFormat = new LineAndPointFormatter();
+				serieFormat.setPointLabelFormatter(new PointLabelFormatter());
+
+				int xmlRef = -1;
+				switch (dataSet.getField()) {
+					case BW_DOWN:
+					case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
+					case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
+					case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
+					case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
+					case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
+					case SW:		xmlRef = R.xml.serieformat_sw;		break;
+					case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
+					case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
+					case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break;
+					case RX_1: case RX_2: case RX_3: case RX_4:
+						xmlRef = R.xml.serieformat_ratedown; break;
+					case TX_1: case TX_2: case TX_3: case TX_4:
+						xmlRef = R.xml.serieformat_rateup; break;
+					default: break;
+				}
+				if (xmlRef != -1)
+					serieFormat.configure(context, xmlRef);
+
+				plot.addSeries(serie, serieFormat);
 			}
-			if (xmlRef != -1)
-				serieFormat.configure(context, xmlRef);
-			
-			plot.addSeries(serie, serieFormat);
+			else {
+				SimpleXYSeries serie = dataSet.getXySerieRef();
+
+				for (Number number : dataSet.getValues()) {
+					serie.removeFirst();
+					serie.addLast(number, number); // TODO put 0 in one of the args??
+				}
+			}
 		}
 		
 		// Add markers (vertical lines)
-		for (XValueMarker m : Util.Times.getMarkers(period, graphsContainer.getSerie())) {
+		for (XValueMarker m : Util.Times.getMarkers(period, valuesBag.getSerie())) {
 			m.getLinePaint().setARGB(30, 255, 255, 255);
 			plot.addMarker(m);
 		}
@@ -292,7 +298,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 			@Override
 			public StringBuffer format(Object obj, @NonNull StringBuffer toAppendTo, @NonNull FieldPosition pos) {
 				int position = ((Number) obj).intValue();
-				String label = Util.Times.getLabel(period, graphsContainer.getSerie().get(position), position, graphsContainer.getSerie());
+				String label = Util.Times.getLabel(period, valuesBag.getSerie().get(position), position, valuesBag.getSerie());
 				return new StringBuffer(label);
 			}
 			
@@ -303,25 +309,24 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 		
 		// Set range label
-		switch (plotType) {
-			case RATEDOWN:
+		switch (graph) {
+			case RateDown:
 				plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
 				break;
-			case RATEUP:
+			case RateUp:
 				plot.setRangeLabel(getString(R.string.rate_up) + " (" + unit.name() + "/s)");
 				break;
-			case SW1:case SW2:case SW3:case SW4:
+			case Switch1:
+			case Switch2:
+			case Switch3:
+			case Switch4:
 				plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
 				break;
 		}
 
 		plot.redraw();
-
-		if (plotType == lastPlot)
-			toggleProgressBar(false);
 	}
 
-    @Override
 	public void displayDebugMenuItem() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -333,9 +338,8 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void displayOutagesDialog() {
-		if (FooBox.getInstance().getFreebox() == null)
+		if (fooBox.getFreebox() == null)
 			return;
 
 		LayoutInflater inflater = LayoutInflater.from(context);
@@ -353,21 +357,15 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		if (!isFinishing()) {
 			AlertDialog dialog = builder.show();
 			
-			new OutagesFetcher(this, FooBox.getInstance().getFreebox(), dialog, dialog_layout).execute();
+			new OutagesFetcher(this, fooBox.getFreebox(), dialog, dialog_layout).execute();
 		}
 	}
 
-    @Override
-	public void toggleProgressBar(boolean visible) {
-		progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
-	}
-    @Override
-    public void setUpdating(boolean val) { this.updating = val; }
+	public void setUpdating(boolean val) { this.updating = val; }
 
-    @Override
 	public void refreshGraph() { refreshGraph(false); }
 	private void refreshGraph(boolean manualRefresh) {
-		if (FooBox.getInstance().getFreebox() == null)
+		if (fooBox.getFreebox() == null)
 			return;
 		if (updating)
 			return;
@@ -377,15 +375,13 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		if (manualRefresh)
 			justRefreshed = true;
 		
-		toggleProgressBar(true);
-		
-		Freebox freebox = FooBox.getInstance().getFreebox();
-		Period period = FooBox.getInstance().getPeriod();
-		new ManualGraphLoader(freebox, period, this).execute();
-		new SwitchLoader(freebox, period, this).execute();
+		for (ProgressBar progressBar : fooBox.getProgressBars().values())
+			progressBar.setVisibility(View.VISIBLE);
+
+		for (Enums.Graph graph : fooBox.getGraphs())
+			new GraphLoader(fooBox, this, graph).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
-    @Override
 	public void displayLaunchPairingScreen() {
 		findViewById(R.id.firstlaunch).setVisibility(View.VISIBLE);
 		findViewById(R.id.screen1).setVisibility(View.VISIBLE);
@@ -396,12 +392,11 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 			public void onClick(View v) {
 				findViewById(R.id.screen1).setVisibility(View.GONE);
 				findViewById(R.id.screen2).setVisibility(View.VISIBLE);
-				new AskForAppToken(FooBox.getInstance().getFreebox(), activity).execute();
+				new AskForAppToken(fooBox.getFreebox(), activity).execute();
 			}
 		});
 	}
 
-    @Override
 	public void pairingFinished(final AuthorizeStatus aStatus) {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -414,7 +409,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void sessionOpenFailed() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -435,7 +429,7 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 						public void onClick(View v) {
 							findViewById(R.id.loadingprogressbar).setVisibility(View.VISIBLE);
 							findViewById(R.id.retrybutton).setVisibility(View.GONE);
-							new SessionOpener(FooBox.getInstance().getFreebox(), activity).execute();
+							new SessionOpener(fooBox.getFreebox(), activity).execute();
 							chargement.setText(R.string.loading);
 							loadingFail.setVisibility(View.GONE);
 						}
@@ -445,7 +439,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void displayFreeboxSearchFailedScreen() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -472,7 +465,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void displayFreeboxUpdateNeededScreen() {
 		findViewById(R.id.ll_loading).setVisibility(View.VISIBLE);
 		
@@ -495,7 +487,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void displayFreeboxUpdateNeededScreenBeforePairing() {
 		findViewById(R.id.loadingprogressbar).setVisibility(View.GONE);
 		findViewById(R.id.retrybutton).setVisibility(View.VISIBLE);
@@ -516,7 +507,6 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void graphLoadingFailed() {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -526,25 +516,24 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 		});
 	}
 
-    @Override
 	public void restartActivity() {
 		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
 	}
 
-    @Override
 	public void finishedLoading() {
 		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
-		freeboxUri.setText(FooBox.getInstance().getFreebox().getDisplayUrl());
+		freeboxUri.setText(fooBox.getFreebox().getDisplayUrl());
 		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
 		
 		appStarted = true;
 		
 		hideLoadingScreen();
-		
+
 		displayGraphs();
 		refreshGraph();
+
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
@@ -634,22 +623,22 @@ public class MainActivity extends FreeboxStatsActivity implements IMainActivity 
 				refreshGraph(true);
 				break;
 			case R.id.period_hour:
-				FooBox.getInstance().setPeriod(Period.HOUR);
+				fooBox.setPeriod(Period.HOUR);
 				periodMenuItem.setTitle(Period.HOUR.getLabel());
 				refreshGraph();
 				break;
 			case R.id.period_day:
-				FooBox.getInstance().setPeriod(Period.DAY);
+				fooBox.setPeriod(Period.DAY);
 				periodMenuItem.setTitle(Period.DAY.getLabel());
 				refreshGraph();
 				break;
 			case R.id.period_week:
-				FooBox.getInstance().setPeriod(Period.WEEK);
+				fooBox.setPeriod(Period.WEEK);
 				periodMenuItem.setTitle(Period.WEEK.getLabel());
 				refreshGraph();
 				break;
 			case R.id.period_month:
-				FooBox.getInstance().setPeriod(Period.MONTH);
+				fooBox.setPeriod(Period.MONTH);
 				periodMenuItem.setTitle(Period.MONTH.getLabel());
 				refreshGraph();
 				break;

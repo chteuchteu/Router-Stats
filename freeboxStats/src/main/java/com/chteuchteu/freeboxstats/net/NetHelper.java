@@ -258,19 +258,20 @@ public class NetHelper {
 		}
 	}
 	
-	public static NetResponse loadGraph(Freebox freebox, Period period, ArrayList<Field> fFields) {
+	public static NetResponse loadGraph(Freebox freebox, Period period, Field[] fFields, long lastTimestamp) {
         if (freebox == null) {
             ErrorsLogger.log("Freebox loading fail");
             return null;
         }
-        if (fFields.isEmpty()) {
+
+        if (fFields.length == 0) {
             ErrorsLogger.log("Empty field list");
             return null;
         }
 		try {
 			String uri = freebox.getApiCallUrl() + "rrd/";
 
-			Db db = GraphHelper.getDbFromField(fFields.get(0));
+			Db db = GraphHelper.getDbFromField(fFields[0]);
 
 			if (db == null)
 				return null;
@@ -282,7 +283,9 @@ public class NetHelper {
 			List<Pair<String, String>> pairs = new ArrayList<>();
 			pairs.add(new Pair<>("db", db.getSerializedValue()));
 			pairs.add(new Pair<>("fields", fields.toString()));
-			if (period != null)
+			if (lastTimestamp != -1)
+				pairs.add(new Pair<>("date_start", String.valueOf(lastTimestamp)));
+			else if (period != null)
 				pairs.add(new Pair<>("date_start", String.valueOf(Util.Times.getFrom(period))));
 
 			if (db == Db.TEMP)

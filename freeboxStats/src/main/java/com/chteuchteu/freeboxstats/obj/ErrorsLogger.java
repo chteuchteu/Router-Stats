@@ -1,7 +1,7 @@
 package com.chteuchteu.freeboxstats.obj;
 
 import com.chteuchteu.freeboxstats.FooBox;
-import com.chteuchteu.freeboxstats.ui.IMainActivity;
+import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public class ErrorsLogger {
 	private ArrayList<AppError> errors;
-	private IMainActivity iActivity;
+	private MainActivity activity;
 	
 	public ErrorsLogger() {
 		this.errors = new ArrayList<>();
@@ -19,14 +19,14 @@ public class ErrorsLogger {
 	
 	public void logError(String error) {
 		this.errors.add(new AppError(error));
-		if (this.iActivity != null)
-			this.iActivity.displayDebugMenuItem();
+		if (this.activity != null)
+			this.activity.displayDebugMenuItem();
 	}
 	public void logError(NetResponse netResponse) {
         this.errors.add(new AppError(netResponse == null ? "Void netResponse" : netResponse.getError()));
 
-		if (this.iActivity != null)
-			this.iActivity.displayDebugMenuItem();
+		if (this.activity != null)
+			this.activity.displayDebugMenuItem();
 	}
 	
 	public ArrayList<AppError> getErrors() { return this.errors; }
@@ -37,7 +37,7 @@ public class ErrorsLogger {
 		return out;
 	}
 
-	public void setActivity(IMainActivity activity) { this.iActivity = activity; }
+	public void setActivity(MainActivity activity) { this.activity = activity; }
 
     public static void log(String msg) { FooBox.getInstance().getErrorsLogger().logError(msg); }
     public static void log(NetResponse nResponse) { FooBox.getInstance().getErrorsLogger().logError(nResponse); }

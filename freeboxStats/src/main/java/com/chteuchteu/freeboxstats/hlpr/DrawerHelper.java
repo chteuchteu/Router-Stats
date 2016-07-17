@@ -32,7 +32,6 @@ import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
-import com.chteuchteu.freeboxstats.ui.IMainActivity;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 
 import org.json.JSONException;
@@ -41,15 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrawerHelper {
-	private IMainActivity iActivity;
-	private Activity activity;
+	private MainActivity activity;
 	private boolean isDrawerOpened;
 	private Context context;
 	private DrawerLayout drawerLayout;
 	private MaterialMenuIconToolbar materialMenu;
 
 	public DrawerHelper(MainActivity activity) {
-		this.iActivity = activity;
 		this.activity = activity;
 		this.context = activity;
 		drawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
@@ -78,13 +75,6 @@ public class DrawerHelper {
 				final CheckBox settings_displayXdslTab = (CheckBox) dialog_layout.findViewById(R.id.settings_displayxdsltab);
 				settings_displayXdslTab.setChecked(SettingsHelper.getInstance().getDisplayXdslTab());
 
-				// Graph precision
-				final Spinner settings_graphPrecision = (Spinner) dialog_layout.findViewById(R.id.settings_graphprecision);
-				ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, Enums.GraphPrecision.getStringArray());
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				settings_graphPrecision.setAdapter(adapter);
-				settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
-
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
@@ -95,24 +85,20 @@ public class DrawerHelper {
 								!= settings_displayXdslTab.isChecked();
 						SettingsHelper.getInstance().setDisplayXdslTab(settings_displayXdslTab.isChecked());
 
-						SettingsHelper.getInstance().setGraphPrecision(
-								Enums.GraphPrecision.get(settings_graphPrecision.getSelectedItemPosition()));
-
 						if (settings_autorefresh.isChecked())
-							iActivity.startRefreshThread();
+							activity.startRefreshThread();
 						else
-							iActivity.stopRefreshThread();
+							activity.stopRefreshThread();
 
 						// Remove tab
 						if (displayXdslTabChanged)
-							iActivity.restartActivity();
+							activity.restartActivity();
 					}
 				});
 				builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						settings_autorefresh.setChecked(SettingsHelper.getInstance().getAutoRefresh());
-						settings_graphPrecision.setSelection(SettingsHelper.getInstance().getGraphPrecision().getIndex());
 						dialog.dismiss();
 					}
 				});
@@ -200,7 +186,7 @@ public class DrawerHelper {
 			@Override
 			public void onClick(View arg0) {
 				drawerLayout.closeDrawers();
-				iActivity.displayOutagesDialog();
+				activity.displayOutagesDialog();
 			}
 		});
 

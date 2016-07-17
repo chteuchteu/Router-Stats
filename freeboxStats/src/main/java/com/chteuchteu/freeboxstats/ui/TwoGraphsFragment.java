@@ -5,10 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.R;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 
 /**
  * TwoGraphsFragment - Used for up & down rate
@@ -22,12 +24,13 @@ public class TwoGraphsFragment extends Fragment {
 		XYPlot plot2 = (XYPlot) rootView.findViewById(R.id.xyPlot2);
 
 		FooBox fooBox = FooBox.getInstance();
+		fooBox.getPlots().put(Enums.Graph.RateDown, plot1);
+		fooBox.getPlots().put(Enums.Graph.RateUp, plot2);
+		fooBox.getProgressBars().put(Enums.Graph.RateDown, (ProgressBar) rootView.findViewById(R.id.progressBar1));
+		fooBox.getProgressBars().put(Enums.Graph.RateUp, (ProgressBar) rootView.findViewById(R.id.progressBar2));
 
-		fooBox.setPlot(plot1, FooBox.PlotType.RATEDOWN);
-		fooBox.setPlot(plot2, FooBox.PlotType.RATEUP);
-
-		fooBox.getActivity().initPlot(plot1, FooBox.PlotType.RATEDOWN);
-		fooBox.getActivity().initPlot(plot2, FooBox.PlotType.RATEUP);
+		fooBox.getActivity().initPlot(Enums.Graph.RateDown);
+		fooBox.getActivity().initPlot(Enums.Graph.RateUp);
 
 		
 		return rootView;

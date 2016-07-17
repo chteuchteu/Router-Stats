@@ -58,7 +58,7 @@ public class MainActivityPagerAdapter extends FragmentStatePagerAdapter {
             case XDSL:
                 Fragment fragment = new GraphFragment();
                 Bundle args = new Bundle();
-                args.putString(GraphFragment.ARG_GRAPHTYPE, tab == Tab.TEMP ? "temp" : "xdsl");
+                args.putString(GraphFragment.ARG_GRAPH, tab == Tab.TEMP ? "temp" : "xdsl");
                 fragment.setArguments(args);
                 return fragment;
             case SWITCH:

@@ -4,26 +4,6 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical"
 	android:padding="20dp">
-	
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:textSize="20sp"
-		android:paddingLeft="10dp"
-		android:text="@string/settings_graphprecision" />
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:textSize="15sp"
-		android:paddingLeft="10dp"
-		android:layout_marginBottom="5dp"
-		android:textColor="@color/textSecondary"
-		android:text="@string/settings_graphprecisiondetails" />
-	<Spinner
-		android:id="@+id/settings_graphprecision"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="10dp"/>
 
 	<CheckBox
 		android:id="@+id/settings_autorefresh"

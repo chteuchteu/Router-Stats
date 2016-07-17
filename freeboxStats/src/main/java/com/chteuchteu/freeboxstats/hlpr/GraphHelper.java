@@ -6,14 +6,12 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Db;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
-import com.chteuchteu.freeboxstats.obj.DataSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class GraphHelper {
@@ -113,7 +111,7 @@ public class GraphHelper {
 		return Unit.To;
 	}
 	
-	public static int getHighestValue(JSONArray dataArray, ArrayList<Field> fields) {
+	public static int getHighestValue(JSONArray dataArray, Field[] fields) {
 		int highestValue = 0;
 		for (int i=0; i<dataArray.length(); i++) {
 			try {
@@ -139,6 +137,9 @@ public class GraphHelper {
 		int timestamp0 = ((JSONObject) data.get(0)).getInt("time");
 		int timestamp1 = ((JSONObject) data.get(1)).getInt("time");
 		int timestampDiff = timestamp1 - timestamp0;
+
+		if (data.length() < 4)
+			return timestampDiff;
 		
 		// Try with the next value (sometimes, the result returned is wrong)
 		int timestamp2 = ((JSONObject) data.get(2)).getInt("time");
