@@ -1,6 +1,5 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
@@ -39,6 +38,14 @@ public class ValuesBag {
 
 		for (Field field : fields)
 			this.dataSets.put(field, new DataSet(field, valuesUnit));
+	}
+
+	public void clear() {
+		for (DataSet dataSet : dataSets.values())
+			dataSet.getValues().clear();
+
+		lastTimestamp = -1;
+		serie.clear();
 	}
 
 	private static Field[] deduceFields(Enums.Graph graph) {
@@ -102,8 +109,7 @@ public class ValuesBag {
 
 	public void fill(JSONArray data) {
 		// Clear previous datasets
-		for (DataSet dataSet : dataSets.values())
-			dataSet.getValues().clear();
+		clear();
 
 		int timestampDiff = 0;
 		try {

@@ -140,11 +140,15 @@ public class FooBox extends Application {
 	
 	public Period getPeriod() { return this.currentPeriod; }
 	public void setPeriod(Period val) {
-		this.currentPeriod = val;
+		if (this.currentPeriod != val) {
+			this.currentPeriod = val;
 
-		// Update ValuesBags
-		for (ValuesBag valuesBag : valuesBags.values())
-			valuesBag.setPeriod(val);
+			// Update & clear ValuesBags
+			for (ValuesBag valuesBag : valuesBags.values()) {
+				valuesBag.setPeriod(val);
+				valuesBag.clear();
+			}
+		}
 	}
 	
 	public ErrorsLogger getErrorsLogger() { return this.errorsLogger; }
