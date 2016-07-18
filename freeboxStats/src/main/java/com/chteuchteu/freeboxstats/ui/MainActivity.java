@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +28,6 @@ import com.androidplot.ui.Size;
 import com.androidplot.ui.SizeLayoutType;
 import com.androidplot.ui.XLayoutStyle;
 import com.androidplot.ui.YLayoutStyle;
-import com.androidplot.ui.YPositionMetric;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
@@ -51,12 +51,13 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.ValuesBag;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
-import java.util.Arrays;
 
 public class MainActivity extends FreeboxStatsActivity {
 	private FooBox fooBox;
@@ -88,7 +89,7 @@ public class MainActivity extends FreeboxStatsActivity {
 		justRefreshed = false;
 		updating = false;
 
-		this.drawerHelper = new DrawerHelper(this);
+		this.drawerHelper = new DrawerHelper(this, (Toolbar) findViewById(R.id.toolbar));
 		this.drawerHelper.initDrawer();
 
 		fooBox = FooBox.getInstance().init(this);
@@ -555,10 +556,8 @@ public class MainActivity extends FreeboxStatsActivity {
 	}
 
 	public void finishedLoading() {
-		TextView freeboxUri = (TextView) findViewById(R.id.drawer_freebox_uri);
-		freeboxUri.setText(fooBox.getFreebox().getDisplayUrl());
-		findViewById(R.id.drawer_freebox).setVisibility(View.VISIBLE);
-		
+		drawerHelper.onFreeboxLoaded(fooBox.getFreebox());
+
 		appStarted = true;
 		
 		hideLoadingScreen();
@@ -571,18 +570,6 @@ public class MainActivity extends FreeboxStatsActivity {
 			startRefreshThread();
 
 		displayOpenSourceAlertIfNeeded();
-	}
-	
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		drawerHelper.getToolbarIcon().syncState(savedInstanceState);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		drawerHelper.getToolbarIcon().onSaveInstanceState(outState);
 	}
 	
 	@Override
@@ -601,8 +588,6 @@ public class MainActivity extends FreeboxStatsActivity {
 		menu.findItem(R.id.period_day).setTitle(Period.DAY.getLabel());
 		menu.findItem(R.id.period_week).setTitle(Period.WEEK.getLabel());
 		menu.findItem(R.id.period_month).setTitle(Period.MONTH.getLabel());
-
-		drawerHelper.setupAnimatedIcon();
 		
 		return true;
 	}
@@ -649,7 +634,7 @@ public class MainActivity extends FreeboxStatsActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				drawerHelper.toggleDrawer();
+				//drawerHelper.toggleDrawer();
 				break;
 			case R.id.action_refresh:
 				refreshGraph(true);

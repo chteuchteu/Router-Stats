@@ -181,17 +181,5 @@
 					android:layout_marginTop="20dp" />
 			</LinearLayout>
 		</RelativeLayout>
-
-		<LinearLayout
-			android:id="@+id/drawer"
-			android:layout_width="240dp"
-			android:layout_height="match_parent"
-			android:orientation="vertical"
-			android:background="@color/colorPrimaryDark"
-			android:fitsSystemWindows="true"
-			android:layout_gravity="start" >
-
-			<include layout="@layout/drawer" />
-		</LinearLayout>
 	</android.support.v4.widget.DrawerLayout>
 </LinearLayout>

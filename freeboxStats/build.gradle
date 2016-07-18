@@ -41,15 +41,18 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:support-v4:24.0.0'
-    compile "com.android.support:design:24.0.0"
+    compile 'com.android.support:appcompat-v7:24.1.0'
+    compile 'com.android.support:support-v4:24.1.0'
+    compile "com.android.support:design:24.1.0"
     compile 'com.google.android.gms:play-services-base:9.2.1'
     compile 'com.google.android.gms:play-services-wallet:9.2.1'
 
     compile "com.androidplot:androidplot-core:0.9.8"
-    compile 'com.balysv.materialmenu:material-menu-toolbar:1.5.4'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }
+    compile('com.mikepenz:materialdrawer:5.3.6@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
 }
