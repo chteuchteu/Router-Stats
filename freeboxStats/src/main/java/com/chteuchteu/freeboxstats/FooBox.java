@@ -28,6 +28,7 @@ import org.json.JSONException;
 import java.util.HashMap;
 
 public class FooBox extends Application {
+	public static final String REPO_URL = "https://github.com/chteuchteu/Freebox-Stats/";
 	public static final String APP_ID = "com.chteuchteu.freeboxstats";
 	public static final String APP_NAME = "FreeboxStats";
 	public static final String DEVICE_NAME = "Android";

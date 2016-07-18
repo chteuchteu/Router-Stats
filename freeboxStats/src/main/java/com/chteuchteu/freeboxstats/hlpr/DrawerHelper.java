@@ -38,6 +38,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
 import org.json.JSONException;
 
@@ -73,15 +74,24 @@ public class DrawerHelper {
 				.withIcon(CommunityMaterial.Icon.cmd_flash)
 				.withSelectable(false);
 
-		PrimaryDrawerItem donate = new PrimaryDrawerItem()
+		PrimaryDrawerItem donate = new SecondaryDrawerItem()
 				.withName(R.string.donate)
 				.withIcon(CommunityMaterial.Icon.cmd_heart)
 				.withSelectable(false);
 
+		PrimaryDrawerItem contribute = new SecondaryDrawerItem()
+				.withName(R.string.contribute)
+				.withIcon(CommunityMaterial.Icon.cmd_github_circle)
+				.withSelectable(false);
+
 		builder.addDrawerItems(
 				settings,
-				outages,
-				donate
+				outages
+		);
+
+		builder.addStickyDrawerItems(
+				donate,
+				contribute
 		);
 
 		header = new AccountHeaderBuilder()
@@ -101,6 +111,10 @@ public class DrawerHelper {
 				.withEmail(freebox.getDisplayUrl())
 				.withIcon(CommunityMaterial.Icon.cmd_router_wireless);
 		header.addProfiles(profile);
+	}
+
+	private void contribute() {
+		activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(FooBox.REPO_URL)));
 	}
 
 	private void settings() {

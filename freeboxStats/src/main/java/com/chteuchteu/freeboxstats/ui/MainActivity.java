@@ -354,14 +354,15 @@ public class MainActivity extends FreeboxStatsActivity {
 	}
 
 	public void displayDebugMenuItem() {
-		runOnUiThread(new Runnable() {
+		// TODO
+		/*runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				View drawer_debug = findViewById(R.id.drawer_debug);
 				if (drawer_debug.getVisibility() != View.VISIBLE)
 					drawer_debug.setVisibility(View.VISIBLE);
 			}
-		});
+		});*/
 	}
 
 	public void displayOutagesDialog() {
@@ -568,8 +569,6 @@ public class MainActivity extends FreeboxStatsActivity {
 		
 		if (SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
-
-		displayOpenSourceAlertIfNeeded();
 	}
 	
 	@Override
@@ -668,23 +667,5 @@ public class MainActivity extends FreeboxStatsActivity {
 			default: super.onOptionsItemSelected(item); break;
 		}
 		return true;
-	}
-
-	private void displayOpenSourceAlertIfNeeded() {
-		if (!Util.getPrefBoolean(this, "openSourceDialogShown", false) && !this.isFinishing()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.dialog_opensource)
-					.setCancelable(true)
-					.setPositiveButton(R.string.contribute, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/chteuchteu/Freebox-Stats/")));
-						}
-					})
-					.setNegativeButton(R.string.close, null);
-			builder.create().show();
-
-			Util.setPref(this, "openSourceDialogShown", true);
-		}
 	}
 }
