@@ -169,12 +169,21 @@ public class MainActivity extends FreeboxStatsActivity {
 	public void initPlot(Enums.Graph graph) {
 		XYPlot plot = fooBox.getPlots().get(graph);
 
+		Paint transparentPaint = new Paint();
+		transparentPaint.setAlpha(0);
+
 		plot.getGraphWidget().setShowDomainLabels(true);
 		plot.getGraphWidget().setShowRangeLabels(true);
 
-		// Styling
-		Paint transparentPaint = new Paint();
-		transparentPaint.setAlpha(0);
+		// Range & domain labels opacity
+		int alpha = 150;
+		plot.getGraphWidget().getRangeTickLabelPaint().setAlpha(alpha);
+		plot.getGraphWidget().getRangeOriginTickLabelPaint().setAlpha(alpha);
+		plot.getGraphWidget().getDomainTickLabelPaint().setAlpha(alpha);
+
+		// Hide origin lines
+		plot.getGraphWidget().setRangeOriginLinePaint(transparentPaint);
+		plot.getGraphWidget().setDomainOriginLinePaint(transparentPaint);
 
 		// Background
 		plot.setBackgroundPaint(transparentPaint);
@@ -226,14 +235,21 @@ public class MainActivity extends FreeboxStatsActivity {
 				break;
 		}
 
-		// Set range label
-		if (graph == Enums.Graph.Temp)
-			plot.setRangeLabel(getString(R.string.temp));
-		else if (graph == Enums.Graph.XDSL)
-			plot.setRangeLabel(getString(R.string.noise));
-		
 		if (graph == Enums.Graph.Temp || graph == Enums.Graph.XDSL)
 			plot.setRangeValueFormat(new DecimalFormat("#"));
+
+		// Define graph title once for graphs whose unit won't change
+		int graphTitle = -1;
+		switch (graph) {
+			case Temp:
+				graphTitle = R.string.temp;
+				break;
+			case XDSL:
+				graphTitle = R.string.noise;
+				break;
+		}
+		if (graphTitle != -1)
+			fooBox.getGraphsTitles().get(graph).setText(graphTitle);
 	}
 
 	@SuppressWarnings("serial")
@@ -314,21 +330,24 @@ public class MainActivity extends FreeboxStatsActivity {
 			}
 		});
 		
-		// Set range label
+		// Update graph titles (unit may have changed)
+		String graphTitle = null;
 		switch (graph) {
 			case RateDown:
-				plot.setRangeLabel(getString(R.string.rate_down) + " (" + unit.name() + "/s)");
+				graphTitle = getString(R.string.rate_down) + " (" + unit.name() + "/s)";
 				break;
 			case RateUp:
-				plot.setRangeLabel(getString(R.string.rate_up) + " (" + unit.name() + "/s)");
+				graphTitle = getString(R.string.rate_up) + " (" + unit.name() + "/s)";
 				break;
 			case Switch1:
 			case Switch2:
 			case Switch3:
 			case Switch4:
-				plot.setRangeLabel(getString(R.string.rate) + " (" + unit.name() + "/s)");
+				graphTitle = getString(R.string.rate) + " (" + unit.name() + "/s)";
 				break;
 		}
+		if (graphTitle != null)
+			fooBox.getGraphsTitles().get(graph).setText(graphTitle);
 
 		plot.redraw();
 	}

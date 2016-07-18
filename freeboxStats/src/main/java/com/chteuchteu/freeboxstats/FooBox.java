@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
@@ -45,6 +46,7 @@ public class FooBox extends Application {
 	private Enums.Graph[] graphs;
 	private HashMap<Enums.Graph, XYPlot> plots;
 	private HashMap<Enums.Graph, ValuesBag> valuesBags;
+	private HashMap<Enums.Graph, TextView> graphsTitles;
 	private HashMap<Enums.Graph, ProgressBar> progressBars;
 
 
@@ -75,6 +77,7 @@ public class FooBox extends Application {
 			valuesBags.put(graph, new ValuesBag(graph, currentPeriod));
 
 		plots = new HashMap<>();
+		graphsTitles = new HashMap<>();
 		progressBars = new HashMap<>();
 	}
 	
@@ -168,6 +171,7 @@ public class FooBox extends Application {
 
 	public HashMap<Enums.Graph, XYPlot> getPlots() { return plots; }
 	public HashMap<Enums.Graph, ValuesBag> getValuesBags() { return valuesBags; }
+	public HashMap<Enums.Graph, TextView> getGraphsTitles() { return graphsTitles; }
 	public HashMap<Enums.Graph, ProgressBar> getProgressBars() { return this.progressBars; }
 	public Enums.Graph[] getGraphs() { return graphs; }
 	public MainActivity getActivity() { return this.activity; }

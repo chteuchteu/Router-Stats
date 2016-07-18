@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.androidplot.xy.XYPlot;
 import com.chteuchteu.freeboxstats.FooBox;
@@ -45,6 +46,11 @@ public class SwitchFragment extends Fragment {
         fooBox.getPlots().put(Enums.Graph.Switch2, switch_plot2);
         fooBox.getPlots().put(Enums.Graph.Switch3, switch_plot3);
         fooBox.getPlots().put(Enums.Graph.Switch4, switch_plot4);
+
+		fooBox.getGraphsTitles().put(Enums.Graph.Switch1, (TextView) rootView.findViewById(R.id.textView_switch1));
+		fooBox.getGraphsTitles().put(Enums.Graph.Switch2, (TextView) rootView.findViewById(R.id.textView_switch2));
+		fooBox.getGraphsTitles().put(Enums.Graph.Switch3, (TextView) rootView.findViewById(R.id.textView_switch3));
+		fooBox.getGraphsTitles().put(Enums.Graph.Switch4, (TextView) rootView.findViewById(R.id.textView_switch4));
 
 		fooBox.getProgressBars().put(Enums.Graph.Switch1, (ProgressBar) rootView.findViewById(R.id.progressBar1));
 		fooBox.getProgressBars().put(Enums.Graph.Switch2, (ProgressBar) rootView.findViewById(R.id.progressBar2));
