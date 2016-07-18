@@ -44,7 +44,6 @@
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
-			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
@@ -96,7 +95,6 @@
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
-			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
@@ -148,7 +146,6 @@
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
-			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
@@ -200,7 +197,6 @@
 			androidPlot.graphWidget.marginLeft="15dp"
 			androidPlot.graphWidget.marginBottom="10dp"
 			androidPlot.graphWidget.marginRight="10dp"
-			androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
 			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
 			androidPlot.legendWidget.visible="false" />
