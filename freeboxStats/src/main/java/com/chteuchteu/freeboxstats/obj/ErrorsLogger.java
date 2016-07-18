@@ -18,7 +18,10 @@ public class ErrorsLogger {
 	}
 	
 	public void logError(String error) {
+		FooBox.log("ErrorsLogger", error);
+
 		this.errors.add(new AppError(error));
+
 		if (this.activity != null)
 			this.activity.displayDebugMenuItem();
 	}

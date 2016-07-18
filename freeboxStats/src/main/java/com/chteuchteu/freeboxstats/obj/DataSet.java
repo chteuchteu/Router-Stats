@@ -1,6 +1,7 @@
 package com.chteuchteu.freeboxstats.obj;
 
 import com.androidplot.xy.SimpleXYSeries;
+import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.Util;
@@ -25,8 +26,23 @@ public class DataSet {
 	 * This shouldn't be used to add values, use addValue(Unit, int) instead
 	 */
 	public ArrayList<Number> getValues() { return this.values; }
-	
-	public void addValue(Unit unit, int value) {
+
+	private static Unit getUnit(Enums.FieldType fieldType) {
+		switch (fieldType) {
+			case DATA:
+				return Unit.o;
+			case TEMP:
+				return Unit.C;
+			case NOISE:
+				return Unit.dB;
+			default:
+				return null;
+		}
+	}
+
+	public void addValue(Enums.FieldType fieldType, int value) {
+		Unit unit = getUnit(fieldType);
+
 		if (unit == Unit.C)
 			this.values.add(value/10);
 		else if (unit == Unit.dB)

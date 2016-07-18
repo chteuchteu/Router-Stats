@@ -109,7 +109,8 @@ public class ValuesBag {
 
 	public void fill(JSONArray data) {
 		// Clear previous datasets
-		clear();
+		for (DataSet dataSet : dataSets.values())
+			dataSet.getValues().clear();
 
 		int timestampDiff = 0;
 		try {
@@ -153,13 +154,7 @@ public class ValuesBag {
 								valuesBuffer.clear(field);
 							}
 
-							DataSet dataSet = dataSets.get(field);
-							if (fieldType == FieldType.DATA)
-								dataSet.addValue(Unit.o, val);
-							else if (fieldType == FieldType.TEMP)
-								dataSet.addValue(Unit.C, val);
-							else if (fieldType == FieldType.NOISE)
-								dataSet.addValue(Unit.dB, val);
+							dataSets.get(field).addValue(fieldType, val);
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
@@ -187,13 +182,7 @@ public class ValuesBag {
 				int val = valuesBuffer.getAverage(field);
 				valuesBuffer.clear(field);
 
-				DataSet dataSet = dataSets.get(field);
-				if (fieldType == FieldType.DATA)
-					dataSet.addValue(Unit.o, val);
-				else if (fieldType == FieldType.TEMP)
-					dataSet.addValue(Unit.C, val);
-				else if (fieldType == FieldType.NOISE)
-					dataSet.addValue(Unit.dB, val);
+				dataSets.get(field).addValue(fieldType, val);
 			}
 			this.serie.add("");
 		}
@@ -211,6 +200,9 @@ public class ValuesBag {
 	}
 	
 	protected void convertAllValues(Unit from, Unit to) {
+		if (from != Unit.Mo)
+			throw new RuntimeException("We can only convert Mos");
+
 		if (this.fieldType == FieldType.TEMP)
 			return;
 		
@@ -226,6 +218,5 @@ public class ValuesBag {
 	}
 	public Unit getValuesUnit() { return this.valuesUnit; }
 	public Field[] getFields() { return this.fields; }
-	public FieldType getFieldType() { return this.fieldType; }
 	public long getLastTimestamp() { return this.lastTimestamp; }
 }

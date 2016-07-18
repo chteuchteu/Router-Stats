@@ -27,6 +27,7 @@ import com.androidplot.ui.Size;
 import com.androidplot.ui.SizeLayoutType;
 import com.androidplot.ui.XLayoutStyle;
 import com.androidplot.ui.YLayoutStyle;
+import com.androidplot.ui.YPositionMetric;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
@@ -55,6 +56,7 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.Arrays;
 
 public class MainActivity extends FreeboxStatsActivity {
 	private FooBox fooBox;
@@ -166,7 +168,9 @@ public class MainActivity extends FreeboxStatsActivity {
 
 	public void initPlot(Enums.Graph graph) {
 		XYPlot plot = fooBox.getPlots().get(graph);
-		plot.setVisibility(View.GONE);
+
+		plot.getGraphWidget().setShowDomainLabels(true);
+		plot.getGraphWidget().setShowRangeLabels(true);
 
 		// Styling
 		Paint transparentPaint = new Paint();
@@ -201,7 +205,7 @@ public class MainActivity extends FreeboxStatsActivity {
 		switch (graph) {
 			case RateDown:
 			case RateUp:
-				/* No legend */
+				// No legend
 				break;
 			default:
 				// Show legend
@@ -233,23 +237,18 @@ public class MainActivity extends FreeboxStatsActivity {
 	}
 
 	@SuppressWarnings("serial")
-	public void loadGraph(Enums.Graph graph) {
+	public void loadGraph(final Enums.Graph graph) {
 		final ValuesBag valuesBag = fooBox.getValuesBags().get(graph);
 		final Period period = fooBox.getPeriod();
 		XYPlot plot = fooBox.getPlots().get(graph);
 		Enums.Unit unit = valuesBag.getValuesUnit();
 
-		if (plot == null)
-			return;
-
-		if (plot.getVisibility() != View.VISIBLE)
-			plot.setVisibility(View.VISIBLE);
-
 		for (DataSet dataSet : valuesBag.getDataSets()) {
 			if (dataSet.getXySerieRef() == null) {
-				SimpleXYSeries serie = new SimpleXYSeries(dataSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dataSet.getField().getDisplayName());
+				FooBox.log("Initializing " + graph.name() + "." + dataSet.getField().name() + " with " + dataSet.getValues().size() + " values");
 
-				// Configure serie
+				// Init serie
+				SimpleXYSeries serie = new SimpleXYSeries(dataSet.getValues(), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, dataSet.getField().getDisplayName());
 				dataSet.setXySerieRef(serie);
 
 				LineAndPointFormatter serieFormat = new LineAndPointFormatter();
@@ -259,8 +258,8 @@ public class MainActivity extends FreeboxStatsActivity {
 				switch (dataSet.getField()) {
 					case BW_DOWN:
 					case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
-					case RATE_DOWN:	xmlRef = R.xml.serieformat_rateup;	break;
-					case RATE_UP: 	xmlRef = R.xml.serieformat_ratedown;break;
+					case RATE_DOWN:	xmlRef = R.xml.serieformat_ratedown;break;
+					case RATE_UP: 	xmlRef = R.xml.serieformat_rateup;	break;
 					case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
 					case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
 					case SW:		xmlRef = R.xml.serieformat_sw;		break;
@@ -268,9 +267,9 @@ public class MainActivity extends FreeboxStatsActivity {
 					case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
 					case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break;
 					case RX_1: case RX_2: case RX_3: case RX_4:
-						xmlRef = R.xml.serieformat_ratedown; break;
-					case TX_1: case TX_2: case TX_3: case TX_4:
 						xmlRef = R.xml.serieformat_rateup; break;
+					case TX_1: case TX_2: case TX_3: case TX_4:
+						xmlRef = R.xml.serieformat_ratedown; break;
 					default: break;
 				}
 				if (xmlRef != -1)
@@ -279,31 +278,36 @@ public class MainActivity extends FreeboxStatsActivity {
 				plot.addSeries(serie, serieFormat);
 			}
 			else {
+				FooBox.log("Appending " + dataSet.getValues().size() + " values to " + graph.name() + "." + dataSet.getField().name());
 				SimpleXYSeries serie = dataSet.getXySerieRef();
 
 				for (Number number : dataSet.getValues()) {
 					serie.removeFirst();
-					serie.addLast(number, number); // TODO put 0 in one of the args??
+					serie.addLast(null, number);
 				}
 			}
 		}
 		
 		// Add markers (vertical lines)
-		for (XValueMarker m : Util.Times.getMarkers(period, valuesBag.getSerie())) {
-			m.getLinePaint().setARGB(30, 255, 255, 255);
-			plot.addMarker(m);
-		}
-		
+		plot.removeMarkers();
+		for (XValueMarker marker : Util.Times.getMarkers(period, valuesBag.getSerie()))
+			plot.addMarker(marker);
+
 		// Add labels
 		plot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
+
 		plot.setDomainValueFormat(new Format() {
 			@Override
 			public StringBuffer format(Object obj, @NonNull StringBuffer toAppendTo, @NonNull FieldPosition pos) {
 				int position = ((Number) obj).intValue();
-				String label = Util.Times.getLabel(period, valuesBag.getSerie().get(position), position, valuesBag.getSerie());
+				String label = "";
+
+				if (position >= 0)
+					label = Util.Times.getLabel(period, valuesBag.getSerie().get(position), position, valuesBag.getSerie());
+
 				return new StringBuffer(label);
 			}
-			
+
 			@Override
 			public Object parseObject(String source, @NonNull ParsePosition pos) {
 				return null;

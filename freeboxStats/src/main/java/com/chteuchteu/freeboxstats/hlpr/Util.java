@@ -1,21 +1,13 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.PowerManager;
-import android.support.v7.app.ActionBar;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.androidplot.xy.XValueMarker;
-import com.chteuchteu.freeboxstats.R;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 
@@ -170,6 +162,7 @@ public class Util {
 		 * returns an empty string or the label depending on the label value
 		 */
 		public static String getLabel(Period period, String serie, int pos, ArrayList<String> series) {
+			// TODO put some regexes in that
 			switch (period) {
 				case HOUR:
 					if (serie.equals("") || !serie.contains(":"))
@@ -246,7 +239,7 @@ public class Util {
 				default: return "";
 			}
 		}
-		
+
 		public static ArrayList<XValueMarker> getMarkers(Period period, ArrayList<String> series) {
 			ArrayList<XValueMarker> markers = new ArrayList<>();
 			
@@ -330,6 +323,7 @@ public class Util {
 				
 				if (display && !currentText.equals(lastText)) {
 					XValueMarker marker = new XValueMarker(pos, "");
+					marker.getLinePaint().setARGB(30, 255, 255, 255);
 					markers.add(marker);
 					lastText = currentText;
 				}

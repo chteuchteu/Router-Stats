@@ -75,8 +75,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 					valuesBag.fill(netResponse.getJsonObject().getJSONArray("data"));
 					return true;
 				}
-				else
-					return false;
 			} catch (JSONException ex) {
 				ex.printStackTrace();
 				Crashlytics.logException(ex);
@@ -89,8 +87,8 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 				ErrorsLogger.log(netResponse);
 				try {
 					String response = netResponse.getCompleteResponse().getString("error_code");
-					// If the session has expired / hasn't been opened, open it
 
+					// If the session has expired / hasn't been opened, open it
 					switch (response) {
 						case "auth_required":
 							cancel = false;
