@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
 	linePaint.strokeWidth="1dp"
-	linePaint.color="#EEA61120"
+	linePaint.color="#EE8BC34A"
 	vertexPaint.color="#00000000"
-	fillPaint.color="#AAA61120"
+	fillPaint.color="#888BC34A"
 	pointLabelFormatter.textPaint.color="#00FFFFFF"/>
