@@ -382,7 +382,11 @@ public class MainActivity extends FreeboxStatsActivity {
 		}
 	}
 
-	public void setUpdating(boolean val) { this.updating = val; }
+	public void setUpdating(boolean val) {
+		updating = val;
+		refreshMenuItem.setEnabled(!updating);
+		refreshMenuItem.getIcon().mutate().setAlpha(updating ? 130 : 255);
+	}
 
 	public void refreshGraph() { refreshGraph(false); }
 	private void refreshGraph(boolean manualRefresh) {
@@ -398,7 +402,7 @@ public class MainActivity extends FreeboxStatsActivity {
 		}
 
 		lastRefresh = System.currentTimeMillis();
-		updating = true;
+		setUpdating(true);
 		
 		if (manualRefresh)
 			justRefreshed = true;
@@ -626,9 +630,6 @@ public class MainActivity extends FreeboxStatsActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case android.R.id.home:
-				//drawerHelper.toggleDrawer();
-				break;
 			case R.id.action_refresh:
 				refreshGraph(true);
 				break;
