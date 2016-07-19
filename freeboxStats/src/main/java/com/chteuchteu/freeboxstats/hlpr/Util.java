@@ -121,18 +121,19 @@ public class Util {
 					cal.add(Calendar.HOUR, -24);
 					break;
 				case WEEK:
-					cal.add(Calendar.DAY_OF_MONTH, -7);
+					cal.add(Calendar.DAY_OF_YEAR, -7);
 					break;
 				case MONTH:
-					cal.add(Calendar.DAY_OF_MONTH, -30);
+					cal.add(Calendar.DAY_OF_YEAR, -30);
 					break;
 				default:
 					break;
 			}
+
 			return cal.getTime().getTime() / 1000;
 		}
 
-		public static long getDayBeginFromTimestamp(long timestamp) {
+		public static long getDayStartFromTimestamp(long timestamp) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(timestamp*1000);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -212,12 +213,12 @@ public class Util {
 					
 					// Only display one day out of X
 					int eachXdays = 5;
-					long dayTimestamp = Util.Times.getDayBeginFromTimestamp(
+					long dayTimestamp = Util.Times.getDayStartFromTimestamp(
 							Integer.parseInt(serie));
 					int previousIndex = pos-1;
 					if (previousIndex < 0)
 						previousIndex = 0;
-					long previousTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(series.get(previousIndex)));
+					long previousTimestamp = Util.Times.getDayStartFromTimestamp(Long.parseLong(series.get(previousIndex)));
 					
 					if (previousTimestamp == dayTimestamp)
 						return "";
@@ -225,7 +226,7 @@ public class Util {
 					if (series.get(series.size()-1).equals(""))
 						return "";
 
-					long latestTimestamp = Util.Times.getDayBeginFromTimestamp(
+					long latestTimestamp = Util.Times.getDayStartFromTimestamp(
 							Long.parseLong(series.get(series.size()-1)));
 					
 					int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays*24*60*60));
@@ -292,11 +293,11 @@ public class Util {
 						else {
 							// Only display one day out of X
 							int eachXdays = 5;
-							long dayTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(serie));
+							long dayTimestamp = Util.Times.getDayStartFromTimestamp(Long.parseLong(serie));
 							int previousIndex = pos - 1;
 							if (previousIndex < 0)
 								previousIndex = 0;
-							long previousTimestamp = Util.Times.getDayBeginFromTimestamp(Long.parseLong(series.get(previousIndex)));
+							long previousTimestamp = Util.Times.getDayStartFromTimestamp(Long.parseLong(series.get(previousIndex)));
 
 							if (previousTimestamp == dayTimestamp) {
 								display = false;
@@ -304,7 +305,7 @@ public class Util {
 								if (series.get(series.size() - 1).equals(""))
 									display = false;
 								else {
-									long latestTimestamp = Util.Times.getDayBeginFromTimestamp(
+									long latestTimestamp = Util.Times.getDayStartFromTimestamp(
 											Long.parseLong(series.get(series.size() - 1)));
 
 									int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays * 24 * 60 * 60));

@@ -9,12 +9,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.androidplot.xy.XYPlot;
+import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
+import com.chteuchteu.freeboxstats.async.SessionOpener;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.async.FreeboxDiscoverer;
-import com.chteuchteu.freeboxstats.async.SessionOpener;
+import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
@@ -22,10 +23,12 @@ import com.chteuchteu.freeboxstats.obj.ValuesBag;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
 import com.crashlytics.android.Crashlytics;
 
-import io.fabric.sdk.android.Fabric;
 import org.json.JSONException;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 public class FooBox extends Application {
 	public static final String REPO_URL = "https://github.com/chteuchteu/Freebox-Stats/";
@@ -151,6 +154,14 @@ public class FooBox extends Application {
 			for (ValuesBag valuesBag : valuesBags.values()) {
 				valuesBag.setPeriod(val);
 				valuesBag.clear();
+			}
+
+			// Remove series from plots & clear series references
+			for (Map.Entry<Enums.Graph, ValuesBag> entry : valuesBags.entrySet()) {
+				for (DataSet dataSet : entry.getValue().getDataSets())
+					plots.get(entry.getKey()).removeSeries(dataSet.getXySerieRef());
+
+				entry.getValue().clearXySerieRefs();
 			}
 		}
 	}

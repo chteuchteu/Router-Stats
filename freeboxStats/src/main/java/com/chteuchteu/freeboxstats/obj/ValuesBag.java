@@ -48,6 +48,11 @@ public class ValuesBag {
 		serie.clear();
 	}
 
+	public void clearXySerieRefs() {
+		for (DataSet dataSet : dataSets.values())
+			dataSet.setXySerieRef(null);
+	}
+
 	private static Field[] deduceFields(Enums.Graph graph) {
 		switch (graph) {
 			case RateDown:
