@@ -43,7 +43,8 @@
 								&#8226;  Votre Freebox n\'est pas à jour<br />\n
 								&#8226;  Votre Freebox est indisponible<br />\n
 								&#8226;  Votre téléphone a un problème de connexion<br />\n
-								&#8226;  Le point d\'accès auquel vous êtes connecté bloque la connexion ]]></string>
+								&#8226;  Le point d\'accès auquel vous êtes connecté bloque la connexion<br />\n
+								&#8226;  Les droits de Freebox Stats ont été révoqués depuis Freebox OS ]]></string>
 								
 	<string name="settings">Paramètres</string>
 	<string name="freebox">Freebox</string>
