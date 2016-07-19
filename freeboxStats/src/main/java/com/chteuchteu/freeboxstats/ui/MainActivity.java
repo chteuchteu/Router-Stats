@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,8 +50,6 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.ValuesBag;
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;

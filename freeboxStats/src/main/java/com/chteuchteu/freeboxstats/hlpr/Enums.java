@@ -51,7 +51,6 @@ public class Enums {
 		Field() { this.displayName = getSerializedValue(); }
 		Field(String displayName) { this.displayName = displayName; }
 		public String getSerializedValue() { return this.name().toLowerCase(); }
-		public boolean equals(Field f1) { return this.getSerializedValue().equals(f1.getSerializedValue()); }
 		public String getDisplayName() { return this.displayName; }
 	}
 	

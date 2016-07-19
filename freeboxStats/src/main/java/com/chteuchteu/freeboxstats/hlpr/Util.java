@@ -66,7 +66,7 @@ public class Util {
 	
 	public static final class Crypto {
 		public static String hmacSha1(String value, String key)
-				throws UnsupportedEncodingException, NoSuchAlgorithmException,
+				throws NoSuchAlgorithmException,
 				InvalidKeyException {
 			String type = "HmacSHA1";
 			SecretKeySpec secret = new SecretKeySpec(key.getBytes(), type);
@@ -105,7 +105,7 @@ public class Util {
 	 * @throws SignatureException 
 	 */
 	public static String encodeAppToken(String app_token, String challenge) throws 
-	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, SignatureException {
+	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException {
 		return Crypto.hmacSha1(challenge, app_token);
 	}
 	
@@ -386,14 +386,6 @@ public class Util {
 				.getLaunchIntentForPackage(context.getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(i);
-	}
-
-	public static int getStatusBarHeight(Context c) {
-		int result = 0;
-		int resourceId = c.getResources().getIdentifier("status_bar_height", "dimen", "android");
-		if (resourceId > 0)
-			result = c.getResources().getDimensionPixelSize(resourceId);
-		return result;
 	}
 
 	public static Enums.Graph[] removeElement(Enums.Graph[] original, Enums.Graph element) {

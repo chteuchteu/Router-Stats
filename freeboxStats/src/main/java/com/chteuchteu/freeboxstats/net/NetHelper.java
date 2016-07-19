@@ -252,7 +252,7 @@ public class NetHelper {
 				return null;
 
 			return new NetResponse(new JSONObject(responseBody));
-		} catch (IOException | JSONException | InvalidKeyException | NoSuchAlgorithmException | SignatureException | IllegalArgumentException ex) {
+		} catch (IOException | JSONException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException ex) {
 			ex.printStackTrace();
 			return null;
 		}

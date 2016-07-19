@@ -21,7 +21,7 @@ public class BillingService {
 	
 	private boolean isBound = false;
 
-	public static final int REQUEST_CODE = 1665;
+	private static final int REQUEST_CODE = 1665;
 
 	public static final String DONATE_2 = "donate_2";
 	public static final String DONATE_5 = "donate_5";
@@ -57,7 +57,7 @@ public class BillingService {
 		isBound = activity.bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
 	}
 	
-	public void launchPurchase(String product) {
+	private void launchPurchase(String product) {
 		progressDialog.dismiss();
 
 		try {

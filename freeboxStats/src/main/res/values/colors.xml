@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimaryDarker">#cf4900</color>
 	<color name="colorPrimaryDark">#E65100</color>
 	<color name="colorPrimary">#EF6C00</color>
 	<color name="accentColor">#03A9F4</color>
@@ -9,6 +8,4 @@
 	<color name="textSecondary">#8e8e8e</color>
 	<color name="fullscreenTextColor">#ffffff</color>
 	<color name="fullscreenTextColor2">#ccffffff</color>
-	<color name="drawerFontColor">#ccffffff</color><!-- #ffffff -->
-	<color name="drawerFontColor2">#99ffffff</color>
 </resources>

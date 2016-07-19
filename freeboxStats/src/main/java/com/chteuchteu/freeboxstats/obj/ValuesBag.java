@@ -25,7 +25,7 @@ public class ValuesBag {
 
 	private Period period;
 	private Unit valuesUnit;
-	public static final Unit defaultUnit = Unit.Mo;
+	private static final Unit defaultUnit = Unit.Mo;
 
 	public ValuesBag(Enums.Graph graph, Period period) {
 		this.period = period;
@@ -199,7 +199,7 @@ public class ValuesBag {
 		}
 	}
 	
-	protected void convertAllValues(Unit from, Unit to) {
+	private void convertAllValues(Unit from, Unit to) {
 		if (from != Unit.Mo)
 			throw new RuntimeException("We can only convert Mos");
 

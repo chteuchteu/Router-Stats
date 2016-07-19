@@ -17,7 +17,7 @@ public class ErrorsLogger {
 		this.errors = new ArrayList<>();
 	}
 	
-	public void logError(String error) {
+	private void logError(String error) {
 		FooBox.log("ErrorsLogger", error);
 
 		this.errors.add(new AppError(error));
@@ -25,7 +25,7 @@ public class ErrorsLogger {
 		if (this.activity != null)
 			this.activity.displayDebugMenuItem();
 	}
-	public void logError(NetResponse netResponse) {
+	private void logError(NetResponse netResponse) {
         this.errors.add(new AppError(netResponse == null ? "Void netResponse" : netResponse.getError()));
 
 		if (this.activity != null)

@@ -22,7 +22,7 @@ public class Freebox {
 
 	private SwitchPortStatuses switchPortStatuses;
 	
-	public Freebox() {
+	private Freebox() {
 		this.uid = "";
 		this.deviceName = "";
 		this.apiVersion = "";

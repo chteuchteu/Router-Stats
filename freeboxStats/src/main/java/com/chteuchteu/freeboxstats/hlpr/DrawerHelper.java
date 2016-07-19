@@ -267,10 +267,10 @@ public class DrawerHelper {
 				freebox.setApiRemoteAccess(radioButtonIp.isChecked() ? Enums.SpecialBool.TRUE : Enums.SpecialBool.FALSE);
 				try {
 					freebox.save(context);
+					header.getActiveProfile().withEmail(freebox.getDisplayUrl());
 				} catch (JSONException ex) {
 					ex.printStackTrace();
 				}
-				((TextView) activity.findViewById(R.id.drawer_freebox_uri)).setText(freebox.getDisplayUrl());
 			}
 		});
 		builder2.setNegativeButton(R.string.cancel, null);
