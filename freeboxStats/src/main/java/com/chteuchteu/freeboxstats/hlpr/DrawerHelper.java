@@ -9,18 +9,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -36,9 +32,13 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.json.JSONException;
 
@@ -50,7 +50,17 @@ public class DrawerHelper {
 	private Toolbar toolbar;
 	private Context context;
 	private DrawerLayout drawerLayout;
+
 	private AccountHeader header;
+	private Drawer drawer;
+
+	private static final int Settings = 10000;
+	private static final int Outages = 10001;
+	private static final int Donate = 10002;
+	private static final int Contribute = 10003;
+	private static final int Debug = 10004;
+	private static final int Freebox_Config = 10005;
+	private static final int Freebox_Dissociate = 10006;
 
 	public DrawerHelper(MainActivity activity, Toolbar toolbar) {
 		this.activity = activity;
@@ -67,29 +77,31 @@ public class DrawerHelper {
 		PrimaryDrawerItem settings = new PrimaryDrawerItem()
 				.withName(R.string.settings)
 				.withIcon(CommunityMaterial.Icon.cmd_settings)
-				.withSelectable(false);
+				.withSelectable(false)
+				.withIdentifier(Settings);
 
 		PrimaryDrawerItem outages = new PrimaryDrawerItem()
 				.withName(R.string.outages)
 				.withIcon(CommunityMaterial.Icon.cmd_flash)
-				.withSelectable(false);
+				.withSelectable(false)
+				.withIdentifier(Outages);
 
 		PrimaryDrawerItem donate = new SecondaryDrawerItem()
 				.withName(R.string.donate)
 				.withIcon(CommunityMaterial.Icon.cmd_heart)
-				.withSelectable(false);
+				.withSelectable(false)
+				.withIdentifier(Donate);
 
 		PrimaryDrawerItem contribute = new SecondaryDrawerItem()
 				.withName(R.string.contribute)
 				.withIcon(CommunityMaterial.Icon.cmd_github_circle)
-				.withSelectable(false);
+				.withSelectable(false)
+				.withIdentifier(Contribute);
 
 		builder.addDrawerItems(
 				settings,
-				outages
-		);
-
-		builder.addStickyDrawerItems(
+				outages,
+				new DividerDrawerItem(),
 				donate,
 				contribute
 		);
@@ -97,20 +109,91 @@ public class DrawerHelper {
 		header = new AccountHeaderBuilder()
 				.withActivity(activity)
 				.withHeaderBackground(R.color.primary_dark)
+				.withProfileImagesVisible(false)
+				.withCompactStyle(true)
+				.withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+					@Override
+					public boolean onProfileChanged(View view, IProfile profile, boolean current) {
+						switch ((int) profile.getIdentifier()) {
+							case Freebox_Config:
+								freeboxConfig();
+								break;
+							case Freebox_Dissociate:
+								freeboxDissociate();
+								break;
+						}
+
+						return false;
+					}
+				})
 				.build();
 		builder.withAccountHeader(header);
-		// TODO handle "logout", Freebox settings
+
+		builder.withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+			@Override
+			public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+				switch ((int) drawerItem.getIdentifier()) {
+					case Settings:
+						settings();
+						break;
+					case Outages:
+						activity.displayOutagesDialog();
+						break;
+					case Donate:
+						donate();
+						break;
+					case Contribute:
+						contribute();
+						break;
+					case Debug:
+						debug();
+						break;
+					default:
+						FooBox.log("Unknown drawer identifier " + drawerItem.getIdentifier());
+				}
+
+				return false;
+			}
+		});
 
 		builder.withSelectedItem(-1);
-		builder.build();
+		drawer = builder.build();
 	}
 
 	public void onFreeboxLoaded(Freebox freebox) {
 		ProfileDrawerItem profile = new ProfileDrawerItem()
 				.withName(context.getString(R.string.freebox))
-				.withEmail(freebox.getDisplayUrl())
-				.withIcon(CommunityMaterial.Icon.cmd_router_wireless);
-		header.addProfiles(profile);
+				.withIcon(CommunityMaterial.Icon.cmd_router_wireless)
+				.withEmail(freebox.getDisplayUrl());
+
+		ProfileSettingDrawerItem manageFreebox = new ProfileSettingDrawerItem()
+				.withName(context.getString(R.string.menu_config))
+				.withIcon(CommunityMaterial.Icon.cmd_settings)
+				.withIdentifier(Freebox_Config);
+
+		ProfileSettingDrawerItem dissociate = new ProfileSettingDrawerItem()
+				.withName(context.getString(R.string.menu_dissociate))
+				.withIcon(CommunityMaterial.Icon.cmd_link_variant_off)
+				.withIdentifier(Freebox_Dissociate);
+
+		header.addProfiles(
+				profile,
+				manageFreebox,
+				dissociate
+		);
+	}
+
+	public void showDebug() {
+		if (drawer.getDrawerItem(Debug) != null)
+			return;
+
+		PrimaryDrawerItem debug = new SecondaryDrawerItem()
+				.withName(R.string.debug)
+				.withIcon(CommunityMaterial.Icon.cmd_bug)
+				.withSelectable(false)
+				.withIdentifier(Debug);
+
+		drawer.addItem(debug);
 	}
 
 	private void contribute() {
@@ -161,74 +244,61 @@ public class DrawerHelper {
 		builder.show();
 	}
 
-	private void freebox() {
-		PopupMenu popupMenu = new PopupMenu(context, activity.findViewById(R.id.drawer_freebox));
-		Menu menu = popupMenu.getMenu();
-		popupMenu.getMenuInflater().inflate(R.menu.freebox, menu);
-		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+	private void freeboxConfig() {
+		LayoutInflater inflater = LayoutInflater.from(context);
+		View dialog_layout = inflater.inflate(R.layout.freeboxsettings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
+
+		final RadioButton radioButtonIp = (RadioButton) dialog_layout.findViewById(R.id.radio_ip);
+		RadioButton radioButtonLocal = (RadioButton) dialog_layout.findViewById(R.id.radio_local);
+
+		final Freebox freebox = FooBox.getInstance().getFreebox();
+		String ip = freebox.getIp();
+		radioButtonIp.setText(ip == null || ip.equals("") ? context.getString(R.string.unknown) : ip);
+		radioButtonLocal.setText(Freebox.ApiUri.substring("http://".length()));
+
+		radioButtonIp.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.TRUE
+				|| freebox.getApiRemoteAccess() == Enums.SpecialBool.UNKNOWN);
+		radioButtonLocal.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.FALSE);
+
+		AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
+		builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				switch (item.getItemId()) {
-					case R.id.action_dissociate:
-						drawerLayout.closeDrawers();
-						AlertDialog.Builder builder = new AlertDialog.Builder(context)
-								.setMessage(R.string.dissociate)
-								.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										Freebox.delete(context);
-										Util.restartApp(context);
-									}
-								})
-								.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										dialog.dismiss();
-									}
-								}).setIcon(android.R.drawable.ic_dialog_alert);
-						// Avoid error when the app is closing or something
-						if (!activity.isFinishing())
-							builder.show();
-						return true;
-
-					case R.id.action_options:
-						LayoutInflater inflater = LayoutInflater.from(context);
-						View dialog_layout = inflater.inflate(R.layout.freeboxsettings_dialog, (ViewGroup) activity.findViewById(R.id.root_layout));
-
-						final RadioButton radioButtonIp = (RadioButton) dialog_layout.findViewById(R.id.radio_ip);
-						RadioButton radioButtonLocal = (RadioButton) dialog_layout.findViewById(R.id.radio_local);
-
-						final Freebox freebox = FooBox.getInstance().getFreebox();
-						String ip = freebox.getIp();
-						radioButtonIp.setText(ip == null || ip.equals("") ? context.getString(R.string.unknown) : ip);
-						radioButtonLocal.setText(Freebox.ApiUri.substring("http://".length()));
-
-						radioButtonIp.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.TRUE
-								|| freebox.getApiRemoteAccess() == Enums.SpecialBool.UNKNOWN);
-						radioButtonLocal.setChecked(freebox.getApiRemoteAccess() == Enums.SpecialBool.FALSE);
-
-						AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
-						builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								freebox.setApiRemoteAccess(radioButtonIp.isChecked() ? Enums.SpecialBool.TRUE : Enums.SpecialBool.FALSE);
-								try {
-									freebox.save(context);
-								} catch (JSONException ex) {
-									ex.printStackTrace();
-								}
-								((TextView) activity.findViewById(R.id.drawer_freebox_uri)).setText(freebox.getDisplayUrl());
-							}
-						});
-						builder2.setNegativeButton(R.string.cancel, null);
-						builder2.setView(dialog_layout);
-						builder2.show();
-						return true;
+			public void onClick(DialogInterface dialog, int which) {
+				freebox.setApiRemoteAccess(radioButtonIp.isChecked() ? Enums.SpecialBool.TRUE : Enums.SpecialBool.FALSE);
+				try {
+					freebox.save(context);
+				} catch (JSONException ex) {
+					ex.printStackTrace();
 				}
-				return false;
+				((TextView) activity.findViewById(R.id.drawer_freebox_uri)).setText(freebox.getDisplayUrl());
 			}
 		});
-		popupMenu.show();
+		builder2.setNegativeButton(R.string.cancel, null);
+		builder2.setView(dialog_layout);
+		builder2.show();
+	}
+
+	private void freeboxDissociate() {
+		drawerLayout.closeDrawers();
+		AlertDialog.Builder builder = new AlertDialog.Builder(context)
+				.setMessage(R.string.dissociate)
+				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Freebox.delete(context);
+						Util.restartApp(context);
+					}
+				})
+				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert);
+
+		// Avoid error when the app is closing or something
+		if (!activity.isFinishing())
+			builder.show();
 	}
 
 	private void debug() {

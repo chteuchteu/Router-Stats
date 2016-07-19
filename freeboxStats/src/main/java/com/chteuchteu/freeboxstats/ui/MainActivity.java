@@ -354,15 +354,12 @@ public class MainActivity extends FreeboxStatsActivity {
 	}
 
 	public void displayDebugMenuItem() {
-		// TODO
-		/*runOnUiThread(new Runnable() {
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				View drawer_debug = findViewById(R.id.drawer_debug);
-				if (drawer_debug.getVisibility() != View.VISIBLE)
-					drawer_debug.setVisibility(View.VISIBLE);
+				drawerHelper.showDebug();
 			}
-		});*/
+		});
 	}
 
 	public void displayOutagesDialog() {

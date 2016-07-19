@@ -22,7 +22,7 @@
 	<string name="no">Non</string>
 	<string name="close">Fermer</string>
 	<string name="send_dev">Envoyer au développeur</string>
-	<string name="menu_accessOptions">Configuration</string>
+	<string name="menu_config">Configuration</string>
 	<string name="menu_dissociate">Dissocier</string>
 	<string name="dissociate">Voulez-vous dissocier l\'application de cette Freebox ?</string>
 	<string name="firstlaunch_autoriserfreebox">Autoriser l\'application</string>
