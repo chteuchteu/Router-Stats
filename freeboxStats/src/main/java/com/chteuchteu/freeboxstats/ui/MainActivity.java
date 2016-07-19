@@ -55,6 +55,7 @@ import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
+import java.util.List;
 
 public class MainActivity extends FreeboxStatsActivity {
 	private FooBox fooBox;
@@ -314,9 +315,10 @@ public class MainActivity extends FreeboxStatsActivity {
 			@Override
 			public StringBuffer format(Object obj, @NonNull StringBuffer toAppendTo, @NonNull FieldPosition pos) {
 				int position = ((Number) obj).intValue();
-				String label = "";
+				List<String> serie = valuesBag.getSerie();
 
-				if (position >= 0)
+				String label = "";
+				if (position >= 0 && position < serie.size())
 					label = Util.Times.getLabel(period, valuesBag.getSerie().get(position), position, valuesBag.getSerie());
 
 				return new StringBuffer(label);
