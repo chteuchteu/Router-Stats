@@ -171,8 +171,9 @@ public class MainActivity extends FreeboxStatsActivity {
 		Paint transparentPaint = new Paint();
 		transparentPaint.setAlpha(0);
 
-		plot.getGraphWidget().setShowDomainLabels(true);
-		plot.getGraphWidget().setShowRangeLabels(true);
+		// Hide labels for now (they are not significant until we first load data into the plots)
+		plot.getGraphWidget().setShowDomainLabels(false);
+		plot.getGraphWidget().setShowRangeLabels(false);
 
 		// Range & domain labels opacity
 		int alpha = 150;
@@ -257,6 +258,12 @@ public class MainActivity extends FreeboxStatsActivity {
 		final Period period = fooBox.getPeriod();
 		XYPlot plot = fooBox.getPlots().get(graph);
 		Enums.Unit unit = valuesBag.getValuesUnit();
+
+		// Show domain labels the first time we load data into this plot
+		if (!plot.getGraphWidget().isShowDomainLabels()) {
+			plot.getGraphWidget().setShowDomainLabels(true);
+			plot.getGraphWidget().setShowRangeLabels(true);
+		}
 
 		for (DataSet dataSet : valuesBag.getDataSets()) {
 			if (dataSet.getXySerieRef() == null) {
