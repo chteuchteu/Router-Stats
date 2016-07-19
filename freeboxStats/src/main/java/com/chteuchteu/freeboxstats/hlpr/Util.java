@@ -14,12 +14,11 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -99,10 +98,9 @@ public class Util {
 	
 	/**
 	 * Returns the password asked by the API from the app_token and challenge
-	 * @throws NoSuchAlgorithmException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws InvalidKeyException 
-	 * @throws SignatureException 
+	 * @throws NoSuchAlgorithmException
+	 * @throws UnsupportedEncodingException
+	 * @throws InvalidKeyException
 	 */
 	public static String encodeAppToken(String app_token, String challenge) throws 
 	InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -388,13 +386,10 @@ public class Util {
 		context.startActivity(i);
 	}
 
-	public static Enums.Graph[] removeElement(Enums.Graph[] original, Enums.Graph element) {
-		List<Enums.Graph> result = new LinkedList<>();
-
-		for (Enums.Graph item : original)
-			if (element != item)
-				result.add(item);
-
-		return result.toArray(original);
+	public static Enums.Graph[] removeElement(Enums.Graph[] array, Enums.Graph element) {
+		List<Enums.Graph> list = new ArrayList<>();
+		Collections.addAll(list, array);
+		list.remove(element);
+		return list.toArray(new Enums.Graph[list.size()]);
 	}
 }
