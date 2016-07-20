@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/fragment_container"
 	android:layout_width="match_parent"
@@ -43,10 +44,11 @@
 			androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
 			androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
 			androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
-			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
-			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainOriginTickLabelPaint.textSizer="graph_labels_font_size"
 			androidPlot.legendWidget.visible="false" />
 
 		<ProgressBar
@@ -95,10 +97,11 @@
 			androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
 			androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
 			androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
-			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
-			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainOriginTickLabelPaint.textSizer="graph_labels_font_size"
 			androidPlot.legendWidget.visible="false" />
 
 		<ProgressBar
@@ -147,10 +150,11 @@
 			androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
 			androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
 			androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
-			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
-			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainOriginTickLabelPaint.textSizer="graph_labels_font_size"
 			androidPlot.legendWidget.visible="false" />
 
 		<ProgressBar
@@ -199,10 +203,11 @@
 			androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
 			androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
 			androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
-			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/domain_label_font_size"
-			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/range_tick_label_font_size"
-			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+			androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+			androidPlot.graphWidget.domainOriginTickLabelPaint.textSizer="graph_labels_font_size"
 			androidPlot.legendWidget.visible="false" />
 
 		<ProgressBar

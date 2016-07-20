@@ -1,8 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<dimen name="domain_label_font_size">12sp</dimen>
-	<dimen name="range_tick_label_font_size">12sp</dimen>
-	<dimen name="domain_tick_label_font_size">12sp</dimen>
+	<dimen name="graph_labels_font_size">12sp</dimen>
 	<dimen name="legend_text_font_size">12sp</dimen>
 
 	<dimen name="graphwidget_margin_top">10dp</dimen>

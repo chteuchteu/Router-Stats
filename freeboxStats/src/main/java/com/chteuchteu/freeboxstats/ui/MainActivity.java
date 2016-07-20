@@ -180,6 +180,7 @@ public class MainActivity extends FreeboxStatsActivity {
 		plot.getGraphWidget().getRangeTickLabelPaint().setAlpha(alpha);
 		plot.getGraphWidget().getRangeOriginTickLabelPaint().setAlpha(alpha);
 		plot.getGraphWidget().getDomainTickLabelPaint().setAlpha(alpha);
+		plot.getGraphWidget().getDomainOriginTickLabelPaint().setAlpha(alpha);
 
 		// Hide origin lines
 		plot.getGraphWidget().setRangeOriginLinePaint(transparentPaint);
