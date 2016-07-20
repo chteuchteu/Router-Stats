@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GraphHelper {
+	private static final int UnitTreshold = 600;
+
 	@SuppressLint("SimpleDateFormat")
 	public static String getDateLabelFromTimestamp(long jsonTimestamp, Period period) {
 		try {
@@ -72,62 +74,24 @@ public class GraphHelper {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the best unit depending on the highest value
 	 */
-	public static Unit getBestUnitByMaxVal(int maxVal) {
-		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
-		if (valueKo.intValue() <= 600)
+	public static Unit getBestUnitByMaxVal(double maxVal, Unit maxValUnit) {
+		Number valueKo = Util.convertUnit(maxValUnit, Unit.ko, maxVal);
+		if (valueKo.doubleValue() <= UnitTreshold)
 			return Unit.ko;
 		
-		Number valueMo = Util.convertUnit(Unit.o, Unit.Mo, maxVal);
-		if (valueMo.intValue() <= 600)
+		Number valueMo = Util.convertUnit(maxValUnit, Unit.Mo, maxVal);
+		if (valueMo.doubleValue() <= UnitTreshold)
 			return Unit.Mo;
 		
-		Number valueGo = Util.convertUnit(Unit.o, Unit.Go, maxVal);
-		if (valueGo.intValue() <= 600)
+		Number valueGo = Util.convertUnit(maxValUnit, Unit.Go, maxVal);
+		if (valueGo.doubleValue() <= UnitTreshold)
 			return Unit.Go;
 		
 		return Unit.To;
-	}
-	
-	/**
-	 * Returns the best unit depending on the highest value
-	 */
-	public static Unit getBestUnitByMaxVal(double maxVal) {
-		Number valueKo = Util.convertUnit(Unit.o, Unit.ko, maxVal);
-		if (valueKo.doubleValue() <= 600)
-			return Unit.ko;
-		
-		Number valueMo = Util.convertUnit(Unit.o, Unit.Mo, maxVal);
-		if (valueMo.doubleValue() <= 600)
-			return Unit.Mo;
-		
-		Number valueGo = Util.convertUnit(Unit.o, Unit.Go, maxVal);
-		if (valueGo.doubleValue() <= 600)
-			return Unit.Go;
-		
-		return Unit.To;
-	}
-	
-	public static int getHighestValue(JSONArray dataArray, Field[] fields) {
-		int highestValue = 0;
-		for (int i=0; i<dataArray.length(); i++) {
-			try {
-				JSONObject jsonObj = dataArray.getJSONObject(i);
-				for (Field field : fields) {
-					if (jsonObj.has(field.getSerializedValue())) {
-						int val = jsonObj.getInt(field.getSerializedValue());
-						if (val > highestValue)
-							highestValue = val;
-					}
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		return highestValue;
 	}
 
 	public static int getTimestampDiff(JSONArray data) throws JSONException {

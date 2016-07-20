@@ -1,11 +1,13 @@
 package com.chteuchteu.freeboxstats.obj;
 
+import com.chteuchteu.freeboxstats.FooBox;
 import com.chteuchteu.freeboxstats.hlpr.Enums;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Field;
 import com.chteuchteu.freeboxstats.hlpr.Enums.FieldType;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Unit;
 import com.chteuchteu.freeboxstats.hlpr.GraphHelper;
+import com.chteuchteu.freeboxstats.hlpr.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,19 +23,22 @@ public class ValuesBag {
 	private ArrayList<String> serie;
 	private HashMap<Field, DataSet> dataSets;
 
+	private double highestValue;
 	private long lastTimestamp;
 
 	private Period period;
+	private Unit apiUnit;
 	private Unit valuesUnit;
-	private static final Unit defaultUnit = Unit.Mo;
 
 	public ValuesBag(Enums.Graph graph, Period period) {
 		this.period = period;
 		this.fields = deduceFields(graph);
 		this.fieldType = deduceFieldType(graph);
-		this.valuesUnit = deduceUnit(fieldType);
+		this.valuesUnit = fieldType != null ? fieldType.getDefaultUnit() : null;
+		this.apiUnit = fieldType != null ? fieldType.getAPIUnit() : null;
 		this.serie = new ArrayList<>();
 		this.dataSets = new HashMap<>();
+		this.highestValue = -1;
 		this.lastTimestamp = -1;
 
 		for (Field field : fields)
@@ -44,6 +49,7 @@ public class ValuesBag {
 		for (DataSet dataSet : dataSets.values())
 			dataSet.getValues().clear();
 
+		highestValue = -1;
 		lastTimestamp = -1;
 		serie.clear();
 	}
@@ -99,19 +105,6 @@ public class ValuesBag {
 		}
 	}
 
-	private static Unit deduceUnit(FieldType fieldType) {
-		switch (fieldType) {
-			case DATA:
-				return defaultUnit;
-			case TEMP:
-				return Unit.C;
-			case NOISE:
-				return Unit.dB;
-			default:
-				return null;
-		}
-	}
-
 	public void fill(JSONArray data) {
 		// Clear previous datasets
 		for (DataSet dataSet : dataSets.values())
@@ -142,7 +135,6 @@ public class ValuesBag {
 				if (lastAddedTimestamp == -1)
 					lastAddedTimestamp = time;
 
-
 				if (obj.getInt("time") - lastAddedTimestamp >= timestampDiff
 						|| obj.getInt("time") - lastAddedTimestamp == 0
 						|| timestampDiff == 0) {
@@ -159,7 +151,7 @@ public class ValuesBag {
 								valuesBuffer.clear(field);
 							}
 
-							dataSets.get(field).addValue(fieldType, val);
+							dataSets.get(field).addValue(fieldType, val, apiUnit);
 						} catch (JSONException ex) { ex.printStackTrace(); }
 					}
 					lastAddedTimestamp = obj.getInt("time");
@@ -187,32 +179,41 @@ public class ValuesBag {
 				int val = valuesBuffer.getAverage(field);
 				valuesBuffer.clear(field);
 
-				dataSets.get(field).addValue(fieldType, val);
+				dataSets.get(field).addValue(fieldType, val, apiUnit);
 			}
 			this.serie.add("");
 		}
 
 		// Get the best values unit
 		if (fieldType == FieldType.DATA) {
-			int highestValue = GraphHelper.getHighestValue(data, fields);
-			Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue);
+			this.highestValue = getHighestValue();
+			Unit bestUnit = GraphHelper.getBestUnitByMaxVal(highestValue, valuesUnit);
 
-			if (bestUnit != defaultUnit) {
-				convertAllValues(defaultUnit, bestUnit);
+			if (bestUnit != valuesUnit) {
+				for (DataSet dataSet : this.dataSets.values())
+					dataSet.setValuesUnit(bestUnit);
+
+				this.highestValue = Util.convertUnit(valuesUnit, bestUnit, highestValue).doubleValue();
 				this.valuesUnit = bestUnit;
 			}
 		}
 	}
-	
-	private void convertAllValues(Unit from, Unit to) {
-		if (from != Unit.Mo)
-			throw new RuntimeException("We can only convert Mos");
 
-		if (this.fieldType == FieldType.TEMP)
-			return;
-		
-		for (DataSet dataSet : this.dataSets.values())
-			dataSet.setValuesUnit(to, true);
+	/**
+	 * Gets the highest value from every dataset
+     */
+	private double getHighestValue() {
+		// We assume the lowest value can't be < 0
+		double highestValue = this.highestValue;
+
+		for (DataSet dataSet : dataSets.values()) {
+			for (Number value : dataSet.getValues()) {
+				if (value.doubleValue() > highestValue)
+					highestValue = value.doubleValue();
+			}
+		}
+
+		return highestValue;
 	}
 
 	public void setPeriod(Period period) { this.period = period; }

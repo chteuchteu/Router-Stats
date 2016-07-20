@@ -27,38 +27,33 @@ public class DataSet {
 	 */
 	public ArrayList<Number> getValues() { return this.values; }
 
-	private static Unit getUnit(Enums.FieldType fieldType) {
+	public void addValue(Enums.FieldType fieldType, int value, Unit valueUnit) {
 		switch (fieldType) {
-			case DATA:
-				return Unit.o;
 			case TEMP:
-				return Unit.C;
+				this.values.add(value/10);
+				break;
 			case NOISE:
-				return Unit.dB;
-			default:
-				return null;
+				this.values.add((double)value/10);
+				break;
+			case DATA:
+				if (valueUnit == null)
+					throw new RuntimeException("You must provide Unit for FieldType.DATA");
+
+				this.values.add(Util.convertUnit(valueUnit, this.valuesUnit, value));
+				break;
 		}
 	}
 
-	public void addValue(Enums.FieldType fieldType, int value) {
-		Unit unit = getUnit(fieldType);
+	/**
+	 * Updates values unit & convert all values
+     */
+	public void setValuesUnit(Unit toUnit) {
+		ArrayList<Number> newValues = new ArrayList<>();
+		for (Number number : this.values)
+			newValues.add(Util.convertUnit(this.valuesUnit, toUnit, number.doubleValue()));
+		this.values = newValues;
 
-		if (unit == Unit.C)
-			this.values.add(value/10);
-		else if (unit == Unit.dB)
-			this.values.add((double)value/10);
-		else
-			this.values.add(Util.convertUnit(unit, valuesUnit, value));
-	}
-
-	public void setValuesUnit(Unit unit, boolean convertAll) {
-		if (convertAll) {
-			ArrayList<Number> newValues = new ArrayList<>();
-			for (Number number : this.values)
-				newValues.add(Util.convertUnit(valuesUnit, unit, number.doubleValue()));
-			this.values = newValues;
-		}
-		this.valuesUnit = unit;
+		this.valuesUnit = toUnit;
 	}
 
 

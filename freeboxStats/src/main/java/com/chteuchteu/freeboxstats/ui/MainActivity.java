@@ -597,19 +597,13 @@ public class MainActivity extends FreeboxStatsActivity {
 		
 		return true;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		
-		if (appStarted) {
-			context = this;
-			activity = this;
-			
-			refreshGraph();
-			
+
+		if (appStarted && SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
-		}
 	}
 	
 	@Override
@@ -622,18 +616,9 @@ public class MainActivity extends FreeboxStatsActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		if (BillingService.isLoaded())
 			BillingService.getInstance().unbind();
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		
-		if (appStarted && findViewById(R.id.ll_loading).getVisibility() == View.VISIBLE) {
-			graphsDisplayed = false;
-			finishedLoading();
-		}
 	}
 
 	@Override

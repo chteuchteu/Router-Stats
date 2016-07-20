@@ -39,7 +39,35 @@ public class Enums {
 
 	public enum Graph { RateDown, RateUp, Temp, XDSL, Switch1, Switch2, Switch3, Switch4 }
 
-	public enum FieldType { DATA, TEMP, NOISE }
+	public enum FieldType {
+		DATA, TEMP, NOISE;
+
+		public Unit getDefaultUnit() {
+			switch (this) {
+				case DATA:
+					return Unit.Mo;
+				case TEMP:
+					return Unit.C;
+				case NOISE:
+					return Unit.dB;
+				default:
+					return null;
+			}
+		}
+
+		public Unit getAPIUnit() {
+			switch (this) {
+				case DATA:
+					return Unit.o;
+				case TEMP:
+					return Unit.C;
+				case NOISE:
+					return Unit.dB;
+				default:
+					return null;
+			}
+		}
+	}
 	public enum Field {
 		BW_UP("Débit maximum"), BW_DOWN("Débit maximum"), RATE_UP("Débit up"), RATE_DOWN("Débit down"), VPN_RATE_UP, VPN_RATE_DOWN,
 		CPUM("CpuM"), CPUB("CpuB"), SW("SW"), HDD("HDD"), FAN_SPEED("Ventilateur"),
