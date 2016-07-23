@@ -394,8 +394,11 @@ public class MainActivity extends FreeboxStatsActivity {
 
 	public void setUpdating(boolean val) {
 		updating = val;
-		refreshMenuItem.setEnabled(!updating);
-		refreshMenuItem.getIcon().mutate().setAlpha(updating ? 130 : 255);
+
+		if (refreshMenuItem != null) {
+			refreshMenuItem.setEnabled(!updating);
+			refreshMenuItem.getIcon().mutate().setAlpha(updating ? 130 : 255);
+		}
 	}
 
 	public void refreshGraph() { refreshGraph(false); }
@@ -603,10 +606,10 @@ public class MainActivity extends FreeboxStatsActivity {
 	public void onResume() {
 		super.onResume();
 
-		if (appStarted && SettingsHelper.getInstance().getAutoRefresh())
+		if (appStarted && SettingsHelper.getInstance().getAutoRefresh()) {
+			refreshGraph();
 			startRefreshThread();
-
-		refreshGraph();
+		}
 	}
 	
 	@Override

@@ -27,6 +27,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 
 	private boolean needsFreeboxUpdate;
 	private boolean success;
+	private boolean displayToastOnError;
 
 	public GraphLoader(FooBox fooBox, MainActivity activity, Enums.Graph graph) {
 		this.fooBox = fooBox;
@@ -36,6 +37,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		this.graph = graph;
 		this.needsFreeboxUpdate = false;
 		this.success = false;
+		this.displayToastOnError = true;
 	}
 	
 	@Override
@@ -53,13 +55,13 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 
 		if (success)
 			activity.loadGraph(graph);
-		else
+		else if (displayToastOnError)
 			activity.graphLoadingFailed();
 
 		if (needsFreeboxUpdate)
 			activity.displayFreeboxUpdateNeededScreen();
 	}
-	
+
 	/**
 	 * Load the graph and display the result on MainActivity
 	 */
@@ -68,7 +70,7 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 		Field[] fields = valuesBag.getFields();
 
 		NetResponse netResponse = NetHelper.loadGraph(freebox, period, fields, valuesBag.getLastTimestamp());
-		
+
 		if (netResponse != null && netResponse.hasSucceeded()) {
 			try {
 				if (netResponse.getJsonObject().get("data") instanceof JSONArray) {
@@ -81,8 +83,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 				return false;
 			}
 		} else {
-			boolean cancel = true;
-			
 			if (netResponse != null) {
 				ErrorsLogger.log(netResponse);
 				try {
@@ -91,15 +91,14 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 					// If the session has expired / hasn't been opened, open it
 					switch (response) {
 						case "auth_required":
-							cancel = false;
+							displayToastOnError = false;
 							new SessionOpener(freebox, activity).execute();
 							break;
 						case "insufficient_rights":
-							cancel = true;
+							// We don't have sufficient rights, that's a failure
 							break;
 						case "invalid_request":
 						case "invalid_api_version":
-							cancel = true;
 							needsFreeboxUpdate = true;
 							break;
 					}
@@ -110,8 +109,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 				}
 			} else
 				ErrorsLogger.log("GraphLoader - error 401");
-			
-			success = !cancel;
 		}
 
 		return false;
