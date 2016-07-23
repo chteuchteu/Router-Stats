@@ -260,6 +260,11 @@ public class MainActivity extends FreeboxStatsActivity {
 		XYPlot plot = fooBox.getPlots().get(graph);
 		Enums.Unit unit = valuesBag.getValuesUnit();
 
+		if (valuesBag.isEmpty()) {
+			FooBox.log(graph.name() + "'s dataset is empty, no need to update graphs");
+			return;
+		}
+
 		// Show domain labels the first time we load data into this plot
 		if (!plot.getGraphWidget().isShowDomainLabels()) {
 			plot.getGraphWidget().setShowDomainLabels(true);
@@ -310,6 +315,15 @@ public class MainActivity extends FreeboxStatsActivity {
 				}
 			}
 		}
+
+		// When adding values to plot, remove old obsolete values from series
+		SimpleXYSeries firstSerie = valuesBag.getDataSets()[0].getXySerieRef();
+		if (firstSerie.size() < valuesBag.getSerie().size()) {
+			FooBox.log("Removing " + (valuesBag.getSerie().size() - firstSerie.size()) + " values from serie");
+			while (firstSerie.size() < valuesBag.getSerie().size())
+				valuesBag.getSerie().remove(0);
+		}
+
 		
 		// Add markers (vertical lines)
 		plot.removeMarkers();

@@ -216,6 +216,20 @@ public class ValuesBag {
 		return highestValue;
 	}
 
+	/**
+	 * Returns false if this ValuesBag contains values.
+	 * Used to see if the API called returned new fresh values
+	 * @return boolean
+     */
+	public boolean isEmpty() {
+		for (DataSet dataSet : this.dataSets.values()) {
+			if (dataSet.getValues().size() > 0)
+				return false;
+		}
+
+		return true;
+	}
+
 	public void setPeriod(Period period) { this.period = period; }
 
 	public ArrayList<String> getSerie() { return this.serie; }
