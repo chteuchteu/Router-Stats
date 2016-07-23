@@ -48,7 +48,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-wallet:9.2.1'
 
     compile "com.androidplot:androidplot-core:0.9.8"
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.1@aar') {
         transitive = true;
     }
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
