@@ -24,7 +24,7 @@
 		androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
 		androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
 		androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.graphWidget.domainOriginTickLabelPaint.textSizer="graph_labels_font_size"
+		androidPlot.graphWidget.domainOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
 		androidPlot.legendWidget.textPaint.textSize="@dimen/legend_text_font_size"
 		androidPlot.legendWidget.heightMetric.value="25dp"
 		androidPlot.legendWidget.positionMetrics.anchor="right_bottom" />
