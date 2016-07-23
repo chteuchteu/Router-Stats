@@ -605,6 +605,8 @@ public class MainActivity extends FreeboxStatsActivity {
 
 		if (appStarted && SettingsHelper.getInstance().getAutoRefresh())
 			startRefreshThread();
+
+		refreshGraph();
 	}
 	
 	@Override
