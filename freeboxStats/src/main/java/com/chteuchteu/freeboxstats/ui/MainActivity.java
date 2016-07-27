@@ -1,5 +1,6 @@
 package com.chteuchteu.freeboxstats.ui;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -77,6 +78,9 @@ public class MainActivity extends FreeboxStatsActivity {
 	private boolean updating;
     private boolean graphsDisplayed;
 
+	private Toast loadingFailedToast;
+
+	@SuppressLint("ShowToast")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.viewToInflate = R.layout.activity_main;
@@ -570,7 +574,11 @@ public class MainActivity extends FreeboxStatsActivity {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(context, R.string.graphs_loading_fail, Toast.LENGTH_SHORT).show();
+				if (loadingFailedToast != null)
+					loadingFailedToast.cancel();
+
+				loadingFailedToast = Toast.makeText(context, R.string.graphs_loading_fail, Toast.LENGTH_SHORT);
+				loadingFailedToast.show();
 			}
 		});
 	}
