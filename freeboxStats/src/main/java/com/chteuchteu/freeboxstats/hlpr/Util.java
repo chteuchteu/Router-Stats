@@ -161,80 +161,80 @@ public class Util {
 		 * returns an empty string or the label depending on the label value
 		 */
 		public static String getLabel(Period period, String serie, int pos, ArrayList<String> series) {
-			// TODO put some regexes in that
 			switch (period) {
-				case HOUR:
+				case HOUR: {
 					if (serie.equals("") || !serie.contains(":"))
 						return "";
 					// Only display 11:00, 11:10, 11:20, ...
 					int minutes = Integer.parseInt(serie.split(":")[1]);
-					
+
 					if (minutes % 10 == 0
-							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1)))) {
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos - 1)))) {
 						int hours = Integer.parseInt(serie.split(":")[0]);
 						if (hours == 24) // Avoid 24:30, display 00:30 instead
-							return "00:" + minutes;
+							return "00:" + (minutes < 9 ? "0" + minutes : minutes);
 						else
 							return serie;
 					} else
 						return "";
-					
-				case DAY:
+				}
+				case DAY: {
 					if (serie.equals("") || !serie.contains(":"))
 						return "";
 					// Only display 14:00, 16:00, 18:00, ...
-					int hours2 = Integer.parseInt(serie.split(":")[0]);
-					int minutes2 = Integer.parseInt(serie.split(":")[1]);
-					
-					if (hours2 % 4 == 0 && minutes2 == 0
-							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1)))) {
-						if (hours2 == 24) // Avoid 24:30, display 00:30 instead
-							return "00:" + minutes2;
+					int hours = Integer.parseInt(serie.split(":")[0]);
+					int minutes = Integer.parseInt(serie.split(":")[1]);
+
+					if (hours % 4 == 0 && minutes == 0
+							&& (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos - 1)))) {
+						if (hours == 24) // Avoid 24:30, display 00:30 instead
+							return "00:00";
 						else
 							return serie;
 					} else
 						return "";
-					
-				case WEEK:
+				}
+				case WEEK: {
 					if (serie.equals(""))
 						return "";
-					
+
 					// Only display 01/02, 02/02, 03/02, ... at midday (12:00)
 					String dateLabel = serie.split(":")[0];
-					int hours3 = Integer.parseInt(serie.split(":")[1]);
-					if (hours3 == 12 && (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos-1))))
+					int hours = Integer.parseInt(serie.split(":")[1]);
+					if (hours == 12 && (pos == 0 || pos > 0 && !series.get(pos).equals(series.get(pos - 1))))
 						return dateLabel;
 					else
 						return "";
-					
-				case MONTH:
+				}
+				case MONTH: {
 					if (serie.equals(""))
 						return "";
-					
+
 					// Only display one day out of X
 					int eachXdays = 5;
 					long dayTimestamp = Util.Times.getDayStartFromTimestamp(
 							Integer.parseInt(serie));
-					int previousIndex = pos-1;
+					int previousIndex = pos - 1;
 					if (previousIndex < 0)
 						previousIndex = 0;
 					long previousTimestamp = Util.Times.getDayStartFromTimestamp(Long.parseLong(series.get(previousIndex)));
-					
+
 					if (previousTimestamp == dayTimestamp)
 						return "";
 
-					if (series.get(series.size()-1).equals(""))
+					if (series.get(series.size() - 1).equals(""))
 						return "";
 
 					long latestTimestamp = Util.Times.getDayStartFromTimestamp(
-							Long.parseLong(series.get(series.size()-1)));
-					
-					int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays*24*60*60));
-					
+							Long.parseLong(series.get(series.size() - 1)));
+
+					int mod = (int) ((latestTimestamp - dayTimestamp) % (eachXdays * 24 * 60 * 60));
+
 					if (mod == 0)
 						return GraphHelper.getDateLabelFromTimestamp(dayTimestamp, null);
 					else
 						return "";
+				}
 				default: return "";
 			}
 		}
