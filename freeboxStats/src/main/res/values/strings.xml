@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Freebox Stats</string>
+	<string name="app_name">Router Stats</string>
 	<string name="temp_tab">Temp.</string>
 	<string name="xdsl">xDSL</string>
 	<string name="switch_tab">Switch</string>
