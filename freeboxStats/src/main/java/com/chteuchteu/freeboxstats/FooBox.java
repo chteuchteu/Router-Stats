@@ -21,14 +21,11 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.Session;
 import com.chteuchteu.freeboxstats.obj.ValuesBag;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import io.fabric.sdk.android.Fabric;
 
 public class FooBox extends Application {
 	public static final String REPO_URL = "https://github.com/chteuchteu/Freebox-Stats/";
@@ -57,7 +54,6 @@ public class FooBox extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Fabric.with(this, new Crashlytics());
 		instance = this;
 		loadInstance();
 	}
@@ -109,7 +105,6 @@ public class FooBox extends Application {
 				this.freebox = Freebox.load(savedFreebox);
 			} catch (JSONException ex) {
 				ex.printStackTrace();
-				Crashlytics.logException(ex);
 			}
 
 			// Open session
@@ -130,7 +125,6 @@ public class FooBox extends Application {
 				this.freebox.save(this.context);
 			} catch (JSONException ex) {
 				ex.printStackTrace();
-				Crashlytics.logException(ex);
 			}
 		}
 	}

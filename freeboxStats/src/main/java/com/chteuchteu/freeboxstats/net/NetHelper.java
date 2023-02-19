@@ -13,7 +13,6 @@ import com.chteuchteu.freeboxstats.hlpr.Util;
 import com.chteuchteu.freeboxstats.obj.ErrorsLogger;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,6 +122,9 @@ public class NetHelper {
 		String apiCallUri = Freebox.ApiUri + "/api_version";
 
 		String responseBody = fetch(apiCallUri, RequestMethod.GET);
+		if (responseBody == null) {
+			return null;
+		}
 		
 		// Parse JSON
 		try {
@@ -131,7 +133,6 @@ public class NetHelper {
 					obj.getString("api_base_url"), obj.getString("device_type"));
 		} catch (JSONException ex) {
 			ex.printStackTrace();
-			Crashlytics.logException(ex);
 			return null;
 		}
 	}
@@ -232,7 +233,6 @@ public class NetHelper {
 			return new NetResponse(obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
-			Crashlytics.logException(e);
 			return null;
 		}
 	}
@@ -306,7 +306,6 @@ public class NetHelper {
 			return new NetResponse(new JSONObject(responseBody));
 		} catch (JSONException | UnsupportedEncodingException ex) {
 			ex.printStackTrace();
-			Crashlytics.logException(ex);
 			return null;
 		}
 	}
@@ -363,7 +362,6 @@ public class NetHelper {
 			return new NetResponse(new JSONObject(responseBody));
 		} catch (JSONException e) {
 			e.printStackTrace();
-			Crashlytics.logException(e);
 			return null;
 		}
 	}

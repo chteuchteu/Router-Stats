@@ -10,7 +10,6 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +39,6 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 			obj.put("device_name", FooBox.DEVICE_NAME);
 		} catch (JSONException ex) {
 			ex.printStackTrace();
-			Crashlytics.logException(ex);
 		}
 		
 		NetResponse response = NetHelper.authorize(freebox, obj.toString());
@@ -60,7 +58,6 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 				ok = true;
 			} catch (JSONException ex) {
 				ex.printStackTrace();
-				Crashlytics.logException(ex);
 			}
 			
 			// Watch for token status
@@ -76,7 +73,6 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 						Thread.sleep(1000);
 					} catch (InterruptedException ex) {
 						ex.printStackTrace();
-						Crashlytics.logException(ex);
 					}
 				}
 			}
@@ -93,7 +89,6 @@ public class AskForAppToken extends AsyncTask<Void, Void, Void> {
 						freebox.save(context);
 					} catch (JSONException ex) {
 						ex.printStackTrace();
-						Crashlytics.logException(ex);
 					}
 				}
 			}

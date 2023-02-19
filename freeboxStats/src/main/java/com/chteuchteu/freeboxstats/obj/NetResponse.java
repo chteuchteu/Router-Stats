@@ -1,7 +1,5 @@
 package com.chteuchteu.freeboxstats.obj;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +22,6 @@ public class NetResponse {
 			
 		} catch (JSONException ex) {
 			ex.printStackTrace();
-			Crashlytics.logException(ex);
 		}
 	}
 	

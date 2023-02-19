@@ -13,7 +13,6 @@ import com.chteuchteu.freeboxstats.obj.Freebox;
 import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.ValuesBag;
 import com.chteuchteu.freeboxstats.ui.MainActivity;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +78,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 				}
 			} catch (JSONException ex) {
 				ex.printStackTrace();
-				Crashlytics.logException(ex);
 				return false;
 			}
 		} else {
@@ -103,7 +101,6 @@ public class GraphLoader extends AsyncTask<Void, Void, Void> {
 							break;
 					}
 				} catch (JSONException ex) {
-					Crashlytics.logException(ex);
 					ex.printStackTrace();
 					return false;
 				}

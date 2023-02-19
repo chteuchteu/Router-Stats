@@ -10,7 +10,6 @@ import com.chteuchteu.freeboxstats.obj.NetResponse;
 import com.chteuchteu.freeboxstats.obj.SwitchDevice;
 import com.chteuchteu.freeboxstats.obj.SwitchPortStatus;
 import com.chteuchteu.freeboxstats.obj.SwitchPortStatuses;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +59,6 @@ public class SwitchPortStatusLoader extends AsyncTask<Void, Void, Void> {
 
 			} catch (JSONException ex) {
 				ex.printStackTrace();
-				Crashlytics.logException(ex);
 			}
 
 		} else {

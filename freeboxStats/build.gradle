@@ -1,29 +1,17 @@
 buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.21.7'
-    }
 
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
 
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 33
     buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.chteuchteu.freeboxstats"
-        minSdkVersion 11
-        targetSdkVersion 24
+        minSdkVersion 22
+        targetSdkVersion 33
         versionCode 20
         versionName "3.0"
     }
@@ -41,18 +29,15 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:support-v4:24.1.1'
-    compile "com.android.support:design:24.1.1"
-    compile 'com.google.android.gms:play-services-base:9.2.1'
-    compile 'com.google.android.gms:play-services-wallet:9.2.1'
+    implementation 'com.android.support:appcompat-v7:24.1.1'
+    implementation 'com.android.support:support-v4:24.1.1'
+    implementation "com.android.support:design:24.1.1"
+    implementation 'com.google.android.gms:play-services-base:9.2.1'
+    implementation 'com.google.android.gms:play-services-wallet:9.2.1'
 
-    compile "com.androidplot:androidplot-core:0.9.8"
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.1@aar') {
-        transitive = true;
-    }
-    compile('com.mikepenz:materialdrawer:5.3.6@aar') {
+    implementation "com.androidplot:androidplot-core:0.9.8"
+    implementation('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
-    compile 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
 }

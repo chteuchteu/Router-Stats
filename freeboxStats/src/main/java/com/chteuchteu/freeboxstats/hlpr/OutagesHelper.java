@@ -1,7 +1,6 @@
 package com.chteuchteu.freeboxstats.hlpr;
 
 import com.chteuchteu.freeboxstats.obj.Outage;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +24,6 @@ public class OutagesHelper {
 			}
 		} catch (JSONException ex) {
 			ex.printStackTrace();
-			Crashlytics.logException(ex);
 		}
 		
 		return outages;
