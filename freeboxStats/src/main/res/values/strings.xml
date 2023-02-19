@@ -50,7 +50,6 @@
 	<string name="freebox">Freebox</string>
 	<string name="debug">Debug</string>
 	<string name="outages">Coupures</string>
-	<string name="donate">Don</string>
 	<string name="outagestext">La précision d\'une coupure (dates, durée) dépend de son ancienneté. Seules les coupures d\'il y a moins d\'un mois sont affichées.</string>
 	<string name="the">Le</string>
 	<string name="since2">de</string>
@@ -67,9 +66,6 @@
 	<string name="outage_less_than_one_minute">Moins d\'une minute</string>
 	<string name="outage_one_minute">Une minute</string>
 	<string name="outage_minutes">XX minutes</string>
-	<string name="donate_text">Développer une telle application demande beaucoup de temps et de dévotion. Si Freebox Stats vous est utile, pourriez-vous
-		considérer un don ? Merci !</string>
-	<string name="donate_amount">Veuillez sélectionner le montant du don. (33% de cette somme est prélevée par Google)</string>
 	<string name="contribute">Contribuer</string>
 	<string name="freebox_access_address">Adresse d\'accès de votre Freebox</string>
 	<string name="freebox_access_address_explanation">Cette adresse est utilisée par l\'application pour communiquer avec votre Freebox. Si elle est

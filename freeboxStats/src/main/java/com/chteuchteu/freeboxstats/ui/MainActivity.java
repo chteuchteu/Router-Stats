@@ -48,7 +48,6 @@ import com.chteuchteu.freeboxstats.hlpr.Enums.AuthorizeStatus;
 import com.chteuchteu.freeboxstats.hlpr.Enums.Period;
 import com.chteuchteu.freeboxstats.hlpr.SettingsHelper;
 import com.chteuchteu.freeboxstats.hlpr.Util;
-import com.chteuchteu.freeboxstats.net.BillingService;
 import com.chteuchteu.freeboxstats.obj.DataSet;
 import com.chteuchteu.freeboxstats.obj.ValuesBag;
 
@@ -639,14 +638,6 @@ public class MainActivity extends FreeboxStatsActivity {
 		super.onPause();
 		
 		stopRefreshThread();
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		if (BillingService.isLoaded())
-			BillingService.getInstance().unbind();
 	}
 
 	@Override
