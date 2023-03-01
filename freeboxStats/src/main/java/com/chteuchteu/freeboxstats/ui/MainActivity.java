@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.androidplot.ui.Size;
 import com.androidplot.ui.SizeLayoutType;
 import com.androidplot.ui.XLayoutStyle;
 import com.androidplot.ui.YLayoutStyle;
+import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
@@ -284,27 +286,59 @@ public class MainActivity extends FreeboxStatsActivity {
 
 				LineAndPointFormatter serieFormat = new LineAndPointFormatter();
 				serieFormat.setPointLabelFormatter(new PointLabelFormatter());
+				serieFormat.getLinePaint().setStrokeWidth(PixelUtils.dpToPix(1));
+				serieFormat.getPointLabelFormatter().getTextPaint().setAlpha(0);
+				serieFormat.getVertexPaint().setColor(Color.parseColor("#00000000"));
 
-				int xmlRef = -1;
 				switch (dataSet.getField()) {
 					case BW_DOWN:
-					case BW_UP:		xmlRef = R.xml.serieformat_bw;		break;
-					case RATE_DOWN:	xmlRef = R.xml.serieformat_ratedown;break;
-					case RATE_UP: 	xmlRef = R.xml.serieformat_rateup;	break;
-					case CPUM:		xmlRef = R.xml.serieformat_cpum;	break;
-					case CPUB:		xmlRef = R.xml.serieformat_cpub;	break;
-					case SW:		xmlRef = R.xml.serieformat_sw;		break;
-					case HDD:		xmlRef = R.xml.serieformat_hdd;		break;
-					case SNR_UP:	xmlRef = R.xml.serieformat_snr_up;	break;
-					case SNR_DOWN:	xmlRef = R.xml.serieformat_snr_down;break;
+					case BW_UP:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#407DB5"));
+						serieFormat.getVertexPaint().setColor(Color.parseColor("#00000077"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case RATE_DOWN:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#EE8BC34A"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#888BC34A"));
+						break;
+					case RATE_UP:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#EEF44336"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#AAF44336"));
+						break;
+					case CPUM:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#EDC240"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case CPUB:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#AFD8F8"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case SW:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#CB4B4B"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case HDD:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#4DA74D"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case SNR_UP:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#CB4B4B"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
+					case SNR_DOWN:
+						serieFormat.getLinePaint().setColor(Color.parseColor("#4DA74D"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#00FFFFFF"));
+						break;
 					case RX_1: case RX_2: case RX_3: case RX_4:
-						xmlRef = R.xml.serieformat_rateup; break;
+						serieFormat.getLinePaint().setColor(Color.parseColor("#EEF44336"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#AAF44336"));
+						break;
 					case TX_1: case TX_2: case TX_3: case TX_4:
-						xmlRef = R.xml.serieformat_ratedown; break;
+						serieFormat.getLinePaint().setColor(Color.parseColor("#EE8BC34A"));
+						serieFormat.getFillPaint().setColor(Color.parseColor("#888BC34A"));
+						break;
 					default: break;
 				}
-				if (xmlRef != -1)
-					serieFormat.configure(context, xmlRef);
 
 				plot.addSeries(serie, serieFormat);
 			}

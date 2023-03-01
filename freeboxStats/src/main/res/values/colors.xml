@@ -8,4 +8,6 @@
 	<color name="textSecondary">#8e8e8e</color>
 	<color name="fullscreenTextColor">#ffffff</color>
 	<color name="fullscreenTextColor2">#ccffffff</color>
+
+	<color name="c00FFFFFF">#00FFFFFF</color>
 </resources>

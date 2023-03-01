@@ -22,7 +22,44 @@ public class TwoGraphsFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_twographs, container, false);
 		
 		XYPlot plot1 = (XYPlot) rootView.findViewById(R.id.xyPlot1);
+		// androidPlot.graphWidget.marginTop="@dimen/graphwidget_margin_top"
+		// plot1.getGraphWidget().setMarginTop(R.dimen.graphwidget_margin_top);
+		// androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
+		// plot1.getGraphWidget().setMarginLeft(R.dimen.graphwidget_margin_left);
+		// androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
+		// plot1.getGraphWidget().setMarginBottom(R.dimen.graphwidget_margin_bottom);
+		// androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
+		// plot1.getGraphWidget().setMarginRight(R.dimen.graphwidget_margin_right);
+		// androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+		plot1.getDomainLabelWidget().getLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot1.getGraphWidget().getRangeTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot1.getGraphWidget().getRangeOriginTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot1.getGraphWidget().getDomainTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.domainOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot1.getGraphWidget().getDomainOriginTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+
 		XYPlot plot2 = (XYPlot) rootView.findViewById(R.id.xyPlot2);
+		// androidPlot.graphWidget.marginTop="@dimen/graphwidget_margin_top"
+		// plot2.getGraphWidget().setMarginTop(R.dimen.graphwidget_margin_top);
+		// androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
+		// plot2.getGraphWidget().setMarginLeft(R.dimen.graphwidget_margin_left);
+		// androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
+		// plot2.getGraphWidget().setMarginBottom(R.dimen.graphwidget_margin_bottom);
+		// androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
+		// plot2.getGraphWidget().setMarginRight(R.dimen.graphwidget_margin_right);
+		// androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
+		plot2.getDomainLabelWidget().getLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot2.getGraphWidget().getRangeTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot2.getGraphWidget().getRangeOriginTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot2.getGraphWidget().getDomainTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
+		// androidPlot.graphWidget.domainOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
+		plot2.getGraphWidget().getDomainOriginTickLabelPaint().setTextSize(R.dimen.graph_labels_font_size);
 
 		FooBox fooBox = FooBox.getInstance();
 		fooBox.getPlots().put(Enums.Graph.RateDown, plot1);

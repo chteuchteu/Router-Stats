@@ -15,19 +15,7 @@
 		android:id="@+id/xyPlot"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/graphTitle"
-		androidPlot.graphWidget.marginTop="@dimen/graphwidget_margin_top"
-		androidPlot.graphWidget.marginLeft="@dimen/graphwidget_margin_left"
-		androidPlot.graphWidget.marginBottom="@dimen/graphwidget_margin_bottom"
-		androidPlot.graphWidget.marginRight="@dimen/graphwidget_margin_right"
-		androidPlot.domainLabelWidget.labelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.graphWidget.rangeTickLabelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.graphWidget.rangeOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.graphWidget.domainTickLabelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.graphWidget.domainOriginTickLabelPaint.textSize="@dimen/graph_labels_font_size"
-		androidPlot.legendWidget.textPaint.textSize="@dimen/legend_text_font_size"
-		androidPlot.legendWidget.heightMetric.value="25dp"
-		androidPlot.legendWidget.positionMetrics.anchor="right_bottom" />
+		android:layout_below="@id/graphTitle" />
 
 	<ProgressBar
 		android:id="@+id/progressBar"
