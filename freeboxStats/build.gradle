@@ -5,21 +5,19 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 31
     buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.chteuchteu.freeboxstats"
         minSdkVersion 22
-        targetSdkVersion 33
+        targetSdkVersion 31
         versionCode 20
         versionName "3.0"
     }
 
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix '-DEBUG'
         }
         release {
             minifyEnabled true
